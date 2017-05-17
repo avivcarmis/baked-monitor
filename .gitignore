@@ -53,3 +53,5 @@ build
 /src/release
 /release
 /bower_components
+src/public/bower_components/Ionicons/png/512/arrow-graph-down-right.png
+/src/public/bower_components
