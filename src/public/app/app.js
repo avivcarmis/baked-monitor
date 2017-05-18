@@ -116,7 +116,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         if (seconds < 10) {
             seconds = "0" + seconds;
         }
-        return minutes + ":" + seconds;
+        return date.getHours() + ":" + minutes + ":" + seconds;
     };
 
     $scope.draw = function () {
@@ -163,6 +163,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
             marginTop: 0,
             marginRight: 15,
             dataProvider: data,
+            categoryField: 'time',
             valueAxes: [
                 {
                     axisAlpha: 0,
@@ -206,16 +207,6 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                 valueLineBalloonEnabled: true,
                 valueLineAlpha: 0.5,
                 fullWidth: true
-            },
-            dataDateFormat: 'YYYY',
-            categoryField: 'time',
-            categoryAxis: {
-                minPeriod: 'YYYY',
-                parseDates: true,
-                minorGridAlpha: 0.1,
-                minorGridEnabled: true,
-                gridAlpha: 0.5,
-                gridColor: layoutColors.border,
             },
             export: {
                 enabled: true

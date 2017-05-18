@@ -5,7 +5,7 @@
     "main-bower-files": "~2.13.1"
   },
   "scripts": {
-    "postinstall": "cd src/static && bower install"
+    "postinstall": "cd src/public && bower install"
   },
   "dependencies": {
     "express": "^4.15.2"
