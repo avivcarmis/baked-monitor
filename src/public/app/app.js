@@ -252,6 +252,101 @@ function initialize($rootScope, baSidebarService, $state) {
                         ]
                     }
                 },
+                {
+                    title: "Endpoint Analysis",
+                    width: 12,
+                    type: "TABLE",
+                    config: {
+                        rows: {
+                            path: [
+                                {
+                                    type: "ARRAY",
+                                    conditions: {title: "Endpoint"},
+                                    result: "value"
+                                }
+                            ],
+                            titleField: "title",
+                            valueField: "value"
+                        },
+                        columns: [
+                            {
+                                title: "Enter Per Sec.",
+                                path: [
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Enter"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Mean Rate"},
+                                        result: "value"
+                                    }
+                                ]
+                            },
+                            {
+                                title: "Exit Per Sec.",
+                                path: [
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Exit"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Mean Rate"},
+                                        result: "value"
+                                    }
+                                ]
+                            },
+                            {
+                                title: "Currently Active",
+                                path: [
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Active"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Count"},
+                                        result: "value"
+                                    }
+                                ]
+                            },
+                            {
+                                title: "Median Duration",
+                                path: [
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Duration"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Mean"},
+                                        result: "value"
+                                    }
+                                ]
+                            },
+                            {
+                                title: "98 Perc. Duration",
+                                path: [
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Duration"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "98th Percentile"},
+                                        result: "value"
+                                    }
+                                ]
+                            },
+                        ]
+                    }
+                },
             ]
         }
     };
@@ -330,6 +425,9 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                     break;
                 case "VALUE":
                     $scope.drawValue(i, meter.config);
+                    break;
+                case "TABLE":
+                    $scope.drawTable(i, meter.config);
                     break;
             }
         }
@@ -530,9 +628,53 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         $("#meter" + index).addClass("value-view").html(config.prefix + value + config.suffix);
     };
 
+    $scope.drawTable = function (index, config) {
+        if ($scope.data.length === 0) {
+            return;
+        }
+        var lastSample = $scope.data[$scope.data.length - 1].data;
+        var headerValues = [""];
+        for (var i = 0; i < config.columns.length; i++) {
+            headerValues.push(config.columns[i].title);
+        }
+        var tableValues = [];
+        var rowsData = $scope.getEntryByPath(config.rows.path, lastSample);
+        for (var key in rowsData) {
+            var rowData = rowsData[key];
+            var title = config.rows.titleField === "{{key}}" ? key : rowData[config.rows.titleField];
+            var row = [title];
+            for (i = 0; i < config.columns.length; i++) {
+                var value = $scope.getEntryByPath(config.columns[i].path, rowData[config.rows.valueField]);
+                row.push(value);
+            }
+            tableValues.push(row);
+        }
+        var headerHolder = $('<tr>');
+        for (i = 0; i < headerValues.length; i++) {
+            headerHolder.append($('<th>').html(headerValues[i]));
+        }
+        var tableHolder = $('<tbody>');
+        for (i = 0; i < tableValues.length; i++) {
+            var rowValues = tableValues[i];
+            var rowHolder = $('<tr>').addClass("no-top-border");
+            for (var j = 0; j < rowValues.length; j++) {
+                rowHolder.append($('<td>').html(rowValues[j]));
+            }
+            tableHolder.append(rowHolder);
+        }
+        $("#meter" + index).html(
+            $('<div>').addClass("horizontal-scroll").append(
+                $('<table>').addClass("table table-hover").append(
+                    $('<thead>').append(headerHolder),
+                    tableHolder
+                )
+            )
+        );
+    };
+
     $scope.getEntryByPath = function (pathArray, sample) {
         if (pathArray.length === 0) {
-            return sample;
+            return $scope.normalizeValue(sample);
         }
         if (!sample) {
             throw "could not extract entry path";
@@ -557,7 +699,36 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         else if (currentInstruction.type === "OBJECT") {
             return $scope.getEntryByPath(pathArray.slice(1), sample[currentInstruction.result]);
         }
-        return sample;
+        return $scope.normalizeValue(sample);
+    };
+
+    $scope.normalizeValue = function (value) {
+        if (!$.isNumeric(value)) {
+            return value;
+        }
+        var result = $scope.formatNumber(value, 3, '.', ',');
+        return result.substr(-3) === "000" ? result.substr(0, result.length - 4) : result;
+    };
+
+    $scope.formatNumber = function (number, decimals, decPoint, thousandsSep) {
+        var n = !isFinite(+number) ? 0 : +number,
+            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+            sep = (typeof thousandsSep === 'undefined') ? ',' : thousandsSep,
+            dec = (typeof decPoint === 'undefined') ? '.' : decPoint,
+            toFixedFix = function (n, prec) {
+                // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+                var k = Math.pow(10, prec);
+                return Math.round(n * k) / k;
+            },
+            s = (prec ? toFixedFix(n, prec) : Math.round(n)).toString().split('.');
+        if (s[0].length > 3) {
+            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+        }
+        if ((s[1] || '').length < prec) {
+            s[1] = s[1] || '';
+            s[1] += new Array(prec - s[1].length + 1).join('0');
+        }
+        return s.join(dec);
     };
 
     $scope.update();
