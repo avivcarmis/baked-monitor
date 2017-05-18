@@ -13,7 +13,6 @@ angular
         'ui.slimscroll',
         'ngJsTree',
         'angular-progress-button-styles',
-
         'BlurAdmin.theme'
     ])
     .config(amChartConfig)
@@ -22,7 +21,6 @@ angular
     .controller('MonitorCtrl', monitorCtrl);
 
 function routesConfig($stateProvider) {
-
     $stateProvider
         .state('monitor', {
             url: '/monitor/:serverId',
@@ -30,7 +28,6 @@ function routesConfig($stateProvider) {
             templateUrl: 'app/monitor.html',
             controller: 'MonitorCtrl'
         });
-
 }
 
 /** @ngInject */
@@ -42,16 +39,219 @@ function initialize($rootScope, baSidebarService, $state) {
             url: "http://localhost:8080/metrics",
             meters: [
                 {
-                    "title": "Total Count",
-                    "width": 12,
-                    "type": "CHART",
-                    "path": [
-                        "Endpoint",
-                        "GET /get_user_by_id",
-                        "Enter",
-                        "Total Count"
-                    ]
-                }
+                    title: "Total Count - get_user_by_id",
+                    width: 12,
+                    type: "GRAPH",
+                    config: {
+                        maxHistory: 12,
+                        fill: true,
+                        path: [
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Endpoint"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "GET /get_user_by_id"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Enter"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Total Count"},
+                                result: "value"
+                            }
+                        ]
+                    }
+                },
+                {
+                    title: "Total Count Comparison",
+                    width: 12,
+                    type: "PIE",
+                    config: {
+                        participants: [
+                            {
+                                title: "get_user_by_id",
+                                path: [
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Endpoint"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "GET /get_user_by_id"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Enter"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Total Count"},
+                                        result: "value"
+                                    }
+                                ]
+                            },
+                            {
+                                title: "get_user_by_id_2",
+                                path: [
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Endpoint"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "GET /get_user_by_id_2"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Enter"},
+                                        result: "value"
+                                    },
+                                    {
+                                        type: "ARRAY",
+                                        conditions: {title: "Total Count"},
+                                        result: "value"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    title: "Mean Time",
+                    width: 3,
+                    type: "VALUE",
+                    config: {
+                        prefix: "",
+                        suffix: "ms",
+                        path: [
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Endpoint"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "GET /get_user_by_id"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Duration"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Mean"},
+                                result: "value"
+                            }
+                        ]
+                    }
+                },
+                {
+                    title: "Min Time",
+                    width: 3,
+                    type: "VALUE",
+                    config: {
+                        prefix: "",
+                        suffix: "ms",
+                        path: [
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Endpoint"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "GET /get_user_by_id"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Duration"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Min"},
+                                result: "value"
+                            }
+                        ]
+                    }
+                },
+                {
+                    title: "Max Time",
+                    width: 3,
+                    type: "VALUE",
+                    config: {
+                        prefix: "",
+                        suffix: "ms",
+                        path: [
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Endpoint"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "GET /get_user_by_id"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Duration"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Max"},
+                                result: "value"
+                            }
+                        ]
+                    }
+                },
+                {
+                    title: "Standard Deviation",
+                    width: 3,
+                    type: "VALUE",
+                    config: {
+                        prefix: "",
+                        suffix: "%",
+                        path: [
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Endpoint"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "GET /get_user_by_id"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Duration"},
+                                result: "value"
+                            },
+                            {
+                                type: "ARRAY",
+                                conditions: {title: "Standard Deviation"},
+                                result: "value"
+                            }
+                        ]
+                    }
+                },
             ]
         }
     };
@@ -98,9 +298,8 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                         });
                         $scope.draw();
                     }
-                }, function (e) {
-                    var i = 1;
-                    // alert("Something went wrong");
+                }, function () {
+                    alert("Something went wrong");
                 }
             );
         setTimeout($scope.update, 5000);
@@ -122,39 +321,29 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
     $scope.draw = function () {
         for (var i = 0; i < $scope.server.meters.length; i++) {
             var meter = $scope.server.meters[i];
-            var data = $scope.getDataByPath(meter.path);
             switch (meter.type) {
-                case "CHART":
-                    $scope.drawChart(i, data);
+                case "GRAPH":
+                    $scope.drawGraph(i, meter.config);
+                    break;
+                case "PIE":
+                    $scope.drawPie(i, meter.config);
+                    break;
+                case "VALUE":
+                    $scope.drawValue(i, meter.config);
                     break;
             }
         }
     };
 
-    $scope.getDataByPath = function (pathArray) {
-        var result = [];
-        for (var i = 0; i < $scope.data.length; i++) {
-            result.push({
+    $scope.drawGraph = function (index, config) {
+        var data = [];
+        var startIndex = config.maxHistory ? Math.max(0, $scope.data.length - config.maxHistory) : 0;
+        for (var i = startIndex; i < $scope.data.length; i++) {
+            data.push({
                 time: $scope.data[i].time,
-                value: $scope.getEntryByPath(pathArray, $scope.data[i].data)
+                value: $scope.getEntryByPath(config.path, $scope.data[i].data)
             });
         }
-        return result;
-    };
-
-    $scope.getEntryByPath = function (pathArray, sample) {
-        if (!sample || pathArray.length === 0) {
-            return sample;
-        }
-        for (var i = 0; i < sample.length; i++) {
-            var sampleEntry = sample[i];
-            if (sampleEntry.title && sampleEntry.title === pathArray[0]) {
-                return $scope.getEntryByPath(pathArray.slice(1), sampleEntry.value);
-            }
-        }
-    };
-
-    $scope.drawChart = function (index, data) {
         var layoutColors = baConfig.colors;
         var lineChart = AmCharts.makeChart("meter" + index, {
             type: 'serial',
@@ -176,13 +365,16 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                 {
                     id: 'g1',
                     balloonText: '[[value]]',
-                    bullet: 'round',
+                    bullet: 'square',
                     bulletSize: 8,
-                    lineColor: layoutColors.danger,
+                    lineColor: layoutColors.primary,
+                    fillColors: layoutColors.primary,
                     lineThickness: 1,
-                    negativeLineColor: layoutColors.warning,
+                    valueField: 'value',
                     type: 'smoothedLine',
-                    valueField: 'value'
+                    fillAlphas: config.fill ? 0.5 : 0,
+                    // fillColorsField: 'lineColor',
+                    // lineColorField: 'lineColor',
                 }
             ],
             chartScrollbar: {
@@ -201,7 +393,6 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                 selectedGraphLineAlpha: 1
             },
             chartCursor: {
-                categoryBalloonDateFormat: 'YYYY',
                 cursorAlpha: 0,
                 valueLineEnabled: true,
                 valueLineBalloonEnabled: true,
@@ -214,15 +405,159 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
             creditsPosition: 'bottom-right',
             pathToImages: layoutPaths.images.amChart
         });
-
         lineChart.addListener('rendered', zoomChart);
         if (lineChart.zoomChart) {
             lineChart.zoomChart();
         }
-
         function zoomChart() {
             lineChart.zoomToIndexes(Math.round(lineChart.dataProvider.length * 0.4), Math.round(lineChart.dataProvider.length * 0.55));
         }
+    };
+
+    $scope.drawPie = function (index, config) {
+        if ($scope.data.length === 0) {
+            return;
+        }
+        var data = [];
+        var lastSample = $scope.data[$scope.data.length - 1].data;
+        for (var i = 0; i < config.participants.length; i++) {
+            var participant = config.participants[i];
+            data.push({
+                title: participant.title,
+                value: $scope.getEntryByPath(participant.path, lastSample)
+            });
+        }
+        var layoutColors = baConfig.colors;
+        var pieChart = AmCharts.makeChart("meter" + index, {
+            type: 'pie',
+            startDuration: 0,
+            theme: 'blur',
+            addClassNames: true,
+            color: layoutColors.defaultText,
+            labelTickColor: layoutColors.borderDark,
+            legend: {
+                position: 'right',
+                marginRight: 100,
+                autoMargins: false,
+            },
+            innerRadius: '40%',
+            defs: {
+                filter: [
+                    {
+                        id: 'shadow',
+                        width: '200%',
+                        height: '200%',
+                        feOffset: {
+                            result: 'offOut',
+                            in: 'SourceAlpha',
+                            dx: 0,
+                            dy: 0
+                        },
+                        feGaussianBlur: {
+                            result: 'blurOut',
+                            in: 'offOut',
+                            stdDeviation: 5
+                        },
+                        feBlend: {
+                            in: 'SourceGraphic',
+                            in2: 'blurOut',
+                            mode: 'normal'
+                        }
+                    }
+                ]
+            },
+            dataProvider: data,
+            valueField: 'value',
+            titleField: 'title',
+            export: {
+                enabled: true
+            },
+            creditsPosition: 'bottom-left',
+            autoMargins: false,
+            marginTop: 10,
+            alpha: 0.8,
+            marginBottom: 30,
+            marginLeft: 0,
+            marginRight: 0,
+            pullOutRadius: 0,
+            pathToImages: layoutPaths.images.amChart,
+            responsive: {
+                enabled: false, // creating an issue of not reading settings each even re-draw
+                rules: [
+                    // at 900px wide, we hide legend
+                    {
+                        maxWidth: 900,
+                        overrides: {
+                            legend: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    // at 200 px we hide value axis labels altogether
+                    {
+                        maxWidth: 200,
+                        overrides: {
+                            valueAxes: {
+                                labelsEnabled: false
+                            },
+                            marginTop: 30,
+                            marginBottom: 30,
+                            marginLeft: 30,
+                            marginRight: 30
+                        }
+                    }
+                ]
+            }
+        });
+        pieChart.addListener('init', function () {
+            pieChart.legend.addListener('rollOverItem', handleRollOver);
+        });
+        pieChart.addListener('rollOverSlice', function (e) {
+            handleRollOver(e);
+        });
+        function handleRollOver(e) {
+            var wedge = e.dataItem.wedge.node;
+            wedge.parentNode.appendChild(wedge);
+        }
+    };
+
+    $scope.drawValue = function (index, config) {
+        if ($scope.data.length === 0) {
+            return;
+        }
+        var lastSample = $scope.data[$scope.data.length - 1].data;
+        var value = $scope.getEntryByPath(config.path, lastSample);
+        $("#meter" + index).addClass("value-view").html(config.prefix + value + config.suffix);
+    };
+
+    $scope.getEntryByPath = function (pathArray, sample) {
+        if (pathArray.length === 0) {
+            return sample;
+        }
+        if (!sample) {
+            throw "could not extract entry path";
+        }
+        var currentInstruction = pathArray[0];
+        if (currentInstruction.type === "ARRAY") {
+            for (var i = 0; i < sample.length; i++) {
+                var isValid = true;
+                var sampleEntry = sample[i];
+                for (var key in currentInstruction.conditions) {
+                    if (sampleEntry[key] !== currentInstruction.conditions[key]) {
+                        isValid = false;
+                        break;
+                    }
+                }
+                if (isValid) {
+                    return $scope.getEntryByPath(pathArray.slice(1), sampleEntry[currentInstruction.result]);
+                }
+            }
+            throw "could not extract entry path - array not match";
+        }
+        else if (currentInstruction.type === "OBJECT") {
+            return $scope.getEntryByPath(pathArray.slice(1), sample[currentInstruction.result]);
+        }
+        return sample;
     };
 
     $scope.update();

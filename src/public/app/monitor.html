@@ -4,7 +4,7 @@
         <div ng-repeat="meter in server.meters track by $index"
              class="col-md-{{meter.width}}"
              ba-panel
-             ba-panel-title="Line Chart"
+             ba-panel-title="{{meter.title}}"
              ba-panel-class="with-scroll">
             <div id="meter{{$index}}" class="admin-chart"></div>
         </div>

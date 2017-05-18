@@ -1,4 +1,13 @@
 @charset "UTF-8";
+
+.value-view {
+  font-size: 26px !important;
+  color: #fff;
+  height: 60px !important;
+  text-align: center;
+  padding: 19px;
+}
+
 .alert {
   color: #ffffff;
   font-size: 13px;
