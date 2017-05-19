@@ -39,33 +39,27 @@ function initialize($rootScope, baSidebarService, $state) {
             url: "http://localhost:8080/metrics",
             meters: [
                 {
-                    title: "Total Count - get_user_by_id",
+                    title: "Endpoint Comparison",
                     width: 12,
                     type: "GRAPH",
                     config: {
                         maxHistory: 12,
-                        fill: true,
-                        path: [
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Endpoint"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "GET /get_user_by_id"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Enter"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Total Count"},
-                                result: "value"
-                            }
+                        participants: [
+                            new ValueInstance("get_user_by_id exit rate", [
+                                new PathArrayEntry({title: "Endpoint"}, "value"),
+                                new PathArrayEntry({title: "GET /get_user_by_id"}, "value"),
+                                new PathArrayEntry({title: "Exit"}, "value"),
+                                new PathArrayEntry({title: "Mean Rate"}, "value")
+                            ]),
+                            new ValueCollection(
+                                [new PathArrayEntry({title: "Endpoint"}, "value")],
+                                [new PathObjectEntry("title")],
+                                [
+                                    new PathObjectEntry("value"),
+                                    new PathArrayEntry({title: "Enter"}, "value"),
+                                    new PathArrayEntry({title: "Mean Rate"}, "value")
+                                ]
+                            )
                         ]
                     }
                 },
@@ -75,56 +69,21 @@ function initialize($rootScope, baSidebarService, $state) {
                     type: "PIE",
                     config: {
                         participants: [
-                            {
-                                title: "get_user_by_id",
-                                path: [
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Endpoint"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "GET /get_user_by_id"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Enter"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Total Count"},
-                                        result: "value"
-                                    }
+                            new ValueInstance("get_user_by_id exit rate", [
+                                new PathArrayEntry({title: "Endpoint"}, "value"),
+                                new PathArrayEntry({title: "GET /get_user_by_id"}, "value"),
+                                new PathArrayEntry({title: "Exit"}, "value"),
+                                new PathArrayEntry({title: "Total Count"}, "value")
+                            ]),
+                            new ValueCollection(
+                                [new PathArrayEntry({title: "Endpoint"}, "value")],
+                                [new PathObjectEntry("title")],
+                                [
+                                    new PathObjectEntry("value"),
+                                    new PathArrayEntry({title: "Enter"}, "value"),
+                                    new PathArrayEntry({title: "Total Count"}, "value")
                                 ]
-                            },
-                            {
-                                title: "get_user_by_id_2",
-                                path: [
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Endpoint"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "GET /get_user_by_id_2"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Enter"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Total Count"},
-                                        result: "value"
-                                    }
-                                ]
-                            }
+                            )
                         ]
                     }
                 },
@@ -257,96 +216,39 @@ function initialize($rootScope, baSidebarService, $state) {
                     width: 12,
                     type: "TABLE",
                     config: {
-                        rows: {
-                            path: [
-                                {
-                                    type: "ARRAY",
-                                    conditions: {title: "Endpoint"},
-                                    result: "value"
-                                }
-                            ],
-                            titleField: "title",
-                            valueField: "value"
-                        },
-                        columns: [
-                            {
-                                title: "Enter Per Sec.",
-                                path: [
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Enter"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Mean Rate"},
-                                        result: "value"
-                                    }
-                                ]
-                            },
-                            {
-                                title: "Exit Per Sec.",
-                                path: [
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Exit"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Mean Rate"},
-                                        result: "value"
-                                    }
-                                ]
-                            },
-                            {
-                                title: "Currently Active",
-                                path: [
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Active"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Count"},
-                                        result: "value"
-                                    }
-                                ]
-                            },
-                            {
-                                title: "Median Duration",
-                                path: [
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Duration"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Mean"},
-                                        result: "value"
-                                    }
-                                ]
-                            },
-                            {
-                                title: "98 Perc. Duration",
-                                path: [
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "Duration"},
-                                        result: "value"
-                                    },
-                                    {
-                                        type: "ARRAY",
-                                        conditions: {title: "98th Percentile"},
-                                        result: "value"
-                                    }
-                                ]
-                            },
-                        ]
+                        table: new TableCollection(
+                            [new PathArrayEntry({title: "Endpoint"}, "value")],
+                            [new PathObjectEntry("title")],
+                            [
+                                new TableValue("Enter Per Sec.", [
+                                    new PathObjectEntry("value"),
+                                    new PathArrayEntry({title: "Enter"}, "value"),
+                                    new PathArrayEntry({title: "Mean Rate"}, "value")
+                                ]),
+                                new TableValue("Exit Per Sec.", [
+                                    new PathObjectEntry("value"),
+                                    new PathArrayEntry({title: "Exit"}, "value"),
+                                    new PathArrayEntry({title: "Mean Rate"}, "value")
+                                ]),
+                                new TableValue("Currently Active", [
+                                    new PathObjectEntry("value"),
+                                    new PathArrayEntry({title: "Active"}, "value"),
+                                    new PathArrayEntry({title: "Count"}, "value")
+                                ]),
+                                new TableValue("Median Duration", [
+                                    new PathObjectEntry("value"),
+                                    new PathArrayEntry({title: "Duration"}, "value"),
+                                    new PathArrayEntry({title: "Mean"}, "value")
+                                ]),
+                                new TableValue("98 Perc. Duration", [
+                                    new PathObjectEntry("value"),
+                                    new PathArrayEntry({title: "Duration"}, "value"),
+                                    new PathArrayEntry({title: "98th Percentile"}, "value")
+                                ])
+                            ]
+                        )
                     }
-                },
+                }
             ]
         }
     };
@@ -400,19 +302,6 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         setTimeout($scope.update, 5000);
     };
 
-    $scope.getTime = function () {
-        var date = new Date();
-        var minutes = date.getMinutes();
-        if (minutes < 10) {
-            minutes = "0" + minutes;
-        }
-        var seconds = date.getSeconds();
-        if (seconds < 10) {
-            seconds = "0" + seconds;
-        }
-        return date.getHours() + ":" + minutes + ":" + seconds;
-    };
-
     $scope.draw = function () {
         for (var i = 0; i < $scope.server.meters.length; i++) {
             var meter = $scope.server.meters[i];
@@ -436,17 +325,65 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
     $scope.drawGraph = function (index, config) {
         var data = [];
         var startIndex = config.maxHistory ? Math.max(0, $scope.data.length - config.maxHistory) : 0;
-        for (var i = startIndex; i < $scope.data.length; i++) {
-            data.push({
-                time: $scope.data[i].time,
-                value: $scope.getEntryByPath(config.path, $scope.data[i].data)
-            });
+        var rawData = $scope.data.slice(startIndex);
+        if (!rawData) {
+            return;
         }
-        var layoutColors = baConfig.colors;
+        var graphIndex = 0;
+        var graphs = [];
+        for (var i = 0; i < rawData.length; i++) {
+            data.push({time: rawData[i].time});
+        }
+        for (i = 0; i < config.participants.length; i++) {
+            var participant = config.participants[i];
+            if (participant.type === "INSTANCE") {
+                var graphId = "g" + ++graphIndex;
+                graphs.push({
+                    id: graphId,
+                    balloonText: participant.title + ' - [[value]]',
+                    bullet: 'square',
+                    bulletSize: 8,
+                    lineColor: $scope.chooseColor(graphIndex),
+                    fillColors: $scope.chooseColor(graphIndex),
+                    lineThickness: 1,
+                    valueField: graphId,
+                    type: 'smoothedLine',
+                    fillAlphas: config.participants.length === 1 && config.participants[0].type === "INSTANCE" ? 0.5 : 0
+                });
+                for (var j = 0; j < rawData.length; j++) {
+                    data[j][graphId] = $scope.getEntryByPath(participant.valuePath, rawData[j].data);
+                }
+            }
+            else {
+                var sampleCollection = $scope.getEntryByPath(participant.collectionPath, rawData[0].data);
+                for (var key in sampleCollection) {
+                    if (!sampleCollection.hasOwnProperty(key)) {
+                        continue;
+                    }
+                    graphId = "g" + ++graphIndex;
+                    graphs.push({
+                        id: graphId,
+                        balloonText: $scope.getTitle(participant.titlePath, key, sampleCollection) + ' - [[value]]',
+                        bullet: 'square',
+                        bulletSize: 8,
+                        lineColor: $scope.chooseColor(graphIndex),
+                        fillColors: $scope.chooseColor(graphIndex),
+                        lineThickness: 1,
+                        valueField: graphId,
+                        type: 'smoothedLine',
+                        fillAlphas: config.participants.length === 1 && config.participants[0].type === "INSTANCE" ? 0.5 : 0
+                    });
+                    for (j = 0; j < rawData.length; j++) {
+                        var sample = $scope.getEntryByPath(participant.collectionPath, rawData[j].data);
+                        data[j][graphId] = $scope.getEntryByPath(participant.valuePath, sample[key]);
+                    }
+                }
+            }
+        }
         var lineChart = AmCharts.makeChart("meter" + index, {
             type: 'serial',
             theme: 'blur',
-            color: layoutColors.defaultText,
+            color: baConfig.colors.defaultText,
             marginTop: 0,
             marginRight: 15,
             dataProvider: data,
@@ -456,38 +393,23 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                     axisAlpha: 0,
                     position: 'left',
                     gridAlpha: 0.5,
-                    gridColor: layoutColors.border
+                    gridColor: baConfig.colors.border
                 }
             ],
-            graphs: [
-                {
-                    id: 'g1',
-                    balloonText: '[[value]]',
-                    bullet: 'square',
-                    bulletSize: 8,
-                    lineColor: layoutColors.primary,
-                    fillColors: layoutColors.primary,
-                    lineThickness: 1,
-                    valueField: 'value',
-                    type: 'smoothedLine',
-                    fillAlphas: config.fill ? 0.5 : 0,
-                    // fillColorsField: 'lineColor',
-                    // lineColorField: 'lineColor',
-                }
-            ],
+            graphs: graphs,
             chartScrollbar: {
                 graph: 'g1',
                 gridAlpha: 0,
-                color: layoutColors.defaultText,
+                color: baConfig.colors.defaultText,
                 scrollbarHeight: 55,
                 backgroundAlpha: 0,
                 selectedBackgroundAlpha: 0.05,
-                selectedBackgroundColor: layoutColors.defaultText,
+                selectedBackgroundColor: baConfig.colors.defaultText,
                 graphFillAlpha: 0,
                 autoGridCount: true,
                 selectedGraphFillAlpha: 0,
                 graphLineAlpha: 0.2,
-                selectedGraphLineColor: layoutColors.defaultText,
+                selectedGraphLineColor: baConfig.colors.defaultText,
                 selectedGraphLineAlpha: 1
             },
             chartCursor: {
@@ -520,10 +442,24 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         var lastSample = $scope.data[$scope.data.length - 1].data;
         for (var i = 0; i < config.participants.length; i++) {
             var participant = config.participants[i];
-            data.push({
-                title: participant.title,
-                value: $scope.getEntryByPath(participant.path, lastSample)
-            });
+            if (participant.type === "INSTANCE") {
+                data.push({
+                    title: participant.title,
+                    value: $scope.getEntryByPath(participant.valuePath, lastSample)
+                });
+            }
+            else {
+                var collection = $scope.getEntryByPath(participant.collectionPath, lastSample);
+                for (var key in collection) {
+                    if (!collection.hasOwnProperty(key)) {
+                        continue;
+                    }
+                    data.push({
+                        title: $scope.getTitle(participant.titlePath, key, collection),
+                        value: $scope.getEntryByPath(participant.valuePath, collection[key])
+                    });
+                }
+            }
         }
         var layoutColors = baConfig.colors;
         var pieChart = AmCharts.makeChart("meter" + index, {
@@ -536,7 +472,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
             legend: {
                 position: 'right',
                 marginRight: 100,
-                autoMargins: false,
+                autoMargins: false
             },
             innerRadius: '40%',
             defs: {
@@ -634,18 +570,18 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         }
         var lastSample = $scope.data[$scope.data.length - 1].data;
         var headerValues = [""];
-        for (var i = 0; i < config.columns.length; i++) {
-            headerValues.push(config.columns[i].title);
+        for (var i = 0; i < config.table.values.length; i++) {
+            headerValues.push(config.table.values[i].title);
         }
         var tableValues = [];
-        var rowsData = $scope.getEntryByPath(config.rows.path, lastSample);
-        for (var key in rowsData) {
-            var rowData = rowsData[key];
-            var title = config.rows.titleField === "{{key}}" ? key : rowData[config.rows.titleField];
-            var row = [title];
-            for (i = 0; i < config.columns.length; i++) {
-                var value = $scope.getEntryByPath(config.columns[i].path, rowData[config.rows.valueField]);
-                row.push(value);
+        var collection = $scope.getEntryByPath(config.table.collectionPath, lastSample);
+        for (var key in collection) {
+            if (!collection.hasOwnProperty(key)) {
+                continue;
+            }
+            var row = [$scope.getTitle(config.table.titlePath, key, collection)];
+            for (i = 0; i < config.table.values.length; i++) {
+                row.push($scope.getEntryByPath(config.table.values[i].valuePath, collection[key]));
             }
             tableValues.push(row);
         }
@@ -685,6 +621,9 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                 var isValid = true;
                 var sampleEntry = sample[i];
                 for (var key in currentInstruction.conditions) {
+                    if (!currentInstruction.conditions.hasOwnProperty(key)) {
+                        continue;
+                    }
                     if (sampleEntry[key] !== currentInstruction.conditions[key]) {
                         isValid = false;
                         break;
@@ -700,6 +639,23 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
             return $scope.getEntryByPath(pathArray.slice(1), sample[currentInstruction.result]);
         }
         return $scope.normalizeValue(sample);
+    };
+
+    $scope.getTitle = function (titlePath, key, sample) {
+        return titlePath === "{{key}}" ? key : $scope.getEntryByPath(titlePath, sample[key]);
+    };
+
+    $scope.getTime = function () {
+        var date = new Date();
+        var minutes = date.getMinutes();
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+        var seconds = date.getSeconds();
+        if (seconds < 10) {
+            seconds = "0" + seconds;
+        }
+        return date.getHours() + ":" + minutes + ":" + seconds;
     };
 
     $scope.normalizeValue = function (value) {
@@ -729,6 +685,24 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
             s[1] += new Array(prec - s[1].length + 1).join('0');
         }
         return s.join(dec);
+    };
+
+    var colors = [
+        baConfig.colors.primary,
+        baConfig.colors.danger,
+        baConfig.colors.warning,
+        baConfig.colors.success,
+        baConfig.colors.info,
+        baConfig.colors.primaryDark,
+        baConfig.colors.warningLight,
+        baConfig.colors.successDark,
+        baConfig.colors.successLight,
+        baConfig.colors.primaryLight,
+        baConfig.colors.warningDark
+    ];
+
+    $scope.chooseColor = function (index) {
+        return colors[index % colors.length];
     };
 
     $scope.update();
@@ -935,4 +909,49 @@ function amChartConfig(baConfigProvider) {
         }
 
     };
+}
+
+function ValueInstance(title, valuePath) {
+    this.type = "INSTANCE";
+    this.title = title;
+    this.valuePath = valuePath;
+}
+
+function ValueCollection(collectionPath, titlePath, valuePath) {
+    this.type = "COLLECTION";
+    this.collectionPath = collectionPath;
+    this.titlePath = titlePath;
+    this.valuePath = valuePath;
+}
+
+function TableCollection(collectionPath, titlePath, values) {
+    this.collectionPath = collectionPath;
+    this.titlePath = titlePath;
+    this.values = values;
+}
+
+function TableValue(title, valuePath) {
+    this.title = title;
+    this.valuePath = valuePath;
+}
+
+function PrototypeCollection(collectionPath, titlePath, valuePath) {
+    this.collectionPath = collectionPath;
+    this.titlePath = titlePath;
+    this.valuePath = valuePath;
+}
+
+function PathArrayEntry(conditions, result) {
+    this.type = "ARRAY";
+    this.conditions = conditions;
+    this.result = result;
+}
+
+function PathObjectEntry(result) {
+    this.type = "OBJECT";
+    this.result = result;
+}
+
+function PathValueEntry() {
+    this.type = "OTHER";
 }
