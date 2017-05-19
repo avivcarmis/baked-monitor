@@ -33,11 +33,37 @@ function routesConfig($stateProvider) {
 /** @ngInject */
 function initialize($rootScope, baSidebarService, $state) {
 
+    baSidebarService.addStaticItem({
+        title: 'Add New Pages',
+        icon: 'ion-android-add-circle',
+        stateRef: 'new'
+    });
+
     $rootScope.servers = {
         example: {
             title: "Example Server",
             url: "http://localhost:8080/metrics",
             meters: [
+                {
+                    prototypeCollection: new PrototypeCollection(
+                        [new PathArrayEntry({title: "Endpoint"}, "value")],
+                        "",
+                        [new PathObjectEntry("title")],
+                        "Exit Rate"
+                    ),
+                    width: 12,
+                    type: "GRAPH",
+                    config: {
+                        maxHistory: 12,
+                        participants: [
+                            new ValueInstance("get_user_by_id exit rate", [
+                                new PathObjectEntry("value"),
+                                new PathArrayEntry({title: "Exit"}, "value"),
+                                new PathArrayEntry({title: "Mean Rate"}, "value")
+                            ])
+                        ]
+                    }
+                },
                 {
                     title: "Endpoint Comparison",
                     width: 12,
@@ -259,13 +285,8 @@ function initialize($rootScope, baSidebarService, $state) {
         stateRef: 'monitor/example'
     });
 
-    baSidebarService.addStaticItem({
-        title: 'Add New Pages',
-        icon: 'ion-android-add-circle',
-        stateRef: 'new'
-    });
-
     $state.go('monitor', {serverId: 'example'});
+
 }
 
 /** @ngInject */
@@ -283,7 +304,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
 
     $scope.data = [];
 
-    $scope.update = function () {
+    $scope.update = function (callback) {
         $http
             .get($scope.server.url)
             .then(
@@ -293,6 +314,9 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                             time: $scope.getTime(),
                             data: response.data
                         });
+                        if (callback) {
+                            callback(response.data);
+                        }
                         $scope.draw();
                     }
                 }, function () {
@@ -705,7 +729,18 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         return colors[index % colors.length];
     };
 
-    $scope.update();
+    $scope.update(function (sample) {
+        $scope.meters = [];
+        for (var i = 0; i < $scope.server.meters.length; i++) {
+            var meter = $scope.server.meters[i];
+            if (!meter.hasOwnProperty("prototypeCollection")) {
+                $scope.meters.push(meter);
+                continue;
+            }
+            var prototypeCollection = meter.prototypeCollection;
+            
+        }
+    });
 
 }
 
@@ -935,10 +970,11 @@ function TableValue(title, valuePath) {
     this.valuePath = valuePath;
 }
 
-function PrototypeCollection(collectionPath, titlePath, valuePath) {
+function PrototypeCollection(collectionPath, titlePrefix, titlePath, titleSuffix) {
     this.collectionPath = collectionPath;
+    this.titlePrefix = titlePrefix;
     this.titlePath = titlePath;
-    this.valuePath = valuePath;
+    this.titleSuffix = titleSuffix;
 }
 
 function PathArrayEntry(conditions, result) {
