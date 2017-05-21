@@ -327,8 +327,8 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
     };
 
     $scope.draw = function () {
-        for (var i = 0; i < $scope.server.meters.length; i++) {
-            var meter = $scope.server.meters[i];
+        for (var i = 0; i < $scope.meters.length; i++) {
+            var meter = $scope.meters[i];
             switch (meter.type) {
                 case "GRAPH":
                     $scope.drawGraph(i, meter.config);
@@ -375,11 +375,11 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                     fillAlphas: config.participants.length === 1 && config.participants[0].type === "INSTANCE" ? 0.5 : 0
                 });
                 for (var j = 0; j < rawData.length; j++) {
-                    data[j][graphId] = $scope.getEntryByPath(participant.valuePath, rawData[j].data);
+                    data[j][graphId] = $scope.getEntryByPath(participant.valuePath, config.getBaseData(rawData[j].data));
                 }
             }
             else {
-                var sampleCollection = $scope.getEntryByPath(participant.collectionPath, rawData[0].data);
+                var sampleCollection = $scope.getEntryByPath(participant.collectionPath, config.getBaseData(rawData[0].data));
                 for (var key in sampleCollection) {
                     if (!sampleCollection.hasOwnProperty(key)) {
                         continue;
@@ -398,7 +398,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
                         fillAlphas: config.participants.length === 1 && config.participants[0].type === "INSTANCE" ? 0.5 : 0
                     });
                     for (j = 0; j < rawData.length; j++) {
-                        var sample = $scope.getEntryByPath(participant.collectionPath, rawData[j].data);
+                        var sample = $scope.getEntryByPath(participant.collectionPath, config.getBaseData(rawData[j].data));
                         data[j][graphId] = $scope.getEntryByPath(participant.valuePath, sample[key]);
                     }
                 }
@@ -463,7 +463,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
             return;
         }
         var data = [];
-        var lastSample = $scope.data[$scope.data.length - 1].data;
+        var lastSample = config.getBaseData($scope.data[$scope.data.length - 1].data);
         for (var i = 0; i < config.participants.length; i++) {
             var participant = config.participants[i];
             if (participant.type === "INSTANCE") {
@@ -583,7 +583,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         if ($scope.data.length === 0) {
             return;
         }
-        var lastSample = $scope.data[$scope.data.length - 1].data;
+        var lastSample = config.getBaseData($scope.data[$scope.data.length - 1].data);
         var value = $scope.getEntryByPath(config.path, lastSample);
         $("#meter" + index).addClass("value-view").html(config.prefix + value + config.suffix);
     };
@@ -592,7 +592,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         if ($scope.data.length === 0) {
             return;
         }
-        var lastSample = $scope.data[$scope.data.length - 1].data;
+        var lastSample = config.getBaseData($scope.data[$scope.data.length - 1].data);
         var headerValues = [""];
         for (var i = 0; i < config.table.values.length; i++) {
             headerValues.push(config.table.values[i].title);
@@ -665,8 +665,15 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         return $scope.normalizeValue(sample);
     };
 
-    $scope.getTitle = function (titlePath, key, sample) {
-        return titlePath === "{{key}}" ? key : $scope.getEntryByPath(titlePath, sample[key]);
+    $scope.getTitle = function (titlePath, key, sample, prefix, suffix) {
+        var title = titlePath === "{{key}}" ? key : $scope.getEntryByPath(titlePath, sample[key]);
+        if (prefix) {
+            title = prefix + " " + title;
+        }
+        if (suffix) {
+            title += " " + suffix;
+        }
+        return title;
     };
 
     $scope.getTime = function () {
@@ -734,11 +741,28 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
         for (var i = 0; i < $scope.server.meters.length; i++) {
             var meter = $scope.server.meters[i];
             if (!meter.hasOwnProperty("prototypeCollection")) {
+                meter.config.getBaseData = function (sample) {
+                    return sample;
+                };
                 $scope.meters.push(meter);
                 continue;
             }
             var prototypeCollection = meter.prototypeCollection;
-            
+            var collection = $scope.getEntryByPath(prototypeCollection.collectionPath, sample);
+            for (var key in collection) {
+                if (!collection.hasOwnProperty(key)) {
+                    continue;
+                }
+                var meterCopy = JSON.parse(JSON.stringify(meter));
+                meterCopy.title = $scope.getTitle(prototypeCollection.titlePath, key, collection,
+                    prototypeCollection.titlePrefix, prototypeCollection.titleSuffix);
+                (function (collectionPath, key) {
+                    meterCopy.config.getBaseData = function (sample) {
+                        return $scope.getEntryByPath(collectionPath, sample)[key];
+                    };
+                })(prototypeCollection.collectionPath, key);
+                $scope.meters.push(meterCopy);
+            }
         }
     });
 
