@@ -4360,7 +4360,7 @@ h1.al-title {
   .top-dropdown-menu.profile-dropdown {
     width: 145px;
     top: 55px;
-    right: -25px; }
+    right: -8px; }
     .top-dropdown-menu.profile-dropdown a {
       text-align: left;
       border: none;
@@ -4429,7 +4429,7 @@ a.al-logo {
 .user-profile {
   float: right;
   min-width: 230px;
-  margin-top: 10px; }
+  margin-top: 11px; }
 
 .al-user-profile {
   float: right;

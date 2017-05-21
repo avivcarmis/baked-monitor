@@ -17,10 +17,33 @@ angular
     ])
     .config(amChartConfig)
     .config(routesConfig)
-    .run(initialize)
+    .controller('LoginCtrl', loginCtrl)
+    .controller('RegisterCtrl', registerCtrl)
     .controller('MonitorCtrl', monitorCtrl);
 
-function routesConfig($stateProvider) {
+function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
+    $locationProvider.html5Mode(true);
+    $stateProvider
+        .state('login', {
+            url: '/login',
+            title: 'Login - BlurMonitor',
+            templateUrl: 'app/login.html',
+            controller: 'LoginCtrl'
+        });
+    $stateProvider
+        .state('register', {
+            url: '/register',
+            title: 'Register A New Profile - BlurMonitor',
+            templateUrl: 'app/register.html',
+            controller: 'RegisterCtrl'
+        });
+    $stateProvider
+        .state('new', {
+            url: '/new',
+            title: 'New Server',
+            templateUrl: 'app/monitor.html', // TODO
+            controller: 'MonitorCtrl'
+        });
     $stateProvider
         .state('monitor', {
             url: '/monitor/:serverId',
@@ -28,278 +51,124 @@ function routesConfig($stateProvider) {
             templateUrl: 'app/monitor.html',
             controller: 'MonitorCtrl'
         });
+    $urlRouterProvider.otherwise('login');
 }
 
-/** @ngInject */
-function initialize($rootScope, baSidebarService, $state) {
+function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
 
-    baSidebarService.addStaticItem({
-        title: 'Add New Pages',
-        icon: 'ion-android-add-circle',
-        stateRef: 'new'
-    });
+    $rootScope.logout = function () {
+        $rootScope.loggedIn = false;
+        if (typeof(Storage) !== "undefined") {
+            localStorage.removeItem("email");
+            localStorage.removeItem("password");
+        }
+        $state.go('login');
+    };
 
-    $rootScope.servers = {
-        example: {
-            title: "Example Server",
-            url: "http://localhost:8080/metrics",
-            meters: [
-                {
-                    prototypeCollection: new PrototypeCollection(
-                        [new PathArrayEntry({title: "Endpoint"}, "value")],
-                        "",
-                        [new PathObjectEntry("title")],
-                        "Exit Rate"
-                    ),
-                    width: 12,
-                    type: "GRAPH",
-                    config: {
-                        maxHistory: 12,
-                        participants: [
-                            new ValueInstance("get_user_by_id exit rate", [
-                                new PathObjectEntry("value"),
-                                new PathArrayEntry({title: "Exit"}, "value"),
-                                new PathArrayEntry({title: "Mean Rate"}, "value")
-                            ])
-                        ]
-                    }
-                },
-                {
-                    title: "Endpoint Comparison",
-                    width: 12,
-                    type: "GRAPH",
-                    config: {
-                        maxHistory: 12,
-                        participants: [
-                            new ValueInstance("get_user_by_id exit rate", [
-                                new PathArrayEntry({title: "Endpoint"}, "value"),
-                                new PathArrayEntry({title: "GET /get_user_by_id"}, "value"),
-                                new PathArrayEntry({title: "Exit"}, "value"),
-                                new PathArrayEntry({title: "Mean Rate"}, "value")
-                            ]),
-                            new ValueCollection(
-                                [new PathArrayEntry({title: "Endpoint"}, "value")],
-                                [new PathObjectEntry("title")],
-                                [
-                                    new PathObjectEntry("value"),
-                                    new PathArrayEntry({title: "Enter"}, "value"),
-                                    new PathArrayEntry({title: "Mean Rate"}, "value")
-                                ]
-                            )
-                        ]
-                    }
-                },
-                {
-                    title: "Total Count Comparison",
-                    width: 12,
-                    type: "PIE",
-                    config: {
-                        participants: [
-                            new ValueInstance("get_user_by_id exit rate", [
-                                new PathArrayEntry({title: "Endpoint"}, "value"),
-                                new PathArrayEntry({title: "GET /get_user_by_id"}, "value"),
-                                new PathArrayEntry({title: "Exit"}, "value"),
-                                new PathArrayEntry({title: "Total Count"}, "value")
-                            ]),
-                            new ValueCollection(
-                                [new PathArrayEntry({title: "Endpoint"}, "value")],
-                                [new PathObjectEntry("title")],
-                                [
-                                    new PathObjectEntry("value"),
-                                    new PathArrayEntry({title: "Enter"}, "value"),
-                                    new PathArrayEntry({title: "Total Count"}, "value")
-                                ]
-                            )
-                        ]
-                    }
-                },
-                {
-                    title: "Mean Time",
-                    width: 3,
-                    type: "VALUE",
-                    config: {
-                        prefix: "",
-                        suffix: "ms",
-                        path: [
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Endpoint"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "GET /get_user_by_id"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Duration"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Mean"},
-                                result: "value"
-                            }
-                        ]
-                    }
-                },
-                {
-                    title: "Min Time",
-                    width: 3,
-                    type: "VALUE",
-                    config: {
-                        prefix: "",
-                        suffix: "ms",
-                        path: [
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Endpoint"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "GET /get_user_by_id"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Duration"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Min"},
-                                result: "value"
-                            }
-                        ]
-                    }
-                },
-                {
-                    title: "Max Time",
-                    width: 3,
-                    type: "VALUE",
-                    config: {
-                        prefix: "",
-                        suffix: "ms",
-                        path: [
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Endpoint"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "GET /get_user_by_id"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Duration"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Max"},
-                                result: "value"
-                            }
-                        ]
-                    }
-                },
-                {
-                    title: "Standard Deviation",
-                    width: 3,
-                    type: "VALUE",
-                    config: {
-                        prefix: "",
-                        suffix: "%",
-                        path: [
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Endpoint"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "GET /get_user_by_id"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Duration"},
-                                result: "value"
-                            },
-                            {
-                                type: "ARRAY",
-                                conditions: {title: "Standard Deviation"},
-                                result: "value"
-                            }
-                        ]
-                    }
-                },
-                {
-                    title: "Endpoint Analysis",
-                    width: 12,
-                    type: "TABLE",
-                    config: {
-                        table: new TableCollection(
-                            [new PathArrayEntry({title: "Endpoint"}, "value")],
-                            [new PathObjectEntry("title")],
-                            [
-                                new TableValue("Enter Per Sec.", [
-                                    new PathObjectEntry("value"),
-                                    new PathArrayEntry({title: "Enter"}, "value"),
-                                    new PathArrayEntry({title: "Mean Rate"}, "value")
-                                ]),
-                                new TableValue("Exit Per Sec.", [
-                                    new PathObjectEntry("value"),
-                                    new PathArrayEntry({title: "Exit"}, "value"),
-                                    new PathArrayEntry({title: "Mean Rate"}, "value")
-                                ]),
-                                new TableValue("Currently Active", [
-                                    new PathObjectEntry("value"),
-                                    new PathArrayEntry({title: "Active"}, "value"),
-                                    new PathArrayEntry({title: "Count"}, "value")
-                                ]),
-                                new TableValue("Median Duration", [
-                                    new PathObjectEntry("value"),
-                                    new PathArrayEntry({title: "Duration"}, "value"),
-                                    new PathArrayEntry({title: "Mean"}, "value")
-                                ]),
-                                new TableValue("98 Perc. Duration", [
-                                    new PathObjectEntry("value"),
-                                    new PathArrayEntry({title: "Duration"}, "value"),
-                                    new PathArrayEntry({title: "98th Percentile"}, "value")
-                                ])
-                            ]
-                        )
-                    }
-                }
-            ]
+    $scope.onSubmit = function () {
+        var emailField = $("#inputEmail3");
+        if (!emailField.get(0).checkValidity()) {
+            return emailField.get(0).reportValidity();
+        }
+        var email = emailField.val();
+        var passwordField = $("#inputPassword3");
+        if (!passwordField.get(0).checkValidity()) {
+            return passwordField.get(0).reportValidity();
+        }
+        var password = passwordField.val();
+        if (!email || !password) {
+            alert("missing email and password");
+        }
+        else {
+            $scope.submit(email, password);
         }
     };
 
-    baSidebarService.addStaticItem({
-        title: 'Example',
-        icon: 'ion-android-home',
-        stateRef: 'monitor/example'
-    });
+    $scope.submit = function (email, password) {
+        $http({
+            method: 'POST',
+            url: '/login',
+            data: JSON.stringify({email: email, password: password})
+        })
+            .then(
+                function (response) {
+                    if (response.data && response.data.success) {
+                        $rootScope.email = email;
+                        if (typeof(Storage) !== "undefined") {
+                            localStorage.setItem("email", email);
+                            localStorage.setItem("password", password);
+                        }
+                        $rootScope.servers = response.data.result;
+                        baSidebarService.clearStaticItems();
+                        for (var key in $rootScope.servers) {
+                            if (!$rootScope.servers.hasOwnProperty(key)) {
+                                continue;
+                            }
+                            baSidebarService.addStaticItem({
+                                title: $rootScope.servers[key].title,
+                                icon: 'ion-android-home',
+                                stateRef: 'monitor/' + key
+                            });
+                        }
+                        baSidebarService.addStaticItem({
+                            title: 'Add New Pages',
+                            icon: 'ion-android-add-circle',
+                            stateRef: 'new'
+                        });
+                        $rootScope.loggedIn = true;
+                        $scope.goHome();
+                    }
+                    else {
+                        alert("Something went wrong");
+                    }
+                }, function () {
+                    alert("Something went wrong");
+                }
+            );
+    };
 
-    $state.go('monitor', {serverId: 'example'});
+    $scope.goHome = function () {
+        for (var key in $rootScope.servers) {
+            if (!$rootScope.servers.hasOwnProperty(key)) {
+                continue;
+            }
+            return $state.go('monitor', {serverId: key});
+        }
+        $state.go('new');
+    };
+
+    if ($rootScope.loggedIn) {
+        $scope.goHome();
+    }
+
+    if (typeof(Storage) !== "undefined") {
+        var email = localStorage.getItem("email");
+        var password = localStorage.getItem("password");
+        if (email && password) {
+            $scope.submit(email, password);
+        }
+    }
 
 }
 
-/** @ngInject */
-function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfig, layoutPaths) {
+function registerCtrl() {
+
+}
+
+function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPaths, $state) {
+
+    if (typeof $rootScope.servers === "undefined") {
+        return $state.go('login');
+    }
 
     $scope.serverId = $stateParams.serverId;
     if (!$scope.serverId) {
-        return $location.path('/');
+        return $state.go('new');
     }
 
     $scope.server = $rootScope.servers[$scope.serverId];
     if (!$scope.server) {
-        return $location.path('/');
+        return $state.go('new');
     }
 
     $scope.data = [];
@@ -767,7 +636,6 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, $location, baConfi
     });
 
 }
-
 
 function amChartConfig(baConfigProvider) {
     var layoutColors = baConfigProvider.colors;

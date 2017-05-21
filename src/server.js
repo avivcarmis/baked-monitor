@@ -98,12 +98,28 @@ app.post('/login', function (req, res) {
     });
 });
 
+app.get('/', function (req, res) {
+    html(res, 'index');
+});
+
+app.get('/monitor/*', function (req, res) {
+    html(res, 'index');
+});
+
+app.get('/login', function (req, res) {
+    html(res, 'index');
+});
+
+app.get('/register', function (req, res) {
+    html(res, 'index');
+});
+
 app.use(express.static('src/public'));
 
 app.use(function(req, res){
     res.status(404);
     if (req.accepts('html')) {
-        res.sendFile(path.join(__dirname+'/404.html'));
+        html(res, '404');
     }
     else if (req.accepts('json')) {
         res.send(new APIResponse(false, "not found"));
@@ -126,4 +142,8 @@ function APIResponse(success, result) {
 function internalError(res, err) {
     console.log(err);
     res.send(new APIResponse(false, "internal error"));
+}
+
+function html(res, filename) {
+    res.sendFile(path.join(__dirname + '/html/' + filename + '.html'));
 }

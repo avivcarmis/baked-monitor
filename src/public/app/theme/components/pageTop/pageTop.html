@@ -2,16 +2,22 @@
     <a href="/" class="al-logo clearfix"><span class="ion-stats-bars"></span>&nbsp;<span>Blur</span>Monitor</a>
     <a href class="collapse-menu-link ion-navicon" ba-sidebar-toggle-menu></a>
 
-    <div class="user-profile clearfix">
-        <div class="al-user-profile" uib-dropdown>
-            <a uib-dropdown-toggle class="profile-toggle-link">
-                <img ng-src="{{::( 'Nasta' | profilePicture )}}">
-            </a>
+    <div class="user-profile clearfix" style="cursor: pointer;">
+        <div uib-dropdown>
+            <div uib-dropdown-toggle>
+                <div class="al-user-profile">
+                    <a class="profile-toggle-link">
+                        <img src="/assets/img/app/profile/avatar.png" style="background: #505050;">
+                    </a>
+                </div>
+                <div style="float: right; margin: 14px 10px;"><span style="font-size: 12px;">{{email}}</span></div>
+            </div>
             <ul class="top-dropdown-menu profile-dropdown" uib-dropdown-menu>
                 <li><i class="dropdown-arr"></i></li>
-                <li><a href="#/profile"><i class="fa fa-user"></i>Profile</a></li>
-                <li><a href><i class="fa fa-cog"></i>Settings</a></li>
-                <li><a href class="signout"><i class="fa fa-power-off"></i>Sign out</a></li>
+                <li><a href="/profile"><i class="fa fa-user"></i>Profile</a></li>
+                <li><a href="javascript:void(0)" ng-click="logout()" class="signout"><i
+                        class="fa fa-power-off"></i>Sign
+                    out</a></li>
             </ul>
         </div>
     </div>

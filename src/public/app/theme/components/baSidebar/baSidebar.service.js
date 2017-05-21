@@ -19,6 +19,10 @@
                     staticMenuItems.push.apply(staticMenuItems, arguments);
                 };
 
+                this.clearStaticItems = function () {
+                    staticMenuItems = [];
+                };
+
                 this.getMenuItems = function () {
                     var states = defineMenuItemStates();
                     var menuItems = states.filter(function (item) {

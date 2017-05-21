@@ -32,7 +32,7 @@
         blank: true
       }, {
         title: 'Sign Up',
-        fixedHref: 'reg.html',
+        fixedHref: 'register.html',
         blank: true
       }, {
         title: 'User Profile',
