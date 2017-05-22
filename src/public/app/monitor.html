@@ -10,7 +10,8 @@
 
                 <div class="row">
                     <div ng-repeat="meter in meters track by $index"
-                         class="col-md-{{meter.width}}"
+                         id="meter-wrapper-{{$index}}"
+                         class="meter col-md-{{meter.width}}"
                          ba-panel
                          ba-panel-title="{{meter.title}}"
                          ba-panel-class="with-scroll">

@@ -7,7 +7,7 @@
             <div class="form-group">
                 <label for="inputName3" class="col-sm-3 control-label">Admin Pass</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="inputName3" placeholder="Password to approve registration">
+                    <input type="password" class="form-control" id="inputName3" placeholder="Password to approve registration">
                 </div>
             </div>
             <div class="form-group">
@@ -26,10 +26,21 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9">
-                    <button type="submit" class="btn btn-default btn-auth">Sign up</button>
+                    <button ng-click="register()" class="btn btn-default btn-auth">Sign up</button>
                 </div>
             </div>
         </form>
+
+        <!--<div class="auth-sep"><span><span>or Sign in with one click</span></span></div>-->
+
+        <!--<div class="al-share-auth">-->
+        <!--<ul class="al-share clearfix">-->
+        <!--<li><i class="socicon socicon-facebook" title="Share on Facebook"></i></li>-->
+        <!--<li><i class="socicon socicon-twitter" title="Share on Twitter"></i></li>-->
+        <!--<li><i class="socicon socicon-google" title="Share on Google Plus"></i></li>-->
+        <!--</ul>-->
+        <!--</div>-->
+
     </div>
 
 </main>

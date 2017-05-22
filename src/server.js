@@ -9,13 +9,14 @@ var path = require("path");
 
 db.serialize(function() {
     db.run("CREATE TABLE IF NOT EXISTS `users` (`email` VARCHAR(128) NOT NULL,`password` VARCHAR(256) NOT NULL,PRIMARY KEY (`email`))");
-    db.run("CREATE TABLE IF NOT EXISTS `servers` (`user` VARCHAR(128) NOT NULL, `title` VARCHAR(256) NOT NULL, `url` VARCHAR(512) NOT NULL)");
+    db.run("CREATE TABLE IF NOT EXISTS `servers` (`user` VARCHAR(128) NOT NULL, `title` VARCHAR(256) NOT NULL, `url` VARCHAR(512) NOT NULL, `method` VARCHAR(16) NOT NULL)");
     db.run("CREATE TABLE IF NOT EXISTS `meters` (`server` INT NOT NULL, `data` TEXT NOT NULL)");
 
     // populate demo data:
 
     // db.run("INSERT INTO `users` (`email`, `password`) VALUES ('avivcarmis@gmail.com', '" + md5("1234") + "');");
-    // db.run("INSERT INTO `servers` (`user`, `title`, `url`) VALUES ('avivcarmis@gmail.com', 'Example Server', 'http://localhost:8080/metrics');");
+    // db.run("INSERT INTO `servers` (`user`, `title`, `url`, `method`) VALUES ('avivcarmis@gmail.com', 'Server 1', 'http://localhost:8080/metrics', 'GET');");
+    // db.run("INSERT INTO `servers` (`user`, `title`, `url`, `method`) VALUES ('avivcarmis@gmail.com', 'Server 2', 'http://localhost:8081', 'GET');");
     // db.run("INSERT INTO `meters` (`server`, `data`) VALUES ('1', '{\"prototypeCollection\":{\"collectionPath\":[{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Endpoint\"},\"result\":\"value\"}],\"titlePrefix\":\"\",\"titlePath\":[{\"type\":\"OBJECT\",\"result\":\"title\"}],\"titleSuffix\":\"Exit Rate\"},\"width\":12,\"type\":\"GRAPH\",\"config\":{\"maxHistory\":12,\"participants\":[{\"type\":\"INSTANCE\",\"title\":\"get_user_by_id exit rate\",\"valuePath\":[{\"type\":\"OBJECT\",\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Exit\"},\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Mean Rate\"},\"result\":\"value\"}]}]}}');");
     // db.run("INSERT INTO `meters` (`server`, `data`) VALUES ('1', '{\"title\":\"Endpoint Comparison\",\"width\":12,\"type\":\"GRAPH\",\"config\":{\"maxHistory\":12,\"participants\":[{\"type\":\"INSTANCE\",\"title\":\"get_user_by_id exit rate\",\"valuePath\":[{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Endpoint\"},\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"GET /get_user_by_id\"},\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Exit\"},\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Mean Rate\"},\"result\":\"value\"}]},{\"type\":\"COLLECTION\",\"collectionPath\":[{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Endpoint\"},\"result\":\"value\"}],\"titlePath\":[{\"type\":\"OBJECT\",\"result\":\"title\"}],\"valuePath\":[{\"type\":\"OBJECT\",\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Enter\"},\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Mean Rate\"},\"result\":\"value\"}]}]}}');");
     // db.run("INSERT INTO `meters` (`server`, `data`) VALUES ('1', '{\"title\":\"Total Count Comparison\",\"width\":12,\"type\":\"PIE\",\"config\":{\"participants\":[{\"type\":\"INSTANCE\",\"title\":\"get_user_by_id exit rate\",\"valuePath\":[{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Endpoint\"},\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"GET /get_user_by_id\"},\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Exit\"},\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Total Count\"},\"result\":\"value\"}]},{\"type\":\"COLLECTION\",\"collectionPath\":[{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Endpoint\"},\"result\":\"value\"}],\"titlePath\":[{\"type\":\"OBJECT\",\"result\":\"title\"}],\"valuePath\":[{\"type\":\"OBJECT\",\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Enter\"},\"result\":\"value\"},{\"type\":\"ARRAY\",\"conditions\":{\"title\":\"Total Count\"},\"result\":\"value\"}]}]}}');");
@@ -28,25 +29,6 @@ db.serialize(function() {
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-app.post('/register', function (req, res) {
-    if (req.body.adminPassword !== config.adminPassword) {
-        res.send(new APIResponse(false, "no permission"));
-    }
-    if (req.body.password.length < config.minPasswordLength) {
-        res.send(new APIResponse(false, "password must be at least " + config.minPasswordLength + " characters long"));
-    }
-    else {
-        db.run("INSERT INTO `users` (`email`, `password`) VALUES (?, ?)", [req.body.email, md5(req.body.password)], function (err) {
-            if (err) {
-                internalError(res, err);
-            }
-            else {
-                res.send(new APIResponse(true, null));
-            }
-        });
-    }
-});
 
 app.post('/login', function (req, res) {
     db.get("SELECT * FROM `users` WHERE `email` = ?", [req.body.email], function (err, row) {
@@ -96,6 +78,25 @@ app.post('/login', function (req, res) {
             });
         }
     });
+});
+
+app.post('/register', function (req, res) {
+    if (req.body.adminPassword !== config.adminPassword) {
+        res.send(new APIResponse(false, "no permission"));
+    }
+    if (req.body.password.length < config.minPasswordLength) {
+        res.send(new APIResponse(false, "password must be at least " + config.minPasswordLength + " characters long"));
+    }
+    else {
+        db.run("INSERT INTO `users` (`email`, `password`) VALUES (?, ?)", [req.body.email, md5(req.body.password)], function (err) {
+            if (err) {
+                internalError(res, err);
+            }
+            else {
+                res.send(new APIResponse(true, null));
+            }
+        });
+    }
 });
 
 app.get('/', function (req, res) {

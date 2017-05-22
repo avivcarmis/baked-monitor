@@ -18,7 +18,6 @@ angular
     .config(amChartConfig)
     .config(routesConfig)
     .controller('LoginCtrl', loginCtrl)
-    .controller('RegisterCtrl', registerCtrl)
     .controller('MonitorCtrl', monitorCtrl);
 
 function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
@@ -35,7 +34,7 @@ function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
             url: '/register',
             title: 'Register A New Profile - BlurMonitor',
             templateUrl: 'app/register.html',
-            controller: 'RegisterCtrl'
+            controller: 'LoginCtrl'
         });
     $stateProvider
         .state('new', {
@@ -65,26 +64,24 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
         $state.go('login');
     };
 
-    $scope.onSubmit = function () {
-        var emailField = $("#inputEmail3");
-        if (!emailField.get(0).checkValidity()) {
-            return emailField.get(0).reportValidity();
+    $scope.login = function () {
+        var email = $scope.getFieldContents("inputEmail3");
+        var password = $scope.getFieldContents("inputPassword3");
+        var valid = true;
+        if (!email) {
+            valid = false;
+            alert("email is required");
         }
-        var email = emailField.val();
-        var passwordField = $("#inputPassword3");
-        if (!passwordField.get(0).checkValidity()) {
-            return passwordField.get(0).reportValidity();
+        if (!password) {
+            valid = false;
+            alert("password is required");
         }
-        var password = passwordField.val();
-        if (!email || !password) {
-            alert("missing email and password");
-        }
-        else {
-            $scope.submit(email, password);
+        if (valid) {
+            $scope.callLogin(email, password);
         }
     };
 
-    $scope.submit = function (email, password) {
+    $scope.callLogin = function (email, password) {
         $http({
             method: 'POST',
             url: '/login',
@@ -106,8 +103,13 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
                             }
                             baSidebarService.addStaticItem({
                                 title: $rootScope.servers[key].title,
-                                icon: 'ion-android-home',
-                                stateRef: 'monitor/' + key
+                                server: {
+                                    title: $rootScope.servers[key].title,
+                                    url: $rootScope.servers[key].url,
+                                    method: $rootScope.servers[key].method
+                                },
+                                stateRef: 'monitor',
+                                stateParams: {serverId: key}
                             });
                         }
                         baSidebarService.addStaticItem({
@@ -125,6 +127,68 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
                     alert("Something went wrong");
                 }
             );
+    };
+
+    $scope.register = function () {
+        var adminPassword = $scope.getFieldContents("inputName3");
+        var email = $scope.getFieldContents("inputEmail3");
+        var password = $scope.getFieldContents("inputPassword3");
+        var valid = true;
+        if (!adminPassword) {
+            valid = false;
+            alert("admin password is required");
+        }
+        if (!email) {
+            valid = false;
+            alert("email is required");
+        }
+        if (!password) {
+            valid = false;
+            alert("password is required");
+        }
+        if (valid) {
+            $http({
+                method: 'POST',
+                url: '/register',
+                data: JSON.stringify({adminPassword: adminPassword, email: email, password: password})
+            })
+                .then(
+                    function (response) {
+                        if (response.data && response.data.success) {
+                            $rootScope.email = email;
+                            if (typeof(Storage) !== "undefined") {
+                                localStorage.setItem("email", email);
+                                localStorage.setItem("password", password);
+                            }
+                            $rootScope.servers = {};
+                            baSidebarService.clearStaticItems();
+                            baSidebarService.addStaticItem({
+                                title: 'Add New Pages',
+                                icon: 'ion-android-add-circle',
+                                stateRef: 'new'
+                            });
+                            $rootScope.loggedIn = true;
+                            $scope.goHome();
+                        }
+                        else {
+                            alert("Something went wrong");
+                        }
+                    }, function () {
+                        alert("Something went wrong");
+                    }
+                );
+        }
+    };
+
+    $scope.getFieldContents = function (id) {
+        var field = $("#" + id);
+        if (!field.get(0).checkValidity()) {
+            try {
+                field.get(0).reportValidity();
+            } catch (e) {}
+            return null;
+        }
+        return field.val();
     };
 
     $scope.goHome = function () {
@@ -145,13 +209,9 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
         var email = localStorage.getItem("email");
         var password = localStorage.getItem("password");
         if (email && password) {
-            $scope.submit(email, password);
+            $scope.callLogin(email, password);
         }
     }
-
-}
-
-function registerCtrl() {
 
 }
 
@@ -172,10 +232,38 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
     }
 
     $scope.data = [];
+    
+    $scope.active = true;
+
+    $scope.hoveredMeterId = null;
+
+    $scope.onMeterMouseEnter = function () {
+        $scope.hoveredMeterId = $(this).attr("id");
+    };
+
+    $scope.onMeterMouseLeave = function () {
+        $scope.hoveredMeterId = null;
+    };
+
+    $scope.shouldDraw = function (id) {
+        return $scope.hoveredMeterId !== id;
+    };
+
+    $("body").on("mouseenter", ".meter", $scope.onMeterMouseEnter).on("mouseleave", ".meter", $scope.onMeterMouseLeave);
+
+    $scope.$on("$destroy", function handler() {
+        $scope.active = false;
+        $("body").off("mouseenter", ".meter", $scope.onMeterMouseEnter).off("mouseleave", ".meter", $scope.onMeterMouseLeave);
+    });
 
     $scope.update = function (callback) {
-        $http
-            .get($scope.server.url)
+        if (!$scope.active) {
+            return;
+        }
+        $http({
+            method: $scope.server.method,
+            url: $scope.server.url
+        })
             .then(
                 function (response) {
                     if (response.data) {
@@ -198,6 +286,10 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
     $scope.draw = function () {
         for (var i = 0; i < $scope.meters.length; i++) {
             var meter = $scope.meters[i];
+            var id = "meter-wrapper-" + i;
+            if (!$scope.shouldDraw(id)) {
+                continue;
+            }
             switch (meter.type) {
                 case "GRAPH":
                     $scope.drawGraph(i, meter.config);

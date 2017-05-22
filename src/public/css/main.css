@@ -7,6 +7,25 @@
   text-align: center;
   padding: 19px;
 }
+.meter-refresh-warning {
+  display: none;
+  position: absolute;
+  right: 22px;
+  font-weight: bold;
+  animation: blinker 1350ms linear infinite;
+}
+@keyframes blinker {
+  50% { opacity: 0.3; }
+}
+.meter:hover .meter-refresh-warning {
+  display: block;
+}
+.health-indicator {
+  border-radius: 50%;
+  width: 8px !important;
+  height: 8px !important;
+  margin: 6px 24px 2px 2px !important;
+}
 
 .alert {
   color: #ffffff;
@@ -2767,17 +2786,6 @@ button.progress-button.btn.btn-danger {
   vertical-align: middle;
   width: 80px;
   height: 80px; }
-
-::-webkit-scrollbar {
-  width: 0.5em;
-  height: 0.5em; }
-
-::-webkit-scrollbar-thumb {
-  background: #d9d9d9;
-  cursor: pointer; }
-
-::-webkit-scrollbar-track {
-  background: transparent; }
 
 body {
   scrollbar-face-color: #d9d9d9;
