@@ -18,28 +18,29 @@ angular
     .config(amChartConfig)
     .config(routesConfig)
     .controller('LoginCtrl', loginCtrl)
-    .controller('MonitorCtrl', monitorCtrl);
+    .controller('MonitorCtrl', monitorCtrl)
+    .controller('ProfileCtrl', profileCtrl);
 
 function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
     $stateProvider
         .state('login', {
             url: '/login',
-            title: 'Login - BlurMonitor',
+            title: 'Sign In - BlurMonitor',
             templateUrl: 'app/login.html',
             controller: 'LoginCtrl'
         });
     $stateProvider
         .state('register', {
             url: '/register',
-            title: 'Register A New Profile - BlurMonitor',
+            title: 'Register a New Profile - BlurMonitor',
             templateUrl: 'app/register.html',
             controller: 'LoginCtrl'
         });
     $stateProvider
         .state('new', {
             url: '/new',
-            title: 'New Server',
+            title: 'Create a New Server - BlurMonitor',
             templateUrl: 'app/monitor.html', // TODO
             controller: 'MonitorCtrl'
         });
@@ -50,10 +51,147 @@ function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
             templateUrl: 'app/monitor.html',
             controller: 'MonitorCtrl'
         });
+    $stateProvider
+        .state('profile', {
+            url: '/profile',
+            title: 'Edit Profile',
+            templateUrl: 'app/profile.html',
+            controller: 'ProfileCtrl'
+        });
     $urlRouterProvider.otherwise('login');
 }
 
-function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
+function profileCtrl($scope, $http, $rootScope, $state, toastr) {
+
+    if (typeof $rootScope.servers === "undefined") {
+        $rootScope.pendingRedirect = {
+            state: $state.current.name
+        };
+        return $state.go('login');
+    }
+
+    $("title").text("Edit Profile - BlueMonitor");
+
+    $scope.avatars = [
+        {name: "abraham", title: "Neat Abraham"},
+        {name: "helen", title: "Organized Helen"},
+        {name: "holly", title: "Genius Holly"},
+        {name: "jim", title: "Furious Jim"},
+        {name: "jones", title: "Mr. Jones"},
+        {name: "leroy", title: "Experienced Leroy"},
+        {name: "natalie", title: "Vigorous Natalie"},
+        {name: "sandra", title: "Sweet Sandra"}
+    ];
+    $scope.avatar = 0;
+    for (var i = 0; i < $scope.avatars.length; i++) {
+        var current = $scope.avatars[i];
+        if (current.name === $rootScope.user.avatar) {
+            $scope.avatar = i;
+            break;
+        }
+    }
+
+    $scope.colors = [
+        '#209e91',
+        '#2dacd1',
+        '#90b900',
+        '#dfb81c',
+        '#e85656',
+        "#a5a5a5",
+        "#505050",
+        "#ececec"
+    ];
+    $scope.color = 0;
+    for (i = 0; i < $scope.colors.length; i++) {
+        current = $scope.colors[i];
+        if (current === $rootScope.user.color) {
+            $scope.color = i;
+            break;
+        }
+    }
+
+    $scope.nextAvatar = function () {
+        $scope.avatar = ($scope.avatar + 1) % $scope.avatars.length;
+    };
+
+    $scope.nextColor = function () {
+        $scope.color = ($scope.color + 1) % $scope.colors.length;
+    };
+
+    $scope.update = function () {
+        var oldPassword = $("#oldPassword");
+        var newPassword = $("#inputPassword");
+        var confirmPassword = $("#inputConfirmPassword");
+        if (confirmPassword.val() !== newPassword.val()) {
+            $scope.setFieldError(newPassword, true);
+            toastr.error("Passwords don't match");
+            return;
+        }
+        $scope.setFieldError(newPassword, false);
+        if (newPassword.val() && !oldPassword.val()) {
+            $scope.setFieldError(oldPassword, true);
+            toastr.error("Old password is missing", "Missing Field");
+            return;
+        }
+        var data = {
+            email: $rootScope.user.email,
+            avatar: $scope.avatars[$scope.avatar].name,
+            color: $scope.colors[$scope.color],
+            fname: $("#inputFirstName").val(),
+            lname: $("#inputLastName").val()
+        };
+        if (confirmPassword.val()) {
+            data.oldPassword = oldPassword.val();
+            data.newPassword = newPassword.val();
+        }
+        $http({
+            method: 'POST',
+            url: '/update_profile',
+            data: JSON.stringify(data)
+        })
+            .then(
+                function (response) {
+                    if (response.status !== 200 || !response.data) {
+                        toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
+                    }
+                    else if (!response.data.success) {
+                        toastr.error(response.data.error.body, response.data.error.title);
+                    }
+                    else {
+                        $rootScope.user.fname = data.fname;
+                        $rootScope.user.lname = data.lname;
+                        $rootScope.user.avatar = data.avatar;
+                        $rootScope.user.color = data.color;
+                        toastr.success("Profile updated");
+                    }
+                }, function () {
+                    toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
+                }
+            );
+    };
+
+    $scope.setFieldError = function (element, hasError) {
+        var parent = element;
+        while (parent && !parent.hasClass("form-group")) {
+            parent = parent.parent();
+        }
+        if (parent) {
+            if (hasError) {
+                parent.addClass("has-error");
+            }
+            else {
+                parent.removeClass("has-error");
+            }
+        }
+    };
+
+}
+
+function loginCtrl($scope, $http, $rootScope, baSidebarService, $state, toastr) {
+
+    $("title").text($state.current.title);
+
+    $scope.initialized = false;
 
     $rootScope.logout = function () {
         $rootScope.loggedIn = false;
@@ -64,19 +202,30 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
         $state.go('login');
     };
 
+    $rootScope.getUserName = function () {
+        if (!$rootScope.user) {
+            return '';
+        }
+        var result = "";
+        if ($rootScope.user.fname) {
+            result += $rootScope.user.fname;
+        }
+        if ($rootScope.user.lname) {
+            if ($rootScope.user.fname) {
+                result += " ";
+            }
+            result += $rootScope.user.lname;
+        }
+        if (result === "") {
+            result = $rootScope.user.email;
+        }
+        return result;
+    };
+
     $scope.login = function () {
-        var email = $scope.getFieldContents("inputEmail3");
-        var password = $scope.getFieldContents("inputPassword3");
-        var valid = true;
-        if (!email) {
-            valid = false;
-            alert("email is required");
-        }
-        if (!password) {
-            valid = false;
-            alert("password is required");
-        }
-        if (valid) {
+        var password = $scope.validateField("inputPassword3", "Password is required", "Required Field");
+        var email = $scope.validateField("inputEmail3", "Email is required", "Required Field");
+        if (email && password) {
             $scope.callLogin(email, password);
         }
     };
@@ -89,13 +238,21 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
         })
             .then(
                 function (response) {
-                    if (response.data && response.data.success) {
-                        $rootScope.email = email;
+                    if (response.status !== 200 || !response.data) {
+                        toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
+                    }
+                    else if (!response.data.success) {
+                        toastr.error(response.data.error.body, response.data.error.title);
+                        $scope.setFieldError("inputEmail3", true);
+                        $scope.setFieldError("inputPassword3", true);
+                    }
+                    else {
                         if (typeof(Storage) !== "undefined") {
                             localStorage.setItem("email", email);
                             localStorage.setItem("password", password);
                         }
-                        $rootScope.servers = response.data.result;
+                        $rootScope.user = response.data.result;
+                        $rootScope.servers = $rootScope.user.servers;
                         baSidebarService.clearStaticItems();
                         for (var key in $rootScope.servers) {
                             if (!$rootScope.servers.hasOwnProperty(key)) {
@@ -113,40 +270,24 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
                             });
                         }
                         baSidebarService.addStaticItem({
-                            title: 'Add New Pages',
+                            title: 'New Server',
                             icon: 'ion-android-add-circle',
                             stateRef: 'new'
                         });
                         $rootScope.loggedIn = true;
                         $scope.goHome();
                     }
-                    else {
-                        alert("Something went wrong");
-                    }
                 }, function () {
-                    alert("Something went wrong");
+                    toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
                 }
             );
     };
 
     $scope.register = function () {
-        var adminPassword = $scope.getFieldContents("inputName3");
-        var email = $scope.getFieldContents("inputEmail3");
-        var password = $scope.getFieldContents("inputPassword3");
-        var valid = true;
-        if (!adminPassword) {
-            valid = false;
-            alert("admin password is required");
-        }
-        if (!email) {
-            valid = false;
-            alert("email is required");
-        }
-        if (!password) {
-            valid = false;
-            alert("password is required");
-        }
-        if (valid) {
+        var password = $scope.validateField("inputPassword3", "Password is required", "Required Field");
+        var email = $scope.validateField("inputEmail3", "Email is required", "Required Field");
+        var adminPassword = $scope.validateField("inputName3", "Admin password is required", "Required Field");
+        if (adminPassword && email && password) {
             $http({
                 method: 'POST',
                 url: '/register',
@@ -154,44 +295,76 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
             })
                 .then(
                     function (response) {
-                        if (response.data && response.data.success) {
+                        if (response.status !== 200 || !response.data) {
+                            toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
+                        }
+                        else if (!response.data.success) {
+                            toastr.error(response.data.error.body, response.data.error.title);
+                            $scope.setFieldError("inputName3", true);
+                            $scope.setFieldError("inputEmail3", true);
+                            $scope.setFieldError("inputPassword3", true);
+                        }
+                        else {
                             $rootScope.email = email;
                             if (typeof(Storage) !== "undefined") {
                                 localStorage.setItem("email", email);
                                 localStorage.setItem("password", password);
                             }
-                            $rootScope.servers = {};
+                            $rootScope.user = response.data.result;
+                            $rootScope.servers = $rootScope.user.servers;
                             baSidebarService.clearStaticItems();
                             baSidebarService.addStaticItem({
-                                title: 'Add New Pages',
+                                title: 'New Server',
                                 icon: 'ion-android-add-circle',
                                 stateRef: 'new'
                             });
                             $rootScope.loggedIn = true;
                             $scope.goHome();
                         }
-                        else {
-                            alert("Something went wrong");
-                        }
                     }, function () {
-                        alert("Something went wrong");
+                        toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
                     }
                 );
         }
     };
 
-    $scope.getFieldContents = function (id) {
+    $scope.validateField = function (id, messageBody, messageTitle) {
         var field = $("#" + id);
-        if (!field.get(0).checkValidity()) {
-            try {
-                field.get(0).reportValidity();
-            } catch (e) {}
-            return null;
+        var value = null;
+        if (field.get(0).checkValidity()) {
+            value = field.val();
         }
-        return field.val();
+        if (value) {
+            $scope.setFieldError(id, false);
+        }
+        else {
+            toastr.error(messageBody, messageTitle);
+            $scope.setFieldError(id, true);
+        }
+        return value;
+    };
+
+    $scope.setFieldError = function (id, hasError) {
+        var parent = $("#" + id);
+        while (parent && !parent.hasClass("form-group")) {
+            parent = parent.parent();
+        }
+        if (parent) {
+            if (hasError) {
+                parent.addClass("has-error");
+            }
+            else {
+                parent.removeClass("has-error");
+            }
+        }
     };
 
     $scope.goHome = function () {
+        if ($rootScope.pendingRedirect) {
+            $state.go($rootScope.pendingRedirect.state, $rootScope.pendingRedirect.params);
+            $rootScope.pendingRedirect = null;
+            return;
+        }
         for (var key in $rootScope.servers) {
             if (!$rootScope.servers.hasOwnProperty(key)) {
                 continue;
@@ -211,6 +384,11 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
         if (email && password) {
             $scope.callLogin(email, password);
         }
+        else {
+            $scope.initialized = true;
+        }
+    } else {
+        $scope.initialized = true;
     }
 
 }
@@ -218,6 +396,10 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state) {
 function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPaths, $state) {
 
     if (typeof $rootScope.servers === "undefined") {
+        $rootScope.pendingRedirect = {
+            state: $state.current.name,
+            params: $stateParams
+        };
         return $state.go('login');
     }
 
@@ -230,6 +412,10 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
     if (!$scope.server) {
         return $state.go('new');
     }
+
+    $("title").text($scope.server.title + " - BlurMonitor");
+
+    $scope.serverIsUp = true;
 
     $scope.data = [];
     
@@ -266,18 +452,26 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
         })
             .then(
                 function (response) {
-                    if (response.data) {
-                        $scope.data.push({
-                            time: $scope.getTime(),
-                            data: response.data
-                        });
-                        if (callback) {
-                            callback(response.data);
+                    if (response.status === 200) {
+                        $scope.serverIsUp = true;
+                        if (response.data) {
+                            $scope.data.push({
+                                time: $scope.getTime(),
+                                data: response.data
+                            });
+                            if (callback) {
+                                callback(response.data);
+                            }
+                            else {
+                                $scope.draw();
+                            }
                         }
-                        $scope.draw();
+                    }
+                    else {
+                        $scope.serverIsUp = false;
                     }
                 }, function () {
-                    alert("Something went wrong");
+                    $scope.serverIsUp = false;
                 }
             );
         setTimeout($scope.update, 5000);
@@ -725,6 +919,9 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
                 $scope.meters.push(meterCopy);
             }
         }
+        $scope.$$postDigest(function(){
+            $scope.draw();
+        });
     });
 
 }

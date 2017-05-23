@@ -1,4 +1,4 @@
-<main class="auth-main">
+<main class="auth-main" ng-if="initialized">
     <div class="auth-block">
         <h1>Sign in to BlurMonitor</h1>
         <a href="/register" class="auth-link">Don't have a profile? Sign up!</a>
@@ -8,14 +8,20 @@
                 <label for="inputEmail3" class="col-sm-3 control-label">Email</label>
 
                 <div class="col-sm-9">
-                    <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                    <div class="field-wrapper">
+                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                        <i class="ion-android-cancel form-control-feedback" aria-hidden="true"></i>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
                 <label for="inputPassword3" class="col-sm-3 control-label">Password</label>
 
                 <div class="col-sm-9">
-                    <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+                    <div class="field-wrapper">
+                        <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+                        <i class="ion-android-cancel form-control-feedback" aria-hidden="true"></i>
+                    </div>
                 </div>
             </div>
             <div class="form-group">

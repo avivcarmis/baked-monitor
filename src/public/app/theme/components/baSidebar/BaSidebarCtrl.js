@@ -9,7 +9,7 @@
         .controller('BaSidebarCtrl', BaSidebarCtrl);
 
     /** @ngInject */
-    function BaSidebarCtrl($scope, baSidebarService, $http, baConfig) {
+    function BaSidebarCtrl($scope, baSidebarService, $http, baConfig, toastr) {
 
         var HEARTBEAT_INTERVAL = 15000;
 
@@ -44,27 +44,37 @@
             }
             $scope.healthCheck(item.server.url, item.server.method, function (success) {
                 var element = $("#ba-sidebar-item-" + index).find(".health-indicator");
+                $scope.setDurationClass(element);
                 if (success) {
                     element
+                        .removeClass("unhealthy")
+                        .addClass("healthy")
                         .css("background-color", baConfig.colors.success)
-                        .css("transition", "opacity " + STATUS_CHANGE_DURATION + "ms ease")
-                        .css("opacity", "1");
+                        .css("transition", "all " + STATUS_CHANGE_DURATION + "ms ease")
+                        .css("opacity", "1")
+                        .css("transform", "scale(1)");
                     setTimeout(function () {
                         element
-                            .css("transition", "opacity " + HEARTBEAT_INTERVAL + "ms ease")
-                            .css("opacity", "0.7");
+                            .css("transition", "all " + HEARTBEAT_INTERVAL + "ms cubic-bezier(.5,.06,.9,.43)")
+                            .css("opacity", "0.8")
+                            .css("transform", "scale(0.5)");
                     }, STATUS_CHANGE_DURATION);
                     if (item.isDown) {
-                        alert(item.title + " is back up");
+                        toastr.success(item.title + " is back up", "HealthCheck Status");
                     }
                     item.isDown = false;
                 }
                 else {
                     element
+                        .removeClass("healthy")
+                        .addClass("unhealthy")
                         .css("transition", "all " + STATUS_CHANGE_DURATION + "ms ease")
                         .css("opacity", "1")
+                        .css("transform", "scale(1)")
                         .css("background-color", baConfig.colors.danger);
-                    alert(item.title + " is down");
+                    if (!item.isDown) {
+                        toastr.error(item.title + " is down", "HealthCheck Status");
+                    }
                     item.isDown = true;
                 }
             });
@@ -84,8 +94,30 @@
                 );
         };
 
-        setInterval($scope.heartbeat, HEARTBEAT_INTERVAL);
+        $scope.setDurationClass = function (element) {
+            for (var i = 0; i < BLINK_DURATION_CLASSES.length; i++) {
+                var durationClass = BLINK_DURATION_CLASSES[i];
+                if (element.hasClass(durationClass)) {
+                    return;
+                }
+            }
+            var chosen = BLINK_DURATION_CLASSES[Math.floor(Math.random() * BLINK_DURATION_CLASSES.length)];
+            element.addClass(chosen);
+        };
+
+        var BLINK_DURATION_CLASSES = [
+            "duration-5",
+            "duration-6",
+            "duration-7",
+            "duration-8",
+            "duration-9"
+        ];
+        var interval = setInterval($scope.heartbeat, HEARTBEAT_INTERVAL);
         $scope.heartbeat();
+
+        $scope.$on("$destroy", function handler() {
+            interval = clearInterval(interval);
+        });
 
     }
 })();
