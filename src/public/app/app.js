@@ -19,6 +19,7 @@ angular
     .config(routesConfig)
     .controller('LoginCtrl', loginCtrl)
     .controller('MonitorCtrl', monitorCtrl)
+    .controller('EditCtrl', editCtrl)
     .controller('ProfileCtrl', profileCtrl);
 
 function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
@@ -38,11 +39,11 @@ function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
             controller: 'LoginCtrl'
         });
     $stateProvider
-        .state('new', {
-            url: '/new',
-            title: 'Create a New Server - BlurMonitor',
-            templateUrl: 'app/monitor.html', // TODO
-            controller: 'MonitorCtrl'
+        .state('edit', {
+            url: '/edit',
+            title: 'Edit Servers',
+            templateUrl: 'app/edit.html',
+            controller: 'EditCtrl'
         });
     $stateProvider
         .state('monitor', {
@@ -187,6 +188,125 @@ function profileCtrl($scope, $http, $rootScope, $state, toastr) {
 
 }
 
+function editCtrl($scope, $http, $rootScope, $state, toastr) {
+
+    if (typeof $rootScope.servers === "undefined") {
+        $rootScope.pendingRedirect = {
+            state: $state.current.name
+        };
+        return $state.go('login');
+    }
+
+    $("title").text("Edit Servers - BlueMonitor");
+
+    $scope.findServer = function (key) {
+        return $rootScope.servers[key];
+    };
+
+    $scope.findMeter = function (serverKey, meterId) {
+        for (var i = 0; i < $rootScope.servers[serverKey].meters.length; i++) {
+            var meter = $rootScope.servers[serverKey].meters[i];
+            if (meter.id === meterId) {
+                return meter;
+            }
+        }
+        return null;
+    };
+
+    $scope.treeConfig = {
+        core: {
+            check_callback: function(operation, node, nodeParent, nodePosition, more) {
+                // 'create_node'/'rename_node'/'delete_node'/'move_node'/'copy_node'
+                if (operation === "move_node") {
+                    if (node.type === "server") {
+                        return nodeParent.type === "#";
+                    }
+                    return nodeParent.type === "server" && node.data.server === nodeParent.data.key;
+                }
+                return true;
+            },
+            themes: {
+                dots: false,
+                responsive: false
+            }
+        },
+        dnd: {
+            check_while_dragging: true
+        },
+        types: {
+            server: {
+                icon: 'tree-icon fa fa-server'
+            },
+            graph: {
+                icon: 'tree-icon fa fa-area-chart'
+            },
+            pie: {
+                icon: 'tree-icon fa fa-pie-chart'
+            },
+            table: {
+                icon: 'tree-icon fa fa-table'
+            },
+            value: {
+                icon: 'tree-icon fa fa-info'
+            }
+        },
+        "plugins": ["dnd", 'types']
+    };
+
+    $scope.treeEventsObj = {
+        select_node: function (e, data) {
+            if (data.node.type === 'server') {
+                $scope.mode = 'server';
+                $scope.current = $scope.findServer(data.node.data.key);
+                $scope.$$postDigest(function() {
+                    $("body").find("input").trigger("change");
+                });
+            }
+            else {
+                $scope.mode = 'meter';
+                $scope.current = $scope.findMeter(data.node.data.server, data.node.data.meter);
+                $scope.$$postDigest(function() {
+                    $("body").find("input").trigger("change");
+                });
+            }
+        }
+    };
+
+    $scope.treeData = [];
+    for (var key in $rootScope.servers) {
+        if (!$rootScope.servers.hasOwnProperty(key)) {
+            continue;
+        }
+        $scope.treeData.push({
+            id: "server-" + key,
+            parent: "#",
+            type: "server",
+            text: $rootScope.servers[key].title,
+            state: {opened: false},
+            data: {key: key}
+        });
+        if (!$rootScope.servers[key].meters) {
+            continue;
+        }
+        for (var i = 0; i < $rootScope.servers[key].meters.length; i++) {
+            var meter = $rootScope.servers[key].meters[i];
+            meter.id = "meter-" + key + "-" + i;
+            $scope.treeData.push({
+                id: "meter-" + key + "-" + i,
+                parent: "server-" + key,
+                type: meter.type.toLowerCase(),
+                text: meter.title,
+                state: {opened: false},
+                data: {
+                    server: key,
+                    meter: meter.id
+                }
+            });
+        }
+    }
+
+}
+
 function loginCtrl($scope, $http, $rootScope, baSidebarService, $state, toastr) {
 
     $("title").text($state.current.title);
@@ -272,7 +392,7 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state, toastr) 
                         baSidebarService.addStaticItem({
                             title: 'New Server',
                             icon: 'ion-android-add-circle',
-                            stateRef: 'new'
+                            stateRef: 'edit'
                         });
                         $rootScope.loggedIn = true;
                         $scope.goHome();
@@ -316,7 +436,7 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state, toastr) 
                             baSidebarService.addStaticItem({
                                 title: 'New Server',
                                 icon: 'ion-android-add-circle',
-                                stateRef: 'new'
+                                stateRef: 'edit'
                             });
                             $rootScope.loggedIn = true;
                             $scope.goHome();

@@ -1,0 +1,163 @@
+<main ng-class="{ 'menu-collapsed': $baSidebarService.isMenuCollapsed() }">
+
+    <ba-sidebar></ba-sidebar>
+    <page-top></page-top>
+
+    <div class="al-main">
+        <div class="al-content">
+
+            <content-top></content-top>
+
+            <div ba-panel>
+                <div class="panel-content">
+
+                    <div class="row">
+
+                        <div class="col-md-5">
+                            <h3 class="with-line" style="padding-top: 0;">Servers Tree</h3>
+                            <div js-tree="treeConfig" ng-model="treeData" tree-events-obj="treeEventsObj"></div>
+                        </div>
+
+                        <div class="col-md-7">
+
+                            <h3 class="with-line" style="padding-top: 0;">Edit{{current ? (' - ' + current.title) : ''}}</h3>
+
+                            <div ng-if="mode === 'server'">
+
+                                <div class="form-group">
+                                    <label for="inputTitle">Title</label>
+                                    <input type="text" class="form-control" id="inputTitle" placeholder="Title of the server" ng-model="current.title">
+                                    <span class="help-block sub-little-text">A title represent the server in the entire monitor UI.</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="inputURL">URL</label>
+                                    <input type="text" class="form-control" id="inputURL" placeholder="URL of the server" ng-model="current.url">
+                                    <span class="help-block sub-little-text">A URL that returns a JSON representation of the server monitoring data.</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="inputMethod">HTTP Method</label>
+                                    <select id="inputMethod" class="form-control" ng-model="current.method">
+                                        <option>GET</option>
+                                        <option>POST</option>
+                                        <option>PUT</option>
+                                        <option>DELETE</option>
+                                    </select>
+                                    <span class="help-block sub-little-text">The HTTP method to use when calling the given URL.</span>
+                                </div>
+
+                            </div>
+
+                            <div ng-if="mode === 'meter'"></div>
+
+
+
+
+
+                            <!--<h3 class="with-line">Personal Info</h3>-->
+
+                            <!--<div class="row">-->
+                                <!--<div class="col-md-6">-->
+                                    <!--<div class="form-group row clearfix">-->
+                                        <!--<label for="inputFirstName" class="col-sm-3 control-label">Avatar</label>-->
+
+                                        <!--<div class="col-sm-9">-->
+
+                                            <!--<div class="edit-avatar">-->
+                                                <!--<div class="bg" style="background-color: {{colors[color]}};"></div>-->
+                                                <!--<img ng-src="/assets/img/app/avatar/{{avatars[avatar].name}}.png">-->
+                                                <!--<div class="desc">{{avatars[avatar].title}}</div>-->
+                                            <!--</div>-->
+                                            <!--<ul class="btn-list clearfix ng-scope">-->
+                                                <!--<li>-->
+                                                    <!--<button type="button" class="btn btn-default btn-with-icon" ng-click="nextAvatar()">-->
+                                                        <!--<i class="ion-android-contact"></i>Change Character-->
+                                                    <!--</button>-->
+                                                <!--</li>-->
+                                                <!--<li>-->
+                                                    <!--<button type="button" class="btn btn-default btn-with-icon" ng-click="nextColor()">-->
+                                                        <!--<i class="ion-android-color-palette"></i>Change Color-->
+                                                    <!--</button>-->
+                                                <!--</li>-->
+                                            <!--</ul>-->
+
+                                        <!--</div>-->
+
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="col-md-6"></div>-->
+                            <!--</div>-->
+
+                            <!--<div class="row">-->
+                                <!--<div class="col-md-6">-->
+                                    <!--<div class="form-group row clearfix">-->
+                                        <!--<label for="inputFirstName" class="col-sm-3 control-label">First Name</label>-->
+                                        <!--<div class="col-sm-9">-->
+                                            <!--<input type="text" class="form-control" id="inputFirstName" placeholder=""-->
+                                                   <!--value="{{user.fname}}">-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="col-md-6">-->
+                                    <!--<div class="form-group row clearfix">-->
+                                        <!--<label for="inputLastName" class="col-sm-3 control-label">Last Name</label>-->
+                                        <!--<div class="col-sm-9">-->
+                                            <!--<input type="text" class="form-control" id="inputLastName" placeholder=""-->
+                                                   <!--value="{{user.lname}}">-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+
+                            <!--<h3 class="with-line">Change Password</h3>-->
+
+                            <!--<div class="row">-->
+                                <!--<div class="col-md-6">-->
+                                    <!--<div class="form-group row clearfix">-->
+                                        <!--<label for="oldPassword" class="col-sm-3 control-label">Old Password</label>-->
+                                        <!--<div class="col-sm-9">-->
+                                            <!--<input type="password" class="form-control" id="oldPassword">-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+
+                            <!--<div class="row">-->
+                                <!--<div class="col-md-6">-->
+                                    <!--<div class="form-group row clearfix">-->
+                                        <!--<label for="inputPassword" class="col-sm-3 control-label">Password</label>-->
+                                        <!--<div class="col-sm-9">-->
+                                            <!--<input type="password" class="form-control" id="inputPassword" placeholder="">-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="col-md-6">-->
+                                    <!--<div class="form-group row clearfix">-->
+                                        <!--<label for="inputConfirmPassword" class="col-sm-3 control-label">Confirm Password</label>-->
+                                        <!--<div class="col-sm-9">-->
+                                            <!--<input type="password" class="form-control" id="inputConfirmPassword" placeholder="">-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+
+                            <!--<button type="button" class="btn btn-primary btn-with-icon save-profile" ng-click="update()">-->
+                                <!--<i class="ion-android-checkmark-circle"></i>Update Profile-->
+                            <!--</button>-->
+
+
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <back-top></back-top>
+
+</main>

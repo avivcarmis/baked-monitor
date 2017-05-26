@@ -13,6 +13,7 @@ var INDEX_PAGES = [
     "/login",
     "/register",
     "/new",
+    "/edit",
     "/profile"
 ];
 var AVATARS = [
