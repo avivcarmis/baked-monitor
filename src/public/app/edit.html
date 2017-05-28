@@ -8,7 +8,7 @@
 
             <content-top></content-top>
 
-            <div ba-panel>
+            <div ba-panel class="edit-page">
                 <div class="panel-content">
 
                     <div class="row">
@@ -20,138 +20,178 @@
 
                         <div class="col-md-7">
 
-                            <h3 class="with-line" style="padding-top: 0;">Edit{{current ? (' - ' + current.title) : ''}}</h3>
+                            <h3 class="with-line" style="padding-top: 0;">Edit{{currentServer ? (' - ' + currentServer.title) : ''}}</h3>
 
                             <div ng-if="mode === 'server'">
 
-                                <div class="form-group">
-                                    <label for="inputTitle">Title</label>
-                                    <input type="text" class="form-control" id="inputTitle" placeholder="Title of the server" ng-model="current.title">
-                                    <span class="help-block sub-little-text">A title represent the server in the entire monitor UI.</span>
+                                <div class="form-group has-feedback">
+                                    <label for="inputServerTitle">Title</label>
+                                    <input type="text" class="form-control validatable" id="inputServerTitle" placeholder="Title of the server" ng-model="currentServer.title">
+                                    <i class="form-control-feedback" aria-hidden="true"></i>
+                                    <span class="help-block sub-little-text">A title representing the server in the entire monitor UI.</span>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="inputURL">URL</label>
-                                    <input type="text" class="form-control" id="inputURL" placeholder="URL of the server" ng-model="current.url">
+                                <div class="form-group has-feedback">
+                                    <label for="inputServerURL">URL</label>
+                                    <div class="row">
+                                        <div class="col-md-2 md-no-gutter-right">
+                                            <select id="inputServerMethod" class="form-control validatable" ng-model="currentServer.method">
+                                                <option>GET</option>
+                                                <option>POST</option>
+                                                <option>PUT</option>
+                                                <option>DELETE</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control validatable" id="inputServerURL" placeholder="URL of the server" ng-model="currentServer.url">
+                                        </div>
+                                    </div>
+                                    <i class="form-control-feedback" aria-hidden="true"></i>
                                     <span class="help-block sub-little-text">A URL that returns a JSON representation of the server monitoring data.</span>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="inputMethod">HTTP Method</label>
-                                    <select id="inputMethod" class="form-control" ng-model="current.method">
-                                        <option>GET</option>
-                                        <option>POST</option>
-                                        <option>PUT</option>
-                                        <option>DELETE</option>
-                                    </select>
-                                    <span class="help-block sub-little-text">The HTTP method to use when calling the given URL.</span>
                                 </div>
 
                             </div>
 
-                            <div ng-if="mode === 'meter'"></div>
+                            <div ng-if="mode === 'meter'">
 
+                                <div class="form-group has-feedback">
+                                    <label for="inputMeterTitle">Title</label>
+                                    <input type="text" class="form-control validatable" id="inputMeterTitle" placeholder="Title of the meter" ng-model="currentMeter.title">
+                                    <i class="form-control-feedback" aria-hidden="true"></i>
+                                    <span class="help-block sub-little-text">A title representing the meter in the entire monitor UI.</span>
+                                </div>
 
+                                <div class="form-group has-feedback">
+                                    <label for="inputMeterWidth">Width (?/12)</label>
+                                    <select id="inputMeterWidth" class="form-control validatable" ng-model="currentMeter.width">
+                                        <option value="12">12 (100%)</option>
+                                        <option value="11">11 (91%)</option>
+                                        <option value="10">10 (83%)</option>
+                                        <option value="9">9 (75%)</option>
+                                        <option value="8">8 (66%)</option>
+                                        <option value="7">7 (58%)</option>
+                                        <option value="6">6 (50%)</option>
+                                        <option value="5">5 (41%)</option>
+                                        <option value="4">4 (33%)</option>
+                                        <option value="3">3 (25%)</option>
+                                        <option value="2">2 (16%)</option>
+                                        <option value="1">1 (8%)</option>
+                                    </select>
+                                    <span class="help-block sub-little-text">The percentage of the entire screen width this meter should occupy (on desktop only).</span>
+                                </div>
 
+                                <div class="form-group has-feedback">
+                                    <label for="inputMeterType">Type</label>
+                                    <select id="inputMeterType" class="form-control validatable" ng-model="currentMeter.type">
+                                        <option value="GRAPH">Graph</option>
+                                        <option value="PIE">Pie Chart</option>
+                                        <option value="TABLE">Table</option>
+                                        <option value="VALUE">Single Value Monitor</option>
+                                    </select>
+                                    <span class="help-block sub-little-text">The type of the meter.</span>
+                                </div>
 
+                                <div class="form-group has-feedback">
+                                    <label class="checkbox-inline custom-checkbox nowrap">
+                                        <input type="checkbox" id="inputMeterIsPrototype" ng-model="currentMeter.isPrototype">
+                                        <span>Is Prototype</span>
+                                    </label>
+                                    <span class="help-block sub-little-text">Makes the meter a non-concrete meter, but a set of meters depending on a given collection of objects.</span>
+                                </div>
 
-                            <!--<h3 class="with-line">Personal Info</h3>-->
+                                <div ng-if="currentMeter.isPrototype">
+                                    <div class="form-group has-feedback" id="inputMeterCollectionPath">
+                                        <label>CollectionPath</label>
+                                        <div class="row">
+                                            <div class="col-sm-1" style="text-align: center;">
 
-                            <!--<div class="row">-->
-                                <!--<div class="col-md-6">-->
-                                    <!--<div class="form-group row clearfix">-->
-                                        <!--<label for="inputFirstName" class="col-sm-3 control-label">Avatar</label>-->
+                                            </div>
+                                            <div class="col-sm-11">
+                                                <div ng-repeat="entry in currentMeter.prototypeCollection.collectionPath track by $index">
+                                                    <div ng-if="detectPathType(currentMeter.prototypeCollection.collectionPath, $index) === 'OBJECT'">
+                                                        <select class="form-control validatable not-empty" ng-model="entry.result">
+                                                            <option ng-repeat="option in calculatePathObjectKeyOptions(currentMeter.prototypeCollection.collectionPath, $index)">{{option}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div ng-if="detectPathType(currentMeter.prototypeCollection.collectionPath, $index) === 'ARRAY'">
+                                                        <div class="form-group">
+                                                            <label>Conditions</label>
+                                                            <div class="form-group" ng-repeat="(key, value) in entry.conditions">
+                                                                <div class="row">
+                                                                    <div class="col-sm-4">
+                                                                        <select class="form-control validatable not-empty" ng-model="key">
+                                                                            <option ng-repeat="option in calculatePathArrayKeyOptions(currentMeter.prototypeCollection.collectionPath, $index)">{{option}}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-sm-1" style="text-align: center;padding: 0;width: 0;line-height: 32px;margin-left: -4px;">=</div>
+                                                                    <div class="col-sm-4">
+                                                                        <select class="form-control validatable not-empty" ng-model="value">
+                                                                            <option ng-repeat="option in calculatePathArrayValueOptions(key, currentMeter.prototypeCollection.collectionPath, $index)">{{option}}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-sm-4" style="text-align: right;">
+                                                                        <ul class="btn-list pull-right" style="padding-top: 0;">
+                                                                            <li>
+                                                                                <button type="button" class="btn btn-danger btn-icon" ng-click="entry.conditions['bla'] = 'blu'">
+                                                                                    <i class="fa fa-times"></i>
+                                                                                </button>
+                                                                            </li>
+                                                                            <li>
+                                                                                <button type="button" class="btn btn-default btn-icon" ng-click="entry.conditions['bla'] = 'blu'">
+                                                                                    <i class="fa fa-plus"></i>
+                                                                                </button>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <span class="help-block sub-little-text">The list of conditions to qualify an entry for selection.</span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Result Key</label>
+                                                            <select class="form-control validatable not-empty" ng-model="entry.result">
+                                                                <option ng-repeat="option in calculatePathArrayKeyOptions(currentMeter.prototypeCollection.collectionPath, $index)">{{option}}</option>
+                                                            </select>
+                                                            <span class="help-block sub-little-text">The key to be extracted from the selected entry.</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="vertical-button">
+                                            <button type="button" class="btn btn-primary btn-with-icon btn-xm" ng-click="addCollectionPath()">
+                                                <i class="fa fa-list-ul"></i>Add Path
+                                            </button>
+                                        </div>
+                                        <span class="help-block sub-little-text">Path to the the collection the objects representing the different meters of this prototype.</span>
+                                    </div>
+                                </div>
 
-                                        <!--<div class="col-sm-9">-->
-
-                                            <!--<div class="edit-avatar">-->
-                                                <!--<div class="bg" style="background-color: {{colors[color]}};"></div>-->
-                                                <!--<img ng-src="/assets/img/app/avatar/{{avatars[avatar].name}}.png">-->
-                                                <!--<div class="desc">{{avatars[avatar].title}}</div>-->
-                                            <!--</div>-->
-                                            <!--<ul class="btn-list clearfix ng-scope">-->
-                                                <!--<li>-->
-                                                    <!--<button type="button" class="btn btn-default btn-with-icon" ng-click="nextAvatar()">-->
-                                                        <!--<i class="ion-android-contact"></i>Change Character-->
-                                                    <!--</button>-->
-                                                <!--</li>-->
-                                                <!--<li>-->
-                                                    <!--<button type="button" class="btn btn-default btn-with-icon" ng-click="nextColor()">-->
-                                                        <!--<i class="ion-android-color-palette"></i>Change Color-->
-                                                    <!--</button>-->
-                                                <!--</li>-->
-                                            <!--</ul>-->
-
-                                        <!--</div>-->
-
-                                    <!--</div>-->
-                                <!--</div>-->
-                                <!--<div class="col-md-6"></div>-->
-                            <!--</div>-->
-
-                            <!--<div class="row">-->
-                                <!--<div class="col-md-6">-->
-                                    <!--<div class="form-group row clearfix">-->
-                                        <!--<label for="inputFirstName" class="col-sm-3 control-label">First Name</label>-->
-                                        <!--<div class="col-sm-9">-->
-                                            <!--<input type="text" class="form-control" id="inputFirstName" placeholder=""-->
-                                                   <!--value="{{user.fname}}">-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                                <!--<div class="col-md-6">-->
-                                    <!--<div class="form-group row clearfix">-->
-                                        <!--<label for="inputLastName" class="col-sm-3 control-label">Last Name</label>-->
-                                        <!--<div class="col-sm-9">-->
-                                            <!--<input type="text" class="form-control" id="inputLastName" placeholder=""-->
-                                                   <!--value="{{user.lname}}">-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                            <!--</div>-->
-
-                            <!--<h3 class="with-line">Change Password</h3>-->
-
-                            <!--<div class="row">-->
-                                <!--<div class="col-md-6">-->
-                                    <!--<div class="form-group row clearfix">-->
-                                        <!--<label for="oldPassword" class="col-sm-3 control-label">Old Password</label>-->
-                                        <!--<div class="col-sm-9">-->
-                                            <!--<input type="password" class="form-control" id="oldPassword">-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                            <!--</div>-->
-
-                            <!--<div class="row">-->
-                                <!--<div class="col-md-6">-->
-                                    <!--<div class="form-group row clearfix">-->
-                                        <!--<label for="inputPassword" class="col-sm-3 control-label">Password</label>-->
-                                        <!--<div class="col-sm-9">-->
-                                            <!--<input type="password" class="form-control" id="inputPassword" placeholder="">-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                                <!--<div class="col-md-6">-->
-                                    <!--<div class="form-group row clearfix">-->
-                                        <!--<label for="inputConfirmPassword" class="col-sm-3 control-label">Confirm Password</label>-->
-                                        <!--<div class="col-sm-9">-->
-                                            <!--<input type="password" class="form-control" id="inputConfirmPassword" placeholder="">-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                            <!--</div>-->
-
-                            <!--<button type="button" class="btn btn-primary btn-with-icon save-profile" ng-click="update()">-->
-                                <!--<i class="ion-android-checkmark-circle"></i>Update Profile-->
-                            <!--</button>-->
-
-
-
+                            </div>
 
                         </div>
 
                     </div>
+
+                    <div style="border-top: 1px solid #ffffff; margin-top: 10px; padding-top: 10px;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <ul class="btn-list pull-right">
+                                    <li>
+                                        <button type="button" class="btn btn-default btn-with-icon btn-xm" ng-click="save()">
+                                            <i class="ion-android-cancel"></i>Cancel
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="btn btn-primary btn-with-icon btn-xm" ng-click="save()">
+                                            <i class="ion-android-checkmark-circle"></i>Save
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

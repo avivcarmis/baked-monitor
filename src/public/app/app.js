@@ -213,6 +213,221 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
         return null;
     };
 
+    $scope.validateFields = function () {
+        $(this).each(function() {
+            var element = $(this);
+            if (element.data("lastValue") === element.val()) {
+                return;
+            }
+            element.data("lastValue", element.val());
+            $scope.setFieldStatus(element, FIELD_STATUS_PENDING);
+            $scope.validate(element, function (valid, errorToast) {
+                $scope.setFieldStatus(element, valid ? FIELD_STATUS_VALID : FIELD_STATUS_INVALID, errorToast);
+            })
+        });
+    };
+
+    $scope.validate = function (element, callback) {
+        if (!element.hasClass("validatable")) {
+            return callback(true);
+        }
+        switch (element.attr("id")) {
+            case "inputMeterWidth":
+                callback(true);
+                break;
+            case "inputMeterType":
+                if (element.val()) {
+                    $scope.$apply(function () {
+                        $scope.treeDataFindById($scope.currentMeter.id).type = element.val().toLowerCase();
+                    });
+                }
+                callback(true);
+                break;
+            case "inputServerTitle":
+                if (element.val()) {
+                    $scope.$apply(function () {
+                        $scope.treeDataFindById($scope.currentServer.id).text = element.val();
+                    });
+                }
+                callback(element.val());
+                break;
+            case "inputServerURL":
+            case "inputServerMethod":
+                var errorToast = {title: "No Server Response", body: "Try changing the given URL or HTTP Method"};
+                $http({
+                    url: $("#inputServerURL").val(),
+                    method: $("#inputServerMethod").val()
+                })
+                    .then(function (response) {
+                        $scope.currentSample = response.data;
+                        callback(response.status === 200, errorToast);
+                    }, function () {
+                        callback(false, errorToast);
+                    });
+                break;
+            case "inputMeterTitle":
+                if (element.val()) {
+                    $scope.$apply(function () {
+                        $scope.treeDataFindById($scope.currentMeter.id).text = element.val();
+                    });
+                }
+                callback(element.val());
+                break;
+        }
+        if (element.hasClass("not-empty")) {
+            return callback(element.val());
+        }
+    };
+
+    var FIELD_STATUS_INVALID = 0, FIELD_STATUS_VALID = 1, FIELD_STATUS_PENDING = 2;
+    $scope.setFieldStatus = function (element, status, errorToast) {
+        var parent = element;
+        while (parent && !parent.hasClass("form-group")) {
+            parent = parent.parent();
+        }
+        if (parent) {
+            var indicator = parent.find(".form-control-feedback");
+            if (status === FIELD_STATUS_INVALID) {
+                parent.addClass("has-error").removeClass("has-success");
+                indicator.removeClass("ion-checkmark-circled").addClass("ion-android-cancel").removeClass("pending-feedback");
+                if (errorToast) {
+                    toastr.error(errorToast.body, errorToast.title);
+                }
+            }
+            else if (status === FIELD_STATUS_VALID) {
+                parent.removeClass("has-error").addClass("has-success");
+                indicator.addClass("ion-checkmark-circled").removeClass("ion-android-cancel").removeClass("pending-feedback");
+            }
+            else if (status === FIELD_STATUS_PENDING) {
+                indicator.addClass("pending-feedback");
+            }
+        }
+    };
+
+    $scope.addCollectionPath = function () {
+        if (!$scope.currentMeter.prototypeCollection) {
+            $scope.currentMeter.prototypeCollection = {
+                collectionPath: []
+            };
+        }
+        var array = $scope.currentMeter.prototypeCollection.collectionPath;
+        var stopIndex = array.length - 1;
+        if ($scope.detectPathType(array, stopIndex) === "ARRAY") {
+            var keys = $scope.calculatePathArrayKeyOptions(array, stopIndex);
+            if (keys.length === 0) {
+                throw "no keys";
+            }
+            var key = keys[0];
+            var values = $scope.calculatePathArrayValueOptions(key, array, stopIndex);
+            var value = values && values.length ? values[0] : '';
+            var conditions = {};
+            conditions[key] = value;
+            array.push({
+                type: "ARRAY",
+                conditions: conditions,
+                result: key
+            });
+        }
+        else {
+            keys = $scope.calculatePathObjectKeyOptions(array, stopIndex);
+            if (keys.length === 0) {
+                throw "no keys";
+            }
+            array.push({
+                type: "OBJECT",
+                result: keys[0]
+            });
+        }
+    };
+
+    $scope.calculatePathObjectKeyOptions = function (pathArray, stopIndex) {
+        var value = $scope.walkPathArray(pathArray, stopIndex);
+        var result = [];
+        for (key in value) {
+            if (value.hasOwnProperty(key)) {
+                result.push(key);
+            }
+        }
+        return result;
+    };
+
+    $scope.calculatePathArrayKeyOptions = function (pathArray, stopIndex) {
+        var value = $scope.walkPathArray(pathArray, stopIndex);
+        var result = [];
+        for (var i = 0; i < value.length; i++) {
+            var entry = value[i];
+            for (var key in entry) {
+                if (entry.hasOwnProperty(key)) {
+                    result.push(key);
+                }
+            }
+        }
+        return result;
+    };
+
+    $scope.calculatePathArrayValueOptions = function (key, pathArray, stopIndex) {
+        var value = $scope.walkPathArray(pathArray, stopIndex);
+        var result = [];
+        for (var i = 0; i < value.length; i++) {
+            var entry = value[i];
+            if (entry.hasOwnProperty(key) && typeof entry[key] !== "object") {
+                result.push(entry[key]);
+            }
+        }
+        return result;
+    };
+
+    $scope.detectPathType = function (pathArray, stopIndex) {
+        return $scope.detectType($scope.walkPathArray(pathArray, stopIndex));
+    };
+
+    $scope.detectType = function (value) {
+        if (typeof value === "object") {
+            return value instanceof Array ? "ARRAY" : "OBJECT";
+        }
+        return "VALUE";
+    };
+
+    $scope.walkPathArray = function (pathArray, stopIndex) {
+        var input = $scope.currentSample;
+        for (var i = 0; i < pathArray.length && i < stopIndex; i++) {
+            var entry = pathArray[i];
+            input = $scope.walkPath(entry, input);
+        }
+        return input;
+    };
+
+    $scope.walkPath = function (entry, input) {
+        if (entry.type === "ARRAY") {
+            for (var i = 0; i < input.length; i++) {
+                var isValid = true;
+                var sampleEntry = input[i];
+                for (var key in entry.conditions) {
+                    if (!entry.conditions.hasOwnProperty(key)) {
+                        continue;
+                    }
+                    if (sampleEntry[key] !== entry.conditions[key]) {
+                        isValid = false;
+                        break;
+                    }
+                }
+                if (isValid) {
+                    return sampleEntry[entry.result];
+                }
+            }
+            throw "could not extract entry path - array not match";
+        }
+        else if (entry.type === "OBJECT") {
+            return input[entry.result];
+        }
+        return input;
+    };
+
+    $("body").on("change", ".validatable", $scope.validateFields).on("keyup", ".validatable", $scope.validateFields);
+    $scope.$on("$destroy", function () {
+        $("body").off("change", ".validatable", $scope.validateFields).off("keyup", ".validatable", $scope.validateFields);
+    });
+
     $scope.treeConfig = {
         core: {
             check_callback: function(operation, node, nodeParent, nodePosition, more) {
@@ -257,16 +472,16 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
         select_node: function (e, data) {
             if (data.node.type === 'server') {
                 $scope.mode = 'server';
-                $scope.current = $scope.findServer(data.node.data.key);
+                $scope.currentServer = $scope.findServer(data.node.data.key);
                 $scope.$$postDigest(function() {
-                    $("body").find("input").trigger("change");
+                    $(".validatable").trigger("change");
                 });
             }
             else {
                 $scope.mode = 'meter';
-                $scope.current = $scope.findMeter(data.node.data.server, data.node.data.meter);
+                $scope.currentMeter = $scope.findMeter(data.node.data.server, data.node.data.meter);
                 $scope.$$postDigest(function() {
-                    $("body").find("input").trigger("change");
+                    $(".validatable").trigger("change");
                 });
             }
         }
@@ -278,7 +493,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
             continue;
         }
         $scope.treeData.push({
-            id: "server-" + key,
+            id: key,
             parent: "#",
             type: "server",
             text: $rootScope.servers[key].title,
@@ -290,10 +505,9 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
         }
         for (var i = 0; i < $rootScope.servers[key].meters.length; i++) {
             var meter = $rootScope.servers[key].meters[i];
-            meter.id = "meter-" + key + "-" + i;
             $scope.treeData.push({
-                id: "meter-" + key + "-" + i,
-                parent: "server-" + key,
+                id: meter.id,
+                parent: key,
                 type: meter.type.toLowerCase(),
                 text: meter.title,
                 state: {opened: false},
@@ -303,6 +517,36 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
                 }
             });
         }
+    }
+
+    $scope.treeDataFindById = function (id) {
+        for (var i = 0; i < $scope.treeData.length; i++) {
+            var data = $scope.treeData[i];
+            if (data.id === id) {
+                return data;
+            }
+        }
+        return {};
+    };
+
+    $scope.treeDataIndexFindById = function (id) {
+        for (var i = 0; i < $scope.treeData.length; i++) {
+            var data = $scope.treeData[i];
+            if (data.id === id) {
+                return i;
+            }
+        }
+        return null;
+    };
+
+    function guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
     }
 
 }
@@ -538,7 +782,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
     $scope.serverIsUp = true;
 
     $scope.data = [];
-    
+
     $scope.active = true;
 
     $scope.hoveredMeterId = null;
@@ -557,7 +801,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
 
     $("body").on("mouseenter", ".meter", $scope.onMeterMouseEnter).on("mouseleave", ".meter", $scope.onMeterMouseLeave);
 
-    $scope.$on("$destroy", function handler() {
+    $scope.$on("$destroy", function () {
         $scope.active = false;
         $("body").off("mouseenter", ".meter", $scope.onMeterMouseEnter).off("mouseleave", ".meter", $scope.onMeterMouseLeave);
     });

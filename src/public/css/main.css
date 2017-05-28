@@ -174,6 +174,28 @@ body .jstree-node, .jstree-children, .jstree-container-ul {
   margin: 17px 7px 17px 0!important;
   line-height: 26px !important;
 }
+.pending-feedback {
+  animation: spinner 4s cubic-bezier(.75,0,.18,1) infinite;
+}
+@keyframes spinner {
+  50% {
+    transform: rotate(720deg);
+  }
+}
+.edit-page .form-control-feedback {
+  transition: color 300ms ease;
+}
+.edit-page .help-block {
+  color: #ffffff !important;
+}
+@media (min-width: 992px) {
+  .md-no-gutter-right {
+    padding-right: 0;
+  }
+}
+.vertical-button {
+  margin: 10px 0;
+}
 
 
 

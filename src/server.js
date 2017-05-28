@@ -84,6 +84,7 @@ app.post('/login', function (req, res) {
                                 } catch (e) {
                                     continue;
                                 }
+                                meterData.id = guid();
                                 var serverId = meter.server;
                                 if (servers[serverId]) {
                                     if (!servers[serverId].meters) {
@@ -236,4 +237,19 @@ function html(res, filename) {
 
 function randomAvatar() {
     return AVATARS[Math.floor(Math.random() * AVATARS.length)];
+}
+
+
+
+
+/// temp
+
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
 }
