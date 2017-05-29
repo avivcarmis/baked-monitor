@@ -193,8 +193,27 @@ body .jstree-node, .jstree-children, .jstree-container-ul {
     padding-right: 0;
   }
 }
+.top-margin {
+  margin-top: 10px;
+}
 .vertical-button {
   margin: 10px 0;
+}
+.validation-group {
+  border-radius: 6px;
+  border-top: none !important;
+  border-bottom: none !important;
+  padding: 10px 20px;
+  margin: 5px 0;
+}
+.has-success .validation-group {
+  border: 1px solid #a6c733;
+}
+.has-error .validation-group {
+  border: 1px solid #e85656;
+}
+.validation-group .btn-list li {
+  margin-bottom: 0;
 }
 
 

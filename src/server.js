@@ -85,6 +85,7 @@ app.post('/login', function (req, res) {
                                     continue;
                                 }
                                 meterData.id = guid();
+                                meterData.serverId = meter.server;
                                 var serverId = meter.server;
                                 if (servers[serverId]) {
                                     if (!servers[serverId].meters) {
