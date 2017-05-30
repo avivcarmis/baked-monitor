@@ -203,7 +203,7 @@ body .jstree-node, .jstree-children, .jstree-container-ul {
   border-radius: 6px;
   border-top: none !important;
   border-bottom: none !important;
-  padding: 10px 20px;
+  padding: 20px;
   margin: 5px 0;
 }
 .has-success .validation-group {

@@ -86,6 +86,14 @@ app.post('/login', function (req, res) {
                                 }
                                 meterData.id = guid();
                                 meterData.serverId = meter.server;
+                                if (!meterData.prototypeCollection) {
+                                    meterData.prototypeCollection = {
+                                        collectionPath: [],
+                                        titlePath: [],
+                                        titlePrefix: "",
+                                        titleSuffix: ""
+                                    };
+                                }
                                 var serverId = meter.server;
                                 if (servers[serverId]) {
                                     if (!servers[serverId].meters) {

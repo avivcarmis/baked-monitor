@@ -100,12 +100,13 @@
                                 </div>
 
                                 <div ng-if="currentMeter.isPrototype">
-                                    <div class="form-group has-feedback" id="inputMeterCollectionPath">
-                                        <label>Prototype Collection Path</label>
-                                        <div id="prototype-collection-path" class="validation-group">
+
+                                    <div class="form-group has-feedback">
+                                        <label>Prototype Collection Path ({{countPathRecords(currentMeter.prototypeCollection.collectionPath)}})</label>
+                                        <div id="prototype-collection-path" class="validation-group validatable">
                                             <div ng-repeat="entry in currentMeter.prototypeCollection.collectionPath track by $index">
                                                 <div ng-if="detectPathType(currentMeter.prototypeCollection.collectionPath, $index) === 'OBJECT'">
-                                                    <select class="form-control validation-group-inner not-empty" ng-model="entry.result">
+                                                    <select class="form-control validation-group-inner" ng-model="entry.result">
                                                         <option ng-repeat="option in calculatePathObjectKeyOptions(currentMeter.prototypeCollection.collectionPath, $parent.$index)">{{option}}</option>
                                                     </select>
                                                 </div>
@@ -114,20 +115,21 @@
                                                         <label>Conditions</label>
                                                         <div class="{{$index === 0 ? '' : 'top-margin'}}" ng-repeat="(key, value) in entry.conditions">
                                                             <div class="row">
-                                                                <div class="col-sm-5">
-                                                                    <select class="form-control validation-group-inner not-empty" ng-model="key">
-                                                                        <option ng-repeat="option in calculatePathArrayKeyOptions(currentMeter.prototypeCollection.collectionPath, $parent.$index)">{{option}}</option>
-                                                                    </select>
+                                                                <div class="col-sm-{{canRemoveCondition(entry) ? '5' : '6'}}" style="line-height: 32px;">
+                                                                    <!--<select class="form-control validation-group-inner" ng-model="key">-->
+                                                                        <!--<option ng-repeat="option in calculatePathArrayKeyOptions(currentMeter.prototypeCollection.collectionPath, $parent.$index)">{{option}}</option>-->
+                                                                    <!--</select>-->
+                                                                    {{key}}
                                                                 </div>
                                                                 <div class="col-sm-1" style="text-align: center;padding: 0;width: 0;line-height: 32px;margin-left: -4px;">=</div>
                                                                 <div class="col-sm-6">
-                                                                    <select class="form-control validation-group-inner not-empty" ng-model="value">
+                                                                    <select class="form-control validation-group-inner" ng-model="entry[value]">
                                                                         <option ng-repeat="option in calculatePathArrayValueOptions(key, currentMeter.prototypeCollection.collectionPath, $parent.$index)">{{option}}</option>
                                                                     </select>
                                                                 </div>
-                                                                <div class="col-sm-1" style="text-align: right;">
+                                                                <div ng-if="canRemoveCondition(entry)" class="col-sm-1" style="text-align: right;">
                                                                     <ul class="btn-list pull-right" style="padding-top: 0;">
-                                                                        <li ng-if="canRemoveCondition(entry)">
+                                                                        <li>
                                                                             <button type="button" class="btn btn-danger btn-icon" ng-click="removeCondition(entry, key)">
                                                                                 <i class="fa fa-times"></i>
                                                                             </button>
@@ -151,7 +153,7 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Result Key</label>
-                                                        <select class="form-control validation-group-inner not-empty" ng-model="entry.result">
+                                                        <select class="form-control validation-group-inner" ng-model="entry.result">
                                                             <option ng-repeat="option in calculatePathArrayKeyOptions(currentMeter.prototypeCollection.collectionPath, $parent.$index)">{{option}}</option>
                                                         </select>
                                                         <span class="help-block sub-little-text">The key to be extracted from the selected entry.</span>
@@ -161,8 +163,13 @@
                                             <div class="row">
                                                 <div class="col-sm-12">
                                                     <ul class="btn-list pull-right">
+                                                        <li ng-if="currentMeter.prototypeCollection.collectionPath.length > 0">
+                                                            <button type="button" class="btn btn-danger btn-with-icon" ng-click="removePathEntry(currentMeter.prototypeCollection.collectionPath)">
+                                                                <i class="fa fa-list-ul"></i>Remove Last Path Entry
+                                                            </button>
+                                                        </li>
                                                         <li>
-                                                            <button type="button" class="btn btn-default btn-with-icon" ng-click="addCollectionPath()">
+                                                            <button type="button" class="btn btn-default btn-with-icon" ng-click="addPathEntry(currentMeter.prototypeCollection.collectionPath)">
                                                                 <i class="fa fa-list-ul"></i>Add Path Entry
                                                             </button>
                                                         </li>
@@ -173,6 +180,87 @@
                                         <i class="form-control-feedback" aria-hidden="true"></i>
                                         <span class="help-block sub-little-text">Path to the the collection the objects representing the different meters of this prototype.</span>
                                     </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label>Prototype Title Path</label>
+                                        <div id="prototype-title-path" class="validation-group validatable">
+                                            <div ng-repeat="entry in currentMeter.prototypeCollection.titlePath track by $index">
+                                                <div ng-if="detectPathType(currentMeter.prototypeCollection.titlePath, $index, [currentMeter.prototypeCollection.collectionPath, chooseAny]) === 'OBJECT'">
+                                                    <select class="form-control validation-group-inner" ng-model="entry.result">
+                                                        <option ng-repeat="option in calculatePathObjectKeyOptions(currentMeter.prototypeCollection.titlePath, $index, [currentMeter.prototypeCollection.collectionPath, chooseAny])">{{option}}</option>
+                                                    </select>
+                                                </div>
+                                                <div ng-if="detectPathType(currentMeter.prototypeCollection.titlePath, $index, [currentMeter.prototypeCollection.collectionPath, chooseAny]) === 'ARRAY'">
+                                                    <div class="form-group">
+                                                        <label>Conditions</label>
+                                                        <div class="{{$index === 0 ? '' : 'top-margin'}}" ng-repeat="(key, value) in entry.conditions">
+                                                            <div class="row">
+                                                                <div class="col-sm-{{canRemoveCondition(entry) ? '5' : '6'}}" style="line-height: 32px;">
+                                                                    <!--<select class="form-control validation-group-inner" ng-model="key">-->
+                                                                        <!--<option ng-repeat="option in calculatePathArrayKeyOptions(currentMeter.prototypeCollection.titlePath, $index, [currentMeter.prototypeCollection.collectionPath, chooseAny])">{{option}}</option>-->
+                                                                    <!--</select>-->
+                                                                    {{key}}
+                                                                </div>
+                                                                <div class="col-sm-1" style="text-align: center;padding: 0;width: 0;line-height: 32px;margin-left: -4px;">=</div>
+                                                                <div class="col-sm-6">
+                                                                    <select class="form-control validation-group-inner" ng-model="entry[value]" data-shit="{{calculatePathArrayValueOptions(key, currentMeter.prototypeCollection.titlePath, $index, [currentMeter.prototypeCollection.collectionPath, chooseAny])}}">
+                                                                        <option ng-repeat="option in calculatePathArrayValueOptions(key, currentMeter.prototypeCollection.titlePath, $index, [currentMeter.prototypeCollection.collectionPath, chooseAny])">{{option}}</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div ng-if="canRemoveCondition(entry)" class="col-sm-1" style="text-align: right;">
+                                                                    <ul class="btn-list pull-right" style="padding-top: 0;">
+                                                                        <li>
+                                                                            <button type="button" class="btn btn-danger btn-icon" ng-click="removeCondition(entry, key)">
+                                                                                <i class="fa fa-times"></i>
+                                                                            </button>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <span class="help-block sub-little-text">The list of conditions to qualify an entry for selection.</span>
+                                                        <div class="row">
+                                                            <div class="col-sm-12">
+                                                                <ul class="btn-list pull-right">
+                                                                    <li>
+                                                                        <button type="button" class="btn btn-default btn-with-icon" ng-click="addCondition(currentMeter.prototypeCollection.titlePath, $parent.$index)">
+                                                                            <i class="fa fa-plus"></i>Add Condition
+                                                                        </button>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Result Key</label>
+                                                        <select class="form-control validation-group-inner" ng-model="entry.result">
+                                                            <option ng-repeat="option in calculatePathArrayKeyOptions(currentMeter.prototypeCollection.titlePath, $index, [currentMeter.prototypeCollection.collectionPath, chooseAny])">{{option}}</option>
+                                                        </select>
+                                                        <span class="help-block sub-little-text">The key to be extracted from the selected entry.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <ul class="btn-list pull-right">
+                                                        <li ng-if="currentMeter.prototypeCollection.titlePath.length > 0">
+                                                            <button type="button" class="btn btn-danger btn-with-icon" ng-click="removePathEntry(currentMeter.prototypeCollection.titlePath)">
+                                                                <i class="fa fa-list-ul"></i>Remove Last Path Entry
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button type="button" class="btn btn-default btn-with-icon" ng-click="addPathEntry(currentMeter.prototypeCollection.titlePath, [currentMeter.prototypeCollection.collectionPath, chooseAny])">
+                                                                <i class="fa fa-list-ul"></i>Add Path Entry
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">Path from a collection object to the value of it's title.</span>
+                                    </div>
+
                                 </div>
 
                             </div>
