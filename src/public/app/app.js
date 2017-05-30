@@ -20,7 +20,8 @@ angular
     .controller('LoginCtrl', loginCtrl)
     .controller('MonitorCtrl', monitorCtrl)
     .controller('EditCtrl', editCtrl)
-    .controller('ProfileCtrl', profileCtrl);
+    .controller('ProfileCtrl', profileCtrl)
+    .controller('PathGeneratorCtrl', pathGeneratorCtrl);
 
 function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -188,7 +189,130 @@ function profileCtrl($scope, $http, $rootScope, $state, toastr) {
 
 }
 
-function editCtrl($scope, $http, $rootScope, $state, toastr) {
+function pathGeneratorCtrl($scope) {
+
+    $scope.title = $scope.$resolve.data.title;
+    $scope.isLeaf = $scope.$resolve.data.isLeaf;
+    $scope.inSelectedPath = [];
+    for (var i = 0; i < $scope.$resolve.data.current.length; i++) {
+        $scope.inSelectedPath.push($scope.walkPathArray($scope.$resolve.data.current, i, $scope.$resolve.data.pre));
+    }
+    function inSelectedPath(value) {
+        for (var i = 0; i < $scope.inSelectedPath.length; i++) {
+            var entry = $scope.inSelectedPath[i];
+            if (value === entry) {
+                return true;
+            }
+        }
+        return false;
+    }
+    $scope.selected = $scope.walkPathArray(
+        $scope.$resolve.data.current,
+        $scope.$resolve.data.current.length,
+        $scope.$resolve.data.pre
+    );
+    $scope.result = $scope.$resolve.data.current;
+
+    $scope.pathTreeData = [];
+    function createTreeData(key, input, parent, parentNode) {
+        var type = $scope.detectType(input);
+        var node = {
+            id: $scope.pathTreeData.length,
+            parent: parent,
+            type: type.toLowerCase(),
+            text: key + (type !== "VALUE" ? '' : ' (' + trimString(input, 30) + ')'),
+            state: {
+                opened: inSelectedPath(input),
+                selected: $scope.selected === input,
+                disabled: $scope.isLeaf ? type !== "VALUE" : type === "VALUE"
+            },
+            data: {
+                getPath: function (selectedChild) {
+                    var result = parentNode ? parentNode.data.getPath(key) : [];
+                    if (selectedChild) {
+                        if (type === "OBJECT") {
+                            result.push(new PathObjectEntry(selectedChild));
+                        }
+                        else if (type === "ARRAY") {
+                            var child = input[selectedChild];
+                            var childType = $scope.detectType(child);
+                            if (childType !== "OBJECT") {
+                                result.push(new PathObjectEntry(selectedChild));
+                            }
+                            else {
+                                var conditions = {};
+                                for (var childKey in child) {
+                                    if (child.hasOwnProperty(childKey)) {
+                                        var childValue = child[childKey];
+                                        if ($scope.detectType(childValue) === "VALUE") {
+                                            conditions[childKey] = childValue;
+                                        }
+                                    }
+                                }
+                                result.push(new PathArrayEntry(conditions));
+                            }
+                        }
+                    }
+                    return result;
+                }
+            }
+        };
+        $scope.pathTreeData.push(node);
+        if (type !== "VALUE") {
+            for (var currentKey in input) {
+                if (input.hasOwnProperty(currentKey)) {
+                    createTreeData(currentKey, input[currentKey], node.id, node);
+                }
+            }
+        }
+    }
+    createTreeData("root", $scope.walkPathArray([], $scope.$resolve.data.current.length, $scope.$resolve.data.pre), "#");
+
+    function trimString(input, length) {
+        input = input + "";
+        if (input.length <= length) {
+            return input;
+        }
+        return input.substr(0, length - 3) + "...";
+    }
+
+    $scope.pathTreeConfig = {
+        core: {
+            check_callback: true,
+            themes: {
+                dots: true,
+                responsive: false,
+                ellipsis: true,
+                stripes: true
+            }
+        },
+        types: {
+            array: {
+                icon: 'fa fa-list text-primary'
+            },
+            object: {
+                icon: 'fa fa-list text-primary'
+            },
+            value: {
+                icon: 'fa fa-leaf text-primary'
+            }
+        },
+        plugins: ['types']
+    };
+
+    $scope.pathTreeEventsObj = {
+        select_node: function (e, data) {
+            $scope.result = data.node.data.getPath();
+        }
+    };
+
+    $scope.update = function () {
+        $scope.$close($scope.result);
+    };
+
+}
+
+function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
 
     if (typeof $rootScope.servers === "undefined") {
         $rootScope.pendingRedirect = {
@@ -231,7 +355,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
 
     $scope.validate = function (element, callback) {
         try {
-            if (!element.hasClass("validatable") && !element.hasClass("validation-group")) {
+            if (!element.hasClass("validatable")) {
                 return callback(true);
             }
             switch (element.attr("id")) {
@@ -271,11 +395,11 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
                     }
                     callback(element.val());
                     break;
-                case "prototype-collection-path":
+                case "inputMeterPrototypeCollectionPath":
                     var stopIndex = $scope.currentMeter.prototypeCollection.collectionPath.length;
                     callback($scope.detectPathType($scope.currentMeter.prototypeCollection.collectionPath, stopIndex) !== "VALUE");
                     break;
-                case "prototype-title-path":
+                case "inputMeterPrototypeTitlePath":
                     stopIndex = $scope.currentMeter.prototypeCollection.titlePath.length;
                     callback($scope.detectPathType($scope.currentMeter.prototypeCollection.titlePath, stopIndex, [$scope.currentMeter.prototypeCollection.collectionPath, $scope.chooseAny]) === "VALUE");
                     break;
@@ -291,7 +415,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
     $scope.$watch('currentMeter.isPrototype', function (value) {
         if (value) {
             $scope.$$postDigest(function() {
-                $(".validation-group").trigger("change");
+                $scope.validateFields.apply($(".prototype-path"));
             });
         }
     });
@@ -364,123 +488,75 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
         return result;
     };
 
-    $scope.addPathEntry = function (pathArray, prePathArrays) {
-        var stopIndex = pathArray.length;
-        if ($scope.detectPathType(pathArray, stopIndex, prePathArrays) === "ARRAY") {
-            var keys = $scope.calculatePathArrayKeyOptions(pathArray, stopIndex, prePathArrays);
-            if (keys.length === 0) {
-                throw "no keys";
+    $scope.beautifyPath = function (pathArray) {
+        var result = "";
+        for (var i = 0; i < pathArray.length; i++) {
+            var entry = pathArray[i];
+            if (entry.type === "ARRAY") {
+                var conditions = [];
+                for (var key in entry.conditions) {
+                    if (entry.conditions.hasOwnProperty(key)) {
+                        conditions.push(key + ":" + entry.conditions[key]);
+                    }
+                }
+                result += "[" + conditions.join(",") + "]";
             }
-            var key = keys[0];
-            var values = $scope.calculatePathArrayValueOptions(key, pathArray, stopIndex, prePathArrays);
-            var value = values && values.length ? values[0] : '';
-            var conditions = {};
-            conditions[key] = value;
-            pathArray.push({
-                type: "ARRAY",
-                conditions: conditions,
-                result: key
-            });
-        }
-        else {
-            keys = $scope.calculatePathObjectKeyOptions(pathArray, stopIndex, prePathArrays);
-            if (keys.length === 0) {
-                throw "no keys";
-            }
-            pathArray.push({
-                type: "OBJECT",
-                result: keys[0]
-            });
-        }
-        $scope.$$postDigest(function() {
-            $(".validation-group").trigger("change");
-        });
-    };
-
-    $scope.removePathEntry = function (pathArray) {
-        pathArray.splice(pathArray.length - 1);
-        $scope.$$postDigest(function() {
-            $(".validation-group").trigger("change");
-        });
-    };
-
-    $scope.addCondition = function (pathArray, entryIndex) {
-        var keys = $scope.calculatePathArrayKeyOptions(pathArray, entryIndex);
-        if (keys.length === 0) {
-            throw "no keys";
-        }
-        var key = null;
-        for (var i = 0; i < keys.length; i++) {
-            if (!pathArray[entryIndex].conditions.hasOwnProperty(keys[i])) {
-                key = keys[i];
-                break;
+            else {
+                result += "." + entry.result;
             }
         }
-        if (key === null) {
-            toastr.warning("No more unused keys to create a new condition with");
-            return;
-        }
-        var values = $scope.calculatePathArrayValueOptions(key, pathArray, entryIndex);
-        pathArray[entryIndex].conditions[key] = values && values.length ? values[0] : '';
-        $scope.$$postDigest(function() {
-            $(".validation-group").trigger("change");
-        });
+        return result;
     };
 
-    $scope.removeCondition = function (pathEntry, key) {
-        delete pathEntry.conditions[key];
-        $scope.$$postDigest(function() {
-            $(".validation-group").trigger("change");
-        });
+    $scope.editPrototypeCollectionPath = function () {
+        $scope.generatePath(
+            'Prototype Collection',
+            $scope.currentMeter.prototypeCollection.collectionPath,
+            [],
+            false,
+            function (path) {
+                $scope.currentMeter.prototypeCollection.collectionPath = path;
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($(".prototype-path"));
+                });
+            }
+        )
     };
 
-    $scope.canRemoveCondition = function (pathEntry) {
-        var counter = 0;
-        for (var key in pathEntry.conditions) {
-            if (pathEntry.conditions.hasOwnProperty(key)) {
-                if (++counter > 1) {
-                    return true;
+    $scope.editPrototypeTitlePath = function () {
+        $scope.generatePath(
+            'Prototype Title',
+            $scope.currentMeter.prototypeCollection.titlePath,
+            [$scope.currentMeter.prototypeCollection.collectionPath, $scope.chooseAny],
+            true,
+            function (path) {
+                $scope.currentMeter.prototypeCollection.titlePath = path;
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($(".prototype-path"));
+                });
+            }
+        )
+    };
+
+    $scope.generatePath = function (title, pathArray, prePathArrays, isLeaf, callback) {
+        var modal = $uibModal.open({
+            animation: true,
+            templateUrl: 'app/path.html',
+            controller: 'PathGeneratorCtrl',
+            size: 'lg',
+            scope: $scope,
+            resolve: {
+                data: function () {
+                    return {
+                        title: title,
+                        current: pathArray,
+                        pre: prePathArrays,
+                        isLeaf: isLeaf
+                    }
                 }
             }
-        }
-        return false;
-    };
-
-    $scope.calculatePathObjectKeyOptions = function (pathArray, stopIndex, prePathArrays) {
-        var value = $scope.walkPathArray(pathArray, stopIndex, prePathArrays);
-        var result = new Set();
-        for (key in value) {
-            if (value.hasOwnProperty(key)) {
-                result.add(key);
-            }
-        }
-        return result.toArray();
-    };
-
-    $scope.calculatePathArrayKeyOptions = function (pathArray, stopIndex, prePathArrays) {
-        var value = $scope.walkPathArray(pathArray, stopIndex, prePathArrays);
-        var result = new Set();
-        for (var i = 0; i < value.length; i++) {
-            var entry = value[i];
-            for (var key in entry) {
-                if (entry.hasOwnProperty(key)) {
-                    result.add(key);
-                }
-            }
-        }
-        return result.toArray();
-    };
-
-    $scope.calculatePathArrayValueOptions = function (key, pathArray, stopIndex, prePathArrays) {
-        var value = $scope.walkPathArray(pathArray, stopIndex, prePathArrays);
-        var result = new Set();
-        for (var i = 0; i < value.length; i++) {
-            var entry = value[i];
-            if (entry.hasOwnProperty(key) && typeof entry[key] !== "object") {
-                result.add(entry[key]);
-            }
-        }
-        return result.toArray();
+        });
+        modal.result.then(callback);
     };
 
     $scope.detectPathType = function (pathArray, stopIndex, prePathArrays) {
@@ -541,7 +617,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
                     }
                 }
                 if (isValid) {
-                    return sampleEntry[entry.result];
+                    return sampleEntry;
                 }
             }
             throw "could not extract entry path - array not match";
@@ -552,19 +628,13 @@ function editCtrl($scope, $http, $rootScope, $state, toastr) {
         return input;
     };
 
-    $scope.propagateValidation = function () {
-        $(".validation-group").trigger("change");
-    };
-
     $("body")
         .on("change", ".validatable", $scope.validateFields)
-        .on("keyup", ".validatable.on-keypress", $scope.validateFields)
-        .on("change", ".validation-group-inner", $scope.propagateValidation);
+        .on("keyup", ".validatable.on-keypress", $scope.validateFields);
     $scope.$on("$destroy", function () {
         $("body")
             .off("change", ".validatable", $scope.validateFields)
-            .off("keyup", ".validatable.on-keypress", $scope.validateFields)
-            .off("change", ".validation-group-inner", $scope.propagateValidation);
+            .off("keyup", ".validatable.on-keypress", $scope.validateFields);
     });
 
     $scope.treeConfig = {
