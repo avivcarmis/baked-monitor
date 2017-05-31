@@ -193,25 +193,14 @@ function pathGeneratorCtrl($scope) {
 
     $scope.title = $scope.$resolve.data.title;
     $scope.isLeaf = $scope.$resolve.data.isLeaf;
-    $scope.inSelectedPath = [];
-    for (var i = 0; i < $scope.$resolve.data.current.length; i++) {
-        $scope.inSelectedPath.push($scope.walkPathArray($scope.$resolve.data.current, i, $scope.$resolve.data.pre));
-    }
-    function inSelectedPath(value) {
-        for (var i = 0; i < $scope.inSelectedPath.length; i++) {
-            var entry = $scope.inSelectedPath[i];
-            if (value === entry) {
-                return true;
-            }
-        }
-        return false;
-    }
-    $scope.selected = $scope.walkPathArray(
-        $scope.$resolve.data.current,
-        $scope.$resolve.data.current.length,
-        $scope.$resolve.data.pre
-    );
     $scope.result = $scope.$resolve.data.current;
+    try {
+        $scope.selected = $scope.walkPathArray(
+            $scope.$resolve.data.current,
+            $scope.$resolve.data.current.length,
+            $scope.$resolve.data.pre
+        );
+    } catch (e) {}
 
     $scope.pathTreeData = [];
     function createTreeData(key, input, parent, parentNode) {
@@ -222,7 +211,6 @@ function pathGeneratorCtrl($scope) {
             type: type.toLowerCase(),
             text: key + (type !== "VALUE" ? '' : ' (' + trimString(input, 30) + ')'),
             state: {
-                opened: inSelectedPath(input),
                 selected: $scope.selected === input,
                 disabled: $scope.isLeaf ? type !== "VALUE" : type === "VALUE"
             },
@@ -266,7 +254,8 @@ function pathGeneratorCtrl($scope) {
             }
         }
     }
-    createTreeData("root", $scope.walkPathArray([], $scope.$resolve.data.current.length, $scope.$resolve.data.pre), "#");
+    var root = $scope.walkPathArray([], $scope.$resolve.data.current.length, $scope.$resolve.data.pre);
+    createTreeData("root", root, "#");
 
     function trimString(input, length) {
         input = input + "";
@@ -340,11 +329,14 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
     $scope.validateFields = function () {
         $(this).each(function() {
             var element = $(this);
-            if (element.data("lastValue") === element.val()) {
+            if (element.data("lastValue") && element.data("lastValue") === element.val()) {
                 return;
             }
             if (element.val()) {
                 element.data("lastValue", element.val());
+            }
+            else {
+                delete element.data()["lastValue"];
             }
             $scope.setFieldStatus(element, FIELD_STATUS_PENDING);
             $scope.validate(element, function (valid, errorToast) {
@@ -380,7 +372,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
                     break;
                 case "inputServerURL":
                 case "inputServerMethod":
-                    $scope.getSampleData(function (success) {
+                    $scope.getSampleData($scope.currentServer.method, $scope.currentServer.url, function (success) {
                         callback(success, {
                             title: "No Server Response",
                             body: "Try changing the given URL or HTTP Method"
@@ -403,6 +395,57 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
                     stopIndex = $scope.currentMeter.prototypeCollection.titlePath.length;
                     callback($scope.detectPathType($scope.currentMeter.prototypeCollection.titlePath, stopIndex, [$scope.currentMeter.prototypeCollection.collectionPath, $scope.chooseAny]) === "VALUE");
                     break;
+                case "inputMeterPath":
+                    stopIndex = $scope.currentMeter.config.path.length;
+                    callback($scope.detectPathType($scope.currentMeter.config.path, stopIndex, $scope.currentMeterPrePathArray()) === "VALUE");
+                    break;
+                case "inputMeterTableCollectionPath":
+                    stopIndex = $scope.currentMeter.config.table.collectionPath.length;
+                    callback($scope.detectPathType($scope.currentMeter.config.table.collectionPath, stopIndex, $scope.currentMeterPrePathArray()) !== "VALUE");
+                    break;
+                case "inputMeterTableTitlePath":
+                    stopIndex = $scope.currentMeter.config.table.titlePath.length;
+                    callback($scope.detectPathType($scope.currentMeter.config.table.titlePath, stopIndex, $scope.currentMeterPrePathArray()) === "VALUE");
+                    break;
+            }
+            if (element.hasClass("participant-value-path")) {
+                for (var i = 0; i < $scope.currentMeter.config.participants.length; i++) {
+                    if (element.attr("id") === "inputMeterParticipantValuePath" + i) {
+                        var participant = $scope.currentMeter.config.participants[i];
+                        var type = $scope.detectPathType(participant.valuePath, participant.valuePath.length, $scope.participantPrePathArray(participant));
+                        return callback(type === "VALUE");
+                    }
+                }
+            }
+            if (element.hasClass("participant-collection-path")) {
+                for (i = 0; i < $scope.currentMeter.config.participants.length; i++) {
+                    if (element.attr("id") === "inputMeterParticipantCollectionPath" + i) {
+                        participant = $scope.currentMeter.config.participants[i];
+                        type = $scope.detectPathType(participant.collectionPath, participant.collectionPath.length, $scope.currentMeterPrePathArray());
+                        return callback(type !== "VALUE");
+                    }
+                }
+            }
+            if (element.hasClass("participant-title-path")) {
+                for (i = 0; i < $scope.currentMeter.config.participants.length; i++) {
+                    if (element.attr("id") === "inputMeterParticipantTitlePath" + i) {
+                        participant = $scope.currentMeter.config.participants[i];
+                        type = $scope.detectPathType(participant.titlePath, participant.titlePath.length, $scope.participantPrePathArray(participant));
+                        return callback(type === "VALUE");
+                    }
+                }
+            }
+            if (element.hasClass("table-value-path")) {
+                for (i = 0; i < $scope.currentMeter.config.table.values.length; i++) {
+                    if (element.attr("id") === "inputMeterTableValuePath" + i) {
+                        var value = $scope.currentMeter.config.table.values[i];
+                        type = $scope.detectPathType(value.valuePath, value.valuePath.length, $scope.currentMeterPrePathArray());
+                        return callback(type === "VALUE");
+                    }
+                }
+            }
+            if (element.hasClass("always-valid")) {
+                return callback(true);
             }
             if (element.hasClass("not-empty")) {
                 return callback(element.val());
@@ -420,9 +463,35 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
         }
     });
 
-    $scope.getSampleData = function (callback) {
-        var server = $scope.mode === 'server' ? $scope.currentServer : $scope.findServer($scope.currentMeter.serverId);
-        $http({url: server.url, method: server.method})
+    $scope.$watch('currentMeter.type', function (value) {
+        switch (value) {
+            case "GRAPH":
+            case "PIE":
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($(".validatable, .participant-collection-path, .participant-title-path, .participant-value-path"));
+                });
+                break;
+            case "VALUE":
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($(".validatable, #inputMeterPath"));
+                });
+                break;
+            case "TABLE":
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($(".validatable, #inputMeterTableCollectionPath, #inputMeterTableTitlePath, .table-value-path"));
+                });
+                break;
+        }
+    });
+
+    $scope.onParticipantTypeChange = function () {
+        $scope.$$postDigest(function() {
+            $scope.validateFields.apply($(".validatable"));
+        });
+    };
+
+    $scope.getSampleData = function (method, url, callback) {
+        $http({url: url, method: method})
             .then(function (response) {
                 if (response.status === 200) {
                     $scope.currentSample = response.data;
@@ -536,6 +605,127 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
                 });
             }
         )
+    };
+
+    $scope.editParticipantCollectionPath = function (participant, index) {
+        $scope.generatePath(
+            'Participant Collection',
+            participant.collectionPath,
+            $scope.currentMeterPrePathArray(),
+            false,
+            function (path) {
+                participant.collectionPath = path;
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($("#inputMeterParticipantCollectionPath" + index));
+                });
+            }
+        )
+    };
+
+    $scope.editParticipantTitlePath = function (participant, index) {
+        $scope.generatePath(
+            'Participant Title',
+            participant.titlePath,
+            $scope.participantPrePathArray(participant),
+            true,
+            function (path) {
+                participant.titlePath = path;
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($("#inputMeterParticipantTitlePath" + index));
+                });
+            }
+        )
+    };
+
+    $scope.editParticipantValuePath = function (participant, index) {
+        $scope.generatePath(
+            participant.title + ' Data',
+            participant.valuePath,
+            $scope.participantPrePathArray(participant),
+            true,
+            function (path) {
+                participant.valuePath = path;
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($("#inputMeterParticipantValuePath" + index));
+                });
+            }
+        )
+    };
+
+    $scope.editValuePath = function () {
+        $scope.generatePath(
+            $scope.currentMeter.title + ' Data',
+            $scope.currentMeter.config.path,
+            $scope.currentMeterPrePathArray(),
+            true,
+            function (path) {
+                $scope.currentMeter.config.path = path;
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($("#inputMeterPath"));
+                });
+            }
+        )
+    };
+
+    $scope.editTableCollectionPath = function () {
+        $scope.generatePath(
+            $scope.currentMeter.title + ' Collection',
+            $scope.currentMeter.config.table.collectionPath,
+            $scope.currentMeterPrePathArray(),
+            false,
+            function (path) {
+                $scope.currentMeter.config.table.collectionPath = path;
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($("#inputMeterTableCollectionPath"));
+                });
+            }
+        )
+    };
+
+    $scope.editTableTitlePath = function () {
+        var prePathArray = $scope.currentMeterPrePathArray();
+        prePathArray.push($scope.currentMeter.config.table.collectionPath);
+        $scope.generatePath(
+            $scope.currentMeter.title + ' Row Title',
+            $scope.currentMeter.config.table.titlePath,
+            prePathArray,
+            true,
+            function (path) {
+                $scope.currentMeter.config.table.titlePath = path;
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($("#inputMeterTableTitlePath"));
+                });
+            }
+        )
+    };
+
+    $scope.editTableValuePath = function (value, index) {
+        var prePathArray = $scope.currentMeterPrePathArray();
+        prePathArray.push($scope.currentMeter.config.table.collectionPath);
+        $scope.generatePath(
+            'Participant Title',
+            value.valuePath,
+            prePathArray,
+            true,
+            function (path) {
+                value.valuePath = path;
+                $scope.$$postDigest(function() {
+                    $scope.validateFields.apply($("#inputMeterTableValuePath" + index));
+                });
+            }
+        )
+    };
+
+    $scope.currentMeterPrePathArray = function () {
+        return $scope.currentMeter.isPrototype ?
+            [$scope.currentMeter.prototypeCollection.collectionPath, $scope.chooseAny] : [];
+    };
+
+    $scope.participantPrePathArray = function (participant) {
+        var prePathArray = $scope.currentMeterPrePathArray();
+        prePathArray.push(participant.collectionPath);
+        prePathArray.push($scope.chooseAny);
+        return prePathArray;
     };
 
     $scope.generatePath = function (title, pathArray, prePathArrays, isLeaf, callback) {
@@ -680,16 +870,24 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
     $scope.treeEventsObj = {
         select_node: function (e, data) {
             if (data.node.type === 'server') {
-                $scope.mode = 'server';
-                $scope.currentServer = $scope.findServer(data.node.data.key);
+                var server = $scope.findServer(data.node.data.key);
             }
             else {
-                $scope.mode = 'meter';
-                $scope.currentMeter = $scope.findMeter(data.node.data.server, data.node.data.meter);
+                var meter = $scope.findMeter(data.node.data.server, data.node.data.meter);
+                server = $scope.findServer(meter.serverId)
             }
-            $scope.getSampleData();
-            $scope.$$postDigest(function() {
-                $(".validatable").trigger("change");
+            $scope.getSampleData(server.method, server.url, function () {
+                if (data.node.type === 'server') {
+                    $scope.mode = 'server';
+                    $scope.currentServer = server;
+                }
+                else {
+                    $scope.mode = 'meter';
+                    $scope.currentMeter = meter;
+                }
+                $scope.$$postDigest(function() {
+                    $(".validatable").trigger("change");
+                });
             });
         }
     };
@@ -1113,7 +1311,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
                     graphId = "g" + ++graphIndex;
                     graphs.push({
                         id: graphId,
-                        balloonText: $scope.getTitle(participant.titlePath, key, sampleCollection) + ' - [[value]]',
+                        balloonText: $scope.getTitle(participant.titlePath, key, sampleCollection, participant.titlePrefix, participant.titleSuffix) + ' - [[value]]',
                         bullet: 'square',
                         bulletSize: 8,
                         lineColor: $scope.chooseColor(graphIndex),
@@ -1329,7 +1527,7 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
             if (!collection.hasOwnProperty(key)) {
                 continue;
             }
-            var row = [$scope.getTitle(config.table.titlePath, key, collection)];
+            var row = [$scope.getTitle(config.table.titlePath, key, collection, config.table.titlePrefix, config.table.titleSuffix)];
             for (i = 0; i < config.table.values.length; i++) {
                 row.push($scope.getEntryByPath(config.table.values[i].valuePath, collection[key]));
             }

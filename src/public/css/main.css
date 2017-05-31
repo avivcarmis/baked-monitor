@@ -266,6 +266,13 @@ option {
 .has-error .form-control.validatable {
   border: 1px solid #e85656 !important;
 }
+.group {
+  border: 1px solid white;
+  border-radius: 5px;
+  border-top: none;
+  border-bottom: none;
+  padding: 20px;
+}
 
 
 

@@ -108,7 +108,7 @@
                                             <input id="inputMeterPrototypeCollectionPath" type="text" class="prototype-path form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.prototypeCollection.collectionPath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text">Path to the the collection the objects representing the different meters of this prototype.</span>
+                                        <span class="help-block sub-little-text">Path to a collection of objects representing the different meters of this prototype.</span>
                                     </div>
 
                                     <div class="form-group has-feedback">
@@ -118,7 +118,259 @@
                                             <input id="inputMeterPrototypeTitlePath" type="text" class="prototype-path form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.prototypeCollection.titlePath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text">Path from a collection object to the value of it's title.</span>
+                                        <span class="help-block sub-little-text">Path from a collection object to the value of the concrete meter title.</span>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterTitlePrefix">Title Prefix</label>
+                                        <input type="text" class="form-control validatable always-valid" id="inputMeterTitlePrefix" placeholder="Title Prefix" ng-model="currentMeter.prototypeCollection.titlePrefix">
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">An optional text to be prepended to the concrete meter title.</span>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterTitleSuffix">Title Suffix</label>
+                                        <input type="text" class="form-control validatable always-valid" id="inputMeterTitleSuffix" placeholder="Title Suffix" ng-model="currentMeter.prototypeCollection.titleSuffix">
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">An optional text to be appended to the concrete meter title.</span>
+                                    </div>
+
+                                </div>
+
+                                <div ng-if="currentMeter.type === 'GRAPH'">
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterMaxHistory">Max History</label>
+                                        <select id="inputMeterMaxHistory" class="form-control validatable always-valid" ng-model="currentMeter.config.maxHistory">
+                                            <option value="30">30 Seconds (0.5 Minutes)</option>
+                                            <option value="60">60 Seconds (1 Minutes)</option>
+                                            <option value="90">90 Seconds  (1.5 Minutes)</option>
+                                            <option value="120">120 Seconds (2 Minutes)</option>
+                                            <option value="150">150 Seconds (2.5 Minutes)</option>
+                                            <option value="180">180 Seconds (3 Minutes)</option>
+                                            <option value="210">210 Seconds (3.5 Minutes)</option>
+                                            <option value="240">240 Seconds (4 Minutes)</option>
+                                            <option value="270">270 Seconds (4.5 Minutes)</option>
+                                            <option value="300">300 Seconds (5 Minutes)</option>
+                                        </select>
+                                        <span class="help-block sub-little-text">How long ago should the chart data span at any time.</span>
+                                    </div>
+
+                                </div>
+
+                                <div ng-if="currentMeter.type === 'GRAPH' || currentMeter.type === 'PIE'">
+
+                                    <label>Chart Participants</label>
+                                    <span class="help-block sub-little-text">The data to be shown in the chart.</span>
+
+                                    <div ng-repeat="participant in currentMeter.config.participants track by $index" class="group">
+
+                                        <div class="form-group has-feedback">
+                                            <label for="inputMeterParticipantType">Type</label>
+                                            <select id="inputMeterParticipantType" class="form-control validatable always-valid" ng-model="participant.type" ng-change="onParticipantTypeChange()">
+                                                <option value="INSTANCE">Single Participant</option>
+                                                <option value="COLLECTION">Collection of Participants</option>
+                                            </select>
+                                            <span class="help-block sub-little-text">Whether should the current participant be a single one, or a collection of participants.</span>
+                                        </div>
+
+                                        <div ng-if="participant.type === 'INSTANCE'">
+
+                                            <div class="form-group has-feedback">
+                                                <label for="inputMeterParticipantTitle">Participant Name</label>
+                                                <input type="text" class="form-control validatable not-empty" id="inputMeterParticipantTitle" placeholder="Display name of the participant in the chart" ng-model="participant.title">
+                                                <i class="form-control-feedback" aria-hidden="true"></i>
+                                                <span class="help-block sub-little-text">A title representing the meter in the entire monitor UI.</span>
+                                            </div>
+
+                                        </div>
+
+                                        <div ng-if="participant.type === 'COLLECTION'">
+
+                                            <div class="form-group has-feedback">
+                                                <label for="inputMeterParticipantCollectionPath{{$index}}">Participant Collection Path ({{countPathRecords(participant.collectionPath)}})</label>
+                                                <div class="input-group ng-scope">
+                                                    <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editParticipantCollectionPath(participant, $index)">Edit</button></span>
+                                                    <input id="inputMeterParticipantCollectionPath{{$index}}" type="text" class="participant-collection-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.collectionPath)}}" disabled>
+                                                </div>
+                                                <i class="form-control-feedback" aria-hidden="true"></i>
+                                                <span class="help-block sub-little-text">Path to a collection of objects representing the different participants.</span>
+                                            </div>
+
+                                            <div class="form-group has-feedback">
+                                                <label for="inputMeterParticipantTitlePath{{$index}}">Participant Title Path</label>
+                                                <div class="input-group ng-scope">
+                                                    <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editParticipantTitlePath(participant, $index)">Edit</button></span>
+                                                    <input id="inputMeterParticipantTitlePath{{$index}}" type="text" class="participant-title-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.titlePath)}}" disabled>
+                                                </div>
+                                                <i class="form-control-feedback" aria-hidden="true"></i>
+                                                <span class="help-block sub-little-text">Path from a collection object to the value of the concrete participants title.</span>
+                                            </div>
+
+                                            <div class="form-group has-feedback">
+                                                <label for="inputMeterParticipantTitlePrefix{{$index}}">Participant Title Prefix</label>
+                                                <input type="text" class="form-control validatable always-valid" id="inputMeterParticipantTitlePrefix{{$index}}" placeholder="Title Prefix" ng-model="participant.titlePrefix">
+                                                <i class="form-control-feedback" aria-hidden="true"></i>
+                                                <span class="help-block sub-little-text">An optional text to be prepended to the concrete meter title.</span>
+                                            </div>
+
+                                            <div class="form-group has-feedback">
+                                                <label for="inputMeterParticipantTitleSuffix{{$index}}">Participant Title Suffix</label>
+                                                <input type="text" class="form-control validatable always-valid" id="inputMeterParticipantTitleSuffix{{$index}}" placeholder="Title Suffix" ng-model="participant.titleSuffix">
+                                                <i class="form-control-feedback" aria-hidden="true"></i>
+                                                <span class="help-block sub-little-text">An optional text to be appended to the concrete meter title.</span>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="form-group has-feedback">
+                                            <label for="inputMeterParticipantValuePath{{$index}}">Participant Data</label>
+                                            <div class="input-group ng-scope">
+                                                <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editParticipantValuePath(participant, $index)">Edit</button></span>
+                                                <input id="inputMeterParticipantValuePath{{$index}}" type="text" class="participant-value-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.valuePath)}}" disabled>
+                                            </div>
+                                            <i class="form-control-feedback" aria-hidden="true"></i>
+                                            <span class="help-block sub-little-text">Path to the data to be presented.</span>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <ul class="btn-list pull-right">
+                                                    <li>
+                                                        <button type="button" class="btn btn-default btn-with-icon" ng-click="currentMeter.config.participants.splice($index, 1)">
+                                                            <i class="fa fa-list"></i>Remove Participant
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <ul class="btn-list pull-right">
+                                                <li>
+                                                    <button type="button" class="btn btn-default btn-with-icon" ng-click="currentMeter.config.participants.push({})">
+                                                        <i class="fa fa-list"></i>Add Participant
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div ng-if="currentMeter.type === 'VALUE'">
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterParticipantValuePrefix">Value Prefix</label>
+                                        <input type="text" class="form-control validatable always-valid" id="inputMeterParticipantValuePrefix" placeholder="Value Prefix" ng-model="currentMeter.config.prefix">
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">An optional text to be prepended to the meter text.</span>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterParticipantValueSuffix">Value Suffix</label>
+                                        <input type="text" class="form-control validatable always-valid" id="inputMeterParticipantValueSuffix" placeholder="Value Suffix" ng-model="currentMeter.config.suffix">
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">An optional text to be appended to the meter text.</span>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterPath">Data</label>
+                                        <div class="input-group ng-scope">
+                                            <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editValuePath()">Edit</button></span>
+                                            <input id="inputMeterPath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.path)}}" disabled>
+                                        </div>
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">Path to the data to be presented.</span>
+                                    </div>
+
+                                </div>
+
+                                <div ng-if="currentMeter.type === 'TABLE'">
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterTableCollectionPath">Table Collection Path ({{countPathRecords(currentMeter.config.table.collectionPath)}})</label>
+                                        <div class="input-group ng-scope">
+                                            <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editTableCollectionPath()">Edit</button></span>
+                                            <input id="inputMeterTableCollectionPath" type="text" class="participant-collection-path form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.collectionPath)}}" disabled>
+                                        </div>
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">Path to a collection of objects representing the different table rows.</span>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterTableTitlePath">Row Title Path</label>
+                                        <div class="input-group ng-scope">
+                                            <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editTableTitlePath()">Edit</button></span>
+                                            <input id="inputMeterTableTitlePath" type="text" class="participant-title-path form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.titlePath)}}" disabled>
+                                        </div>
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">Path from a collection object to the value of the concrete row title.</span>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterTableTitlePrefix">Row Title Prefix</label>
+                                        <input type="text" class="form-control validatable always-valid" id="inputMeterTableTitlePrefix" placeholder="Row Title Prefix" ng-model="currentMeter.config.table.titlePrefix">
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">An optional text to be prepended to the concrete row title.</span>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label for="inputMeterTableTitleSuffix">Row Title Suffix</label>
+                                        <input type="text" class="form-control validatable always-valid" id="inputMeterTableTitleSuffix" placeholder="Row Title Suffix" ng-model="currentMeter.config.table.titleSuffix">
+                                        <i class="form-control-feedback" aria-hidden="true"></i>
+                                        <span class="help-block sub-little-text">An optional text to be appended to the concrete row title.</span>
+                                    </div>
+
+                                    <label>Table Columns</label>
+                                    <span class="help-block sub-little-text">The columns of the table, each contains a concrete column title and path to the cell data.</span>
+
+                                    <div ng-repeat="value in currentMeter.config.table.values track by $index" class="group">
+
+                                        <div class="form-group has-feedback">
+                                            <label for="inputMeterTableColumnTitle{{$index}}">Column Title</label>
+                                            <input type="text" class="form-control validatable not-empty" id="inputMeterTableColumnTitle{{$index}}" placeholder="The title of the column" ng-model="value.title">
+                                            <i class="form-control-feedback" aria-hidden="true"></i>
+                                            <span class="help-block sub-little-text">A title to be shown in the column table header.</span>
+                                        </div>
+
+                                        <div class="form-group has-feedback">
+                                            <label for="inputMeterTableValuePath{{$index}}">Column Cell Data</label>
+                                            <div class="input-group ng-scope">
+                                                <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editTableValuePath(value, $index)">Edit</button></span>
+                                                <input id="inputMeterTableValuePath{{$index}}" type="text" class="table-value-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.valuePath)}}" disabled>
+                                            </div>
+                                            <i class="form-control-feedback" aria-hidden="true"></i>
+                                            <span class="help-block sub-little-text">Path from a collection object to the value of the column cell.</span>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <ul class="btn-list pull-right">
+                                                    <li>
+                                                        <button type="button" class="btn btn-default btn-with-icon" ng-click="currentMeter.config.table.values.splice($index, 1)">
+                                                            <i class="fa fa-list"></i>Remove Column
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <ul class="btn-list pull-right">
+                                                <li>
+                                                    <button type="button" class="btn btn-default btn-with-icon" ng-click="currentMeter.config.table.values.push({})">
+                                                        <i class="fa fa-list"></i>Add Column
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
 
                                 </div>
