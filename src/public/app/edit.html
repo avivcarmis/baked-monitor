@@ -295,7 +295,7 @@
                                         <label for="inputMeterTableCollectionPath">Table Collection Path ({{countPathRecords(currentMeter.config.table.collectionPath)}})</label>
                                         <div class="input-group ng-scope">
                                             <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editTableCollectionPath()">Edit</button></span>
-                                            <input id="inputMeterTableCollectionPath" type="text" class="participant-collection-path form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.collectionPath)}}" disabled>
+                                            <input id="inputMeterTableCollectionPath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.collectionPath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
                                         <span class="help-block sub-little-text">Path to a collection of objects representing the different table rows.</span>
@@ -305,7 +305,7 @@
                                         <label for="inputMeterTableTitlePath">Row Title Path</label>
                                         <div class="input-group ng-scope">
                                             <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editTableTitlePath()">Edit</button></span>
-                                            <input id="inputMeterTableTitlePath" type="text" class="participant-title-path form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.titlePath)}}" disabled>
+                                            <input id="inputMeterTableTitlePath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.titlePath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
                                         <span class="help-block sub-little-text">Path from a collection object to the value of the concrete row title.</span>
