@@ -42,7 +42,7 @@ function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
         });
     $stateProvider
         .state('edit', {
-            url: '/edit',
+            url: '/edit/:resourceId',
             title: 'Edit Servers',
             templateUrl: 'app/edit.html',
             controller: 'EditCtrl'
@@ -342,26 +342,85 @@ function pathGeneratorCtrl($scope, comparator) {
 
 }
 
-function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
+function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $stateParams) {
 
     if (typeof $rootScope.servers === "undefined") {
         $rootScope.pendingRedirect = {
-            state: $state.current.name
+            state: $state.current.name,
+            params: $stateParams
         };
         return $state.go('login');
     }
 
     $("title").text("Edit Servers - BlueMonitor");
 
-    $scope.findServer = function (key) {
-        return $rootScope.servers[key];
+    $scope.findServer = function (id) {
+        for (var i = 0; i < $rootScope.servers.length; i++) {
+            var server = $rootScope.servers[i];
+            if (server.id === id) {
+                return server;
+            }
+        }
+        return null;
     };
 
-    $scope.findMeter = function (serverKey, meterId) {
-        for (var i = 0; i < $rootScope.servers[serverKey].meters.length; i++) {
-            var meter = $rootScope.servers[serverKey].meters[i];
+    $scope.removeServerInstance = function (id) {
+        for (var i = 0; i < $rootScope.servers.length; i++) {
+            var server = $rootScope.servers[i];
+            if (server.id === id) {
+                $rootScope.servers.splice(i, 1);
+            }
+        }
+    };
+
+    $scope.moveServer = function (id, toIndex) {
+        var index = $scope.findServerIndex(id);
+        if (index === null) {
+            return;
+        }
+        $rootScope.servers.splice(toIndex, 0, $rootScope.servers.splice(index, 1)[0]);
+    };
+
+    $scope.findServerIndex = function (id) {
+        for (var i = 0; i < $rootScope.servers.length; i++) {
+            var server = $rootScope.servers[i];
+            if (server.id === id) {
+                return i;
+            }
+        }
+        return null;
+    };
+
+    $scope.findMeter = function (serverId, meterId) {
+        var server = $scope.findServer(serverId);
+        if (server.meters) {
+            for (var i = 0; i < server.meters.length; i++) {
+                var meter = server.meters[i];
+                if (meter.id === meterId) {
+                    return meter;
+                }
+            }
+        }
+        return null;
+    };
+
+    $scope.moveMeter = function (serverId, meterId, toIndex) {
+        var server = $scope.findServer(serverId);
+        if (!server.meters) {
+            return;
+        }
+        var index = $scope.findMeterIndex(server.meters, meterId);
+        if (index === null) {
+            return;
+        }
+        server.meters.splice(toIndex, 0, server.meters.splice(index, 1)[0]);
+    };
+
+    $scope.findMeterIndex = function (meters, meterId) {
+        for (var i = 0; i < meters.length; i++) {
+            var meter = meters[i];
             if (meter.id === meterId) {
-                return meter;
+                return i;
             }
         }
         return null;
@@ -397,17 +456,13 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
                     break;
                 case "inputMeterType":
                     if (element.val()) {
-                        $scope.$apply(function () {
-                            $scope.treeDataFindById($scope.currentMeter.id).type = element.val().toLowerCase();
-                        });
+                        $('#tree').jstree(true).set_type($scope.currentMeter.id, element.val().toLowerCase());
                     }
                     callback(true);
                     break;
                 case "inputServerTitle":
                     if (element.val()) {
-                        $scope.$apply(function () {
-                            $scope.treeDataFindById($scope.currentServer.id).text = element.val();
-                        });
+                        $('#tree').jstree("set_text", $scope.currentServer.id, element.val());
                     }
                     callback(element.val());
                     break;
@@ -422,9 +477,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
                     break;
                 case "inputMeterTitle":
                     if (element.val()) {
-                        $scope.$apply(function () {
-                            $scope.treeDataFindById($scope.currentMeter.id).text = element.val();
-                        });
+                        $('#tree').jstree("set_text", $scope.currentMeter.id, element.val());
                     }
                     callback(element.val());
                     break;
@@ -480,7 +533,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
                 for (i = 0; i < $scope.currentMeter.config.table.values.length; i++) {
                     if (element.attr("id") === "inputMeterTableValuePath" + i) {
                         var value = $scope.currentMeter.config.table.values[i];
-                        type = $scope.detectPathType(value.valuePath, value.valuePath.length, $scope.currentMeterPrePathArray());
+                        type = $scope.detectPathType(value.valuePath, value.valuePath.length, $scope.tablePrePathArray());
                         return callback(type === "VALUE");
                     }
                 }
@@ -558,6 +611,9 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
     };
 
     $scope.getSampleData = function (method, url, callback) {
+        if (url === "") {
+            return callback(false);
+        }
         $http({url: url, method: method})
             .then(function (response) {
                 if (response.status === 200) {
@@ -784,6 +840,43 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
         )
     };
 
+    $scope.addColumn = function () {
+        var index = $scope.currentMeter.config.table.values.length;
+        $scope.currentMeter.config.table.values.push({
+            title: "",
+            valuePath: []
+        });
+        $scope.$$postDigest(function() {
+            $scope.validateFields.apply($(".validatable, #inputMeterTableValuePath" + index));
+        });
+    };
+
+    $scope.removeColumn = function (index) {
+        $scope.currentMeter.config.table.values.splice(index, 1);
+        $scope.$$postDigest(function() {
+            $scope.validateFields.apply($(".validatable, #inputMeterTableValuePath" + index));
+        });
+    };
+
+    $scope.addParticipant = function () {
+        var index = $scope.currentMeter.config.participants.length;
+        $scope.currentMeter.config.participants.push({
+            type: "INSTANCE",
+            title: "",
+            valuePath: []
+        });
+        $scope.$$postDigest(function() {
+            $scope.validateFields.apply($(".validatable, #inputMeterParticipantValuePath" + index));
+        });
+    };
+
+    $scope.removeParticipant = function (index) {
+        $scope.currentMeter.config.participants.splice(index, 1);
+        $scope.$$postDigest(function() {
+            $scope.validateFields.apply($(".validatable, #inputMeterParticipantValuePath" + index));
+        });
+    };
+
     $scope.currentMeterPrePathArray = function () {
         return $scope.currentMeter.isPrototype ?
             [$scope.currentMeter.prototypeCollection.collectionPath, $scope.chooseAny] : [];
@@ -906,8 +999,8 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
 
     $scope.treeConfig = {
         core: {
-            check_callback: function(operation, node, nodeParent, nodePosition, more) {
-                // 'create_node'/'rename_node'/'delete_node'/'move_node'/'copy_node'
+            multiple: false,
+            check_callback: function(operation, node, nodeParent) {
                 if (operation === "move_node") {
                     if (node.type === "server") {
                         return nodeParent.type === "#";
@@ -941,11 +1034,200 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
                 icon: 'tree-icon fa fa-info'
             }
         },
-        "plugins": ["dnd", 'types']
+        contextmenu: {
+            select_node: false,
+            show_at_node: false,
+            items: function (node) {
+                if (node.type === 'server') {
+                    return {
+                        addMeter: {
+                            label: "Add new meter",
+                            title: "Add a new meter to this server",
+                            icon: "fa fa-area-chart",
+                            separator_after: true,
+                            action: function () {$scope.addMeter(node.data.key)}
+                        },
+                        addServer: {
+                            label: "Add new server",
+                            title: "Add a new server after this one",
+                            icon: "fa fa-server",
+                            separator_after: true,
+                            action: $scope.addNewServer
+                        },
+                        duplicate: {
+                            label: "Duplicate server",
+                            title: "Create another server identical to this one",
+                            icon: "fa fa-clone",
+                            action: function () {$scope.duplicateServer(node.data.key)}
+                        },
+                        remove: {
+                            label: "Remove server",
+                            title: "Remove this server and all it's meters",
+                            icon: "fa fa-trash-o",
+                            action: function () {$scope.removeServer(node.data.key)}
+                        }
+                    };
+                }
+                return {
+                    addMeter: {
+                        label: "Add new meter",
+                        title: "Add a new meter after this one",
+                        icon: "fa fa-area-chart",
+                        separator_after: true,
+                        action: function () {$scope.addMeter(node.data.server)}
+                    },
+                    duplicate: {
+                        label: "Duplicate meter",
+                        title: "Create another meter identical to this one",
+                        icon: "fa fa-clone",
+                        action: function () {$scope.duplicateMeter(node.data.server, node.data.meter)}
+                    },
+                    remove: {
+                        label: "Remove meter",
+                        title: "Remove this meter",
+                        icon: "fa fa-trash-o",
+                        action: function () {$scope.removeMeter(node.data.server, node.data.meter)}
+                    }
+                };
+            }
+        },
+        plugins: ['dnd', 'types', 'contextmenu']
+    };
+
+    $scope.removeMeter = function (serverId, meterId) {
+        var server = $scope.findServer(serverId);
+        if (!server.meters) {
+            return;
+        }
+        for (var i = 0; i < server.meters.length; i++) {
+            if (server.meters[i].id == meterId) {
+                server.meters.splice(i, 1);
+                break;
+            }
+        }
+        $("#tree").jstree("delete_node", meterId, serverId);
+        $scope.$$postDigest(function () {
+            $("#tree").jstree("deselect_all").jstree("select_node", serverId);
+        });
+    };
+
+    $scope.removeServer = function (serverId) {
+        var idsToRemove = [{id: serverId, parent: "#"}];
+        var server = $scope.findServer(serverId);
+        if (server.meters) {
+            for (var i = 0; i < server.meters.length; i++) {
+                idsToRemove.push({id: server.meters[i].id, parent: serverId});
+            }
+        }
+        $scope.removeServerInstance(serverId);
+        for (i = 0; i < idsToRemove.length; i++) {
+            var entry = idsToRemove[i];
+            $("#tree").jstree("delete_node", entry.id, entry.parent);
+        }
+        if ($rootScope.servers.length > 0) {
+            $scope.$$postDigest(function () {
+                $("#tree").jstree("deselect_all").jstree("select_node", $rootScope.servers[0].id);
+            });
+        }
+        else {
+            $scope.mode = null;
+            $scope.currentServer = null;
+            $scope.currentMeter = null;
+        }
+    };
+
+    $scope.duplicateMeter = function (serverId, meterId) {
+        var currentMeter = $scope.findMeter(serverId, meterId);
+        var newMeter = cloneObject(currentMeter);
+        newMeter.id = guid();
+        newMeter.title = "Copy of " + newMeter.title;
+        var server = $scope.findServer(serverId);
+        if (!server.meters) {
+            server.meters = [];
+        }
+        server.meters.push(newMeter);
+        $("#tree").jstree("create_node", server.id, $scope.meterToTreeNode(server.id, newMeter), "last");
+        $scope.$$postDigest(function () {
+            $('#tree').jstree("deselect_all").jstree("select_node", newMeter.id);
+        });
+    };
+
+    $scope.duplicateServer = function (serverId) {
+        var newServer = cloneObject($scope.findServer(serverId));
+        newServer.id = guid();
+        newServer.title = "Copy of " + newServer.title;
+        $rootScope.servers.push(newServer);
+        if (newServer.meters) {
+            for (var i = 0; i < newServer.meters.length; i++) {
+                newServer.meters[i].id = guid();
+            }
+        }
+        var allTreeNodes = $scope.serverToTreeNodes(newServer);
+        for (i = 0; i < allTreeNodes.length; i++) {
+            $("#tree").jstree("create_node", allTreeNodes[i].parent, allTreeNodes[i], "last");
+        }
+        $scope.$$postDigest(function () {
+            $('#tree').jstree("deselect_all").jstree("select_node", newServer.id);
+        });
+    };
+
+    $scope.addMeter = function (serverId) {
+        var server = $scope.findServer(serverId);
+        if (!server.meters) {
+            server.meters = [];
+        }
+        var meter = $scope.newMeter(serverId);
+        server.meters.push(meter);
+        $("#tree").jstree("create_node", serverId, $scope.meterToTreeNode(serverId, meter), "last");
+        $scope.$$postDigest(function () {
+            $("#tree").jstree("deselect_all").jstree("select_node", meter.id);
+        });
+    };
+
+    $scope.addNewServer = function () {
+        var server = {
+            id: guid(),
+            user: $rootScope.email,
+            title: "New Server",
+            url: "",
+            method: "GET",
+            meters: []
+        };
+        $rootScope.servers.push(server);
+        $("#tree").jstree("create_node", "#", $scope.serverToTreeNodes(server)[0], "last");
+        $scope.$$postDigest(function () {
+            $("#tree").jstree("deselect_all").jstree("select_node", server.id);
+        });
+        return server.id;
+    };
+
+    $scope.newMeter = function (serverId) {
+        return {
+            id: guid(),
+            serverId: serverId,
+            title: "New Meter",
+            width: 12,
+            type: "GRAPH",
+            config: {
+                maxHistory: 120,
+                participants: []
+            }
+        };
     };
 
     $scope.treeEventsObj = {
         select_node: function (e, data) {
+            if ($scope.pendingSelectError) {
+                $scope.pendingSelectError = false;
+                return;
+            }
+            if ($(".has-error").length > 0) {
+                toastr.error("Fix all errors before selecting another meter or server");
+                $scope.pendingSelectError = true;
+                $("#tree").jstree("deselect_all").jstree("select_node", $scope.selected);
+                return;
+            }
+            $scope.selected = data.node.id;
             if (data.node.type === 'server') {
                 var server = $scope.findServer(data.node.data.key);
             }
@@ -966,60 +1248,68 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal) {
                     $(".validatable").trigger("change");
                 });
             });
+        },
+        move_node: function (e, data) {
+            if (data.node.type === 'server') {
+                $scope.moveServer(data.node.data.key, data.position);
+            }
+            else {
+                $scope.moveMeter(data.node.data.server, data.node.data.meter, data.position);
+            }
+        },
+        ready: function () {
+            if (!$stateParams.resourceId) {
+                $scope.$$postDigest($scope.addNewServer);
+            }
+            else {
+                $("#tree").jstree("select_node", $stateParams.resourceId);
+            }
         }
+    };
+
+    $scope.serverToTreeNodes = function (server) {
+        var result = [];
+        result.push({
+            id: server.id,
+            parent: "#",
+            type: "server",
+            text: server.title,
+            state: {selected: false},
+            data: {key: server.id}
+        });
+        if (server.meters) {
+            for (var i = 0; i < server.meters.length; i++) {
+                result.push($scope.meterToTreeNode(server.id, server.meters[i]));
+            }
+        }
+        return result;
+    };
+
+    $scope.meterToTreeNode = function (serverId, meter) {
+        return {
+            id: meter.id,
+            parent: serverId,
+            type: meter.type.toLowerCase(),
+            text: meter.title,
+            state: {selected: false},
+            data: {
+                server: serverId,
+                meter: meter.id
+            }
+        };
     };
 
     $scope.treeData = [];
-    for (var key in $rootScope.servers) {
-        if (!$rootScope.servers.hasOwnProperty(key)) {
-            continue;
-        }
-        $scope.treeData.push({
-            id: key,
-            parent: "#",
-            type: "server",
-            text: $rootScope.servers[key].title,
-            state: {opened: false},
-            data: {key: key}
-        });
-        if (!$rootScope.servers[key].meters) {
-            continue;
-        }
-        for (var i = 0; i < $rootScope.servers[key].meters.length; i++) {
-            var meter = $rootScope.servers[key].meters[i];
-            $scope.treeData.push({
-                id: meter.id,
-                parent: key,
-                type: meter.type.toLowerCase(),
-                text: meter.title,
-                state: {opened: false},
-                data: {
-                    server: key,
-                    meter: meter.id
-                }
-            });
+    for (var i = 0; i < $rootScope.servers.length; i++) {
+        var nodes = $scope.serverToTreeNodes($rootScope.servers[i]);
+        for (var j = 0; j < nodes.length; j++) {
+            $scope.treeData.push(nodes[j]);
         }
     }
 
-    $scope.treeDataFindById = function (id) {
-        for (var i = 0; i < $scope.treeData.length; i++) {
-            var data = $scope.treeData[i];
-            if (data.id == id) {
-                return data;
-            }
-        }
-        return {};
-    };
-
-    $scope.treeDataIndexFindById = function (id) {
-        for (var i = 0; i < $scope.treeData.length; i++) {
-            var data = $scope.treeData[i];
-            if (data.id === id) {
-                return i;
-            }
-        }
-        return null;
-    };
+    function cloneObject(object) {
+        return JSON.parse(JSON.stringify(object));
+    }
 
     function guid() {
         function s4() {
@@ -1100,19 +1390,17 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state, toastr) 
                         $rootScope.user = response.data.result;
                         $rootScope.servers = $rootScope.user.servers;
                         baSidebarService.clearStaticItems();
-                        for (var key in $rootScope.servers) {
-                            if (!$rootScope.servers.hasOwnProperty(key)) {
-                                continue;
-                            }
+                        for (var i = 0; i < $rootScope.servers.length; i++) {
+                            var server = $rootScope.servers[i];
                             baSidebarService.addStaticItem({
-                                title: $rootScope.servers[key].title,
+                                title: server.title,
                                 server: {
-                                    title: $rootScope.servers[key].title,
-                                    url: $rootScope.servers[key].url,
-                                    method: $rootScope.servers[key].method
+                                    title: server.title,
+                                    url: server.url,
+                                    method: server.method
                                 },
                                 stateRef: 'monitor',
-                                stateParams: {serverId: key}
+                                stateParams: {serverId: server.id}
                             });
                         }
                         baSidebarService.addStaticItem({
@@ -1211,13 +1499,12 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state, toastr) 
             $rootScope.pendingRedirect = null;
             return;
         }
-        for (var key in $rootScope.servers) {
-            if (!$rootScope.servers.hasOwnProperty(key)) {
-                continue;
-            }
-            return $state.go('monitor', {serverId: key});
+        if ($rootScope.servers.length > 0) {
+            $state.go('monitor', {serverId: $rootScope.servers[0].id});
         }
-        $state.go('new');
+        else {
+            $state.go('new');
+        }
     };
 
     if ($rootScope.loggedIn) {
@@ -1254,7 +1541,14 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
         return $state.go('new');
     }
 
-    $scope.server = $rootScope.servers[$scope.serverId];
+    $scope.server = null;
+    for (var i = 0; i < $rootScope.servers.length; i++) {
+        var server = $rootScope.servers[i];
+        if (server.id == $scope.serverId) {
+            $scope.server = server;
+            break;
+        }
+    }
     if (!$scope.server) {
         return $state.go('new');
     }

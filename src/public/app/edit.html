@@ -15,7 +15,13 @@
 
                         <div class="col-md-5">
                             <h3 class="with-line" style="padding-top: 0;">Servers Tree</h3>
-                            <div js-tree="treeConfig" ng-model="treeData" tree-events-obj="treeEventsObj"></div>
+                            <div id="tree" js-tree="treeConfig" ng-model="treeData" tree-events-obj="treeEventsObj"></div>
+                            <div ng-if="servers.length === 0" style="text-align: center; padding: 30px 20px;">
+                                <p>You have not created any monitored servers.</p>
+                                <button type="button" class="btn btn-default btn-with-icon btn-lg blinker" ng-click="addNewServer()">
+                                    <i class="fa fa-plus-circle"></i>Add Your First Server!
+                                </button>
+                            </div>
                         </div>
 
                         <div class="col-md-7">
@@ -237,7 +243,7 @@
                                             <div class="col-md-12">
                                                 <ul class="btn-list pull-right">
                                                     <li>
-                                                        <button type="button" class="btn btn-default btn-with-icon" ng-click="currentMeter.config.participants.splice($index, 1)">
+                                                        <button type="button" class="btn btn-default btn-with-icon" ng-click="removeParticipant($index)">
                                                             <i class="fa fa-list"></i>Remove Participant
                                                         </button>
                                                     </li>
@@ -251,7 +257,7 @@
                                         <div class="col-md-12">
                                             <ul class="btn-list pull-right">
                                                 <li>
-                                                    <button type="button" class="btn btn-default btn-with-icon" ng-click="currentMeter.config.participants.push({})">
+                                                    <button type="button" class="btn btn-default btn-with-icon" ng-click="addParticipant()">
                                                         <i class="fa fa-list"></i>Add Participant
                                                     </button>
                                                 </li>
@@ -281,7 +287,7 @@
                                         <label for="inputMeterPath">Data</label>
                                         <div class="input-group ng-scope">
                                             <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editValuePath()">Edit</button></span>
-                                            <input id="inputMeterPath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.path)}}" disabled>
+                                            <input id="inputMeterPath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.path)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
                                         <span class="help-block sub-little-text">Path to the data to be presented.</span>
@@ -341,7 +347,7 @@
                                             <label for="inputMeterTableValuePath{{$index}}">Column Cell Data</label>
                                             <div class="input-group ng-scope">
                                                 <span class="input-group-btn"><button class="btn btn-primary" type="button" ng-click="editTableValuePath(value, $index)">Edit</button></span>
-                                                <input id="inputMeterTableValuePath{{$index}}" type="text" class="table-value-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.valuePath)}}" disabled>
+                                                <input id="inputMeterTableValuePath{{$index}}" type="text" class="table-value-path form-control with-primary-addon validatable" value="{{beautifyPath(value.valuePath)}}" disabled>
                                             </div>
                                             <i class="form-control-feedback" aria-hidden="true"></i>
                                             <span class="help-block sub-little-text">Path from a collection object to the value of the column cell.</span>
@@ -351,7 +357,7 @@
                                             <div class="col-md-12">
                                                 <ul class="btn-list pull-right">
                                                     <li>
-                                                        <button type="button" class="btn btn-default btn-with-icon" ng-click="currentMeter.config.table.values.splice($index, 1)">
+                                                        <button type="button" class="btn btn-default btn-with-icon" ng-click="removeColumn($index)">
                                                             <i class="fa fa-list"></i>Remove Column
                                                         </button>
                                                     </li>
@@ -365,7 +371,7 @@
                                         <div class="col-md-12">
                                             <ul class="btn-list pull-right">
                                                 <li>
-                                                    <button type="button" class="btn btn-default btn-with-icon" ng-click="currentMeter.config.table.values.push({})">
+                                                    <button type="button" class="btn btn-default btn-with-icon" ng-click="addColumn()">
                                                         <i class="fa fa-list"></i>Add Column
                                                     </button>
                                                 </li>

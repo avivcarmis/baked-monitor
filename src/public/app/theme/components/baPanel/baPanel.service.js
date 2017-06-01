@@ -3,28 +3,32 @@
  * created on 23.12.2015
  */
 (function () {
-  'use strict';
+    'use strict';
 
-  angular.module('BlurAdmin.theme')
-      .factory('baPanel', baPanel);
+    angular.module('BlurAdmin.theme')
+        .factory('baPanel', baPanel);
 
-  /** @ngInject */
-  function baPanel() {
+    /** @ngInject */
+    function baPanel() {
 
-    /** Base baPanel directive */
-    return {
-      restrict: 'A',
-      transclude: true,
-      template: function(elem, attrs) {
-        var res = '<div class="panel-body" ng-transclude></div>';
-        if (attrs.baPanelTitle) {
-          var titleTpl = '<div class="panel-heading clearfix"><div class="text-danger meter-refresh-warning">NOT REFRESHING</div><h3 class="panel-title">' + attrs.baPanelTitle + '</h3></div>';
-          res = titleTpl + res; // title should be before
-        }
+        /** Base baPanel directive */
+        return {
+            restrict: 'A',
+            transclude: true,
+            template: function (elem, attrs) {
+                var res = '<div class="panel-body" ng-transclude></div>';
+                var toAdd = "";
+                if (attrs.baPanelMeterId) {
+                    toAdd = '<span class="meter-refresh-warning"><span class="text-danger warning">not refreshing</span>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="/edit/' + attrs.baPanelMeterId + '">click to edit</a></span>';
+                }
+                if (attrs.baPanelTitle) {
+                    var titleTpl = '<div class="panel-heading clearfix">' + toAdd + '<h3 class="panel-title">' + attrs.baPanelTitle + '</h3></div>';
+                    res = titleTpl + res; // title should be before
+                }
 
-        return res;
-      }
-    };
-  }
+                return res;
+            }
+        };
+    }
 
 })();

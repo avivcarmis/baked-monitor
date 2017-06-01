@@ -6,7 +6,26 @@
     <div class="al-main">
         <div class="al-content">
 
-            <content-top></content-top>
+            <div class="content-top clearfix">
+
+                <div class="row">
+
+                    <div class="col-sm-7">
+                        <h1 class="al-title" style="line-height: 34px;">Monitor {{server.title}}</h1>
+                    </div>
+                    <div class="col-sm-5">
+                        <ul class="btn-list pull-right" style="padding: 0;">
+                            <li style="margin: 0;">
+                                <a href="/edit/{{serverId}}" class="btn btn-default btn-with-icon">
+                                    <i class="fa fa-cog" aria-hidden="true"></i>Edit This Server
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
 
             <div ng-if="serverIsUp" class="widgets" autoscroll="true" autoscroll-body-top>
                 <div class="row">
@@ -15,6 +34,7 @@
                          class="meter col-md-{{meter.width}}"
                          ba-panel
                          ba-panel-title="{{meter.title}}"
+                         ba-panel-meter-id="{{meter.id}}"
                          ba-panel-class="with-scroll">
                         <div id="meter{{$index}}" class="admin-chart"></div>
                     </div>

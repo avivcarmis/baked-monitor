@@ -12,6 +12,13 @@
   position: absolute;
   right: 22px;
   font-weight: bold;
+  text-transform: uppercase;
+  z-index: 1;
+}
+.meter-refresh-warning .warning {
+  animation: blinker 1350ms linear infinite;
+}
+.blinker {
   animation: blinker 1350ms linear infinite;
 }
 @keyframes blinker {
@@ -165,6 +172,9 @@ option {
 .edit-page .jstree-node, .jstree-children, .jstree-container-ul {
   overflow: hidden;
 }
+.edit-page .jstree-default .jstree-context {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+}
 .tree-icon {
   background-color: rgba(255, 255, 255, 0.43) !important;
   border-radius: 50%;
@@ -272,6 +282,16 @@ option {
   border-top: none;
   border-bottom: none;
   padding: 20px;
+}
+.btn.btn-default {
+  border-width: 1px;
+  color: #ffffff;
+  background: transparent;
+  border-color: #ffffff;
+}
+.btn.btn-default:active, .btn.btn-default:target {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #ffffff;
 }
 
 

@@ -14,6 +14,7 @@ var INDEX_PAGES = [
     "/register",
     "/new",
     "/edit",
+    "/edit/*",
     "/profile"
 ];
 var AVATARS = [
@@ -102,7 +103,12 @@ app.post('/login', function (req, res) {
                                     servers[serverId].meters.push(meterData);
                                 }
                             }
-                            user.servers = servers;
+                            user.servers = [];
+                            for (var key in servers) {
+                                if (servers.hasOwnProperty(key)) {
+                                    user.servers.push(servers[key]);
+                                }
+                            }
                             delete user.password;
                             res.send(new APIResponse(true, user));
                         }
