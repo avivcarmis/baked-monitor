@@ -34,13 +34,6 @@ function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
             controller: 'LoginCtrl'
         });
     $stateProvider
-        .state('register', {
-            url: '/register',
-            title: 'Register a New Profile - BlurMonitor',
-            templateUrl: 'app/register.html',
-            controller: 'LoginCtrl'
-        });
-    $stateProvider
         .state('edit', {
             url: '/edit/:resourceId',
             title: 'Edit Servers',
@@ -109,7 +102,7 @@ function comparatorFactory() {
 
 function profileCtrl($scope, $http, $rootScope, $state, toastr) {
 
-    if (typeof $rootScope.servers === "undefined") {
+    if (typeof $rootScope.profile === "undefined") {
         $rootScope.pendingRedirect = {
             state: $state.current.name
         };
@@ -118,118 +111,99 @@ function profileCtrl($scope, $http, $rootScope, $state, toastr) {
 
     $("title").text("Edit Profile - BlueMonitor");
 
-    $scope.avatars = [
-        {name: "abraham", title: "Neat Abraham"},
-        {name: "helen", title: "Organized Helen"},
-        {name: "holly", title: "Genius Holly"},
-        {name: "jim", title: "Furious Jim"},
-        {name: "jones", title: "Mr. Jones"},
-        {name: "leroy", title: "Experienced Leroy"},
-        {name: "natalie", title: "Vigorous Natalie"},
-        {name: "sandra", title: "Sweet Sandra"}
-    ];
     $scope.avatar = 0;
-    for (var i = 0; i < $scope.avatars.length; i++) {
-        var current = $scope.avatars[i];
-        if (current.name === $rootScope.user.avatar) {
+    for (var i = 0; i < $rootScope.AVATARS.length; i++) {
+        var current = $rootScope.AVATARS[i];
+        if (current.name === $rootScope.profile.avatar) {
             $scope.avatar = i;
             break;
         }
     }
-
-    $scope.colors = [
-        '#209e91',
-        '#2dacd1',
-        '#90b900',
-        '#dfb81c',
-        '#e85656',
-        "#a5a5a5",
-        "#505050",
-        "#ececec"
-    ];
     $scope.color = 0;
-    for (i = 0; i < $scope.colors.length; i++) {
-        current = $scope.colors[i];
-        if (current === $rootScope.user.color) {
+    for (i = 0; i < $rootScope.COLORS.length; i++) {
+        current = $rootScope.COLORS[i];
+        if (current === $rootScope.profile.color) {
             $scope.color = i;
             break;
         }
     }
 
     $scope.nextAvatar = function () {
-        $scope.avatar = ($scope.avatar + 1) % $scope.avatars.length;
+        $scope.avatar = ($scope.avatar + 1) % $rootScope.AVATARS.length;
     };
 
     $scope.nextColor = function () {
-        $scope.color = ($scope.color + 1) % $scope.colors.length;
+        $scope.color = ($scope.color + 1) % $rootScope.COLORS.length;
     };
 
     $scope.update = function () {
-        var oldPassword = $("#oldPassword");
-        var newPassword = $("#inputPassword");
-        var confirmPassword = $("#inputConfirmPassword");
-        if (confirmPassword.val() !== newPassword.val()) {
-            $scope.setFieldError(newPassword, true);
-            toastr.error("Passwords don't match");
-            return;
+        if ($(".has-error").length > 0) {
+            return toastr.error("Fix all errors before moving on.", "Oops!");
         }
-        $scope.setFieldError(newPassword, false);
-        if (newPassword.val() && !oldPassword.val()) {
-            $scope.setFieldError(oldPassword, true);
-            toastr.error("Old password is missing", "Missing Field");
-            return;
+        var redirect = $rootScope.firstProfileUpdate;
+        $rootScope.firstProfileUpdate = false;
+        $rootScope.profile.name = $("#inputProfileName").val();
+        $rootScope.profile.avatar = $rootScope.AVATARS[$scope.avatar].name;
+        $rootScope.profile.color = $rootScope.COLORS[$scope.color];
+        $rootScope.saveProfile();
+        toastr.success("Profile updated");
+        if (redirect) {
+            $state.go('edit');
         }
-        var data = {
-            email: $rootScope.user.email,
-            avatar: $scope.avatars[$scope.avatar].name,
-            color: $scope.colors[$scope.color],
-            fname: $("#inputFirstName").val(),
-            lname: $("#inputLastName").val()
-        };
-        if (confirmPassword.val()) {
-            data.oldPassword = oldPassword.val();
-            data.newPassword = newPassword.val();
-        }
-        $http({
-            method: 'POST',
-            url: '/update_profile',
-            data: JSON.stringify(data)
-        })
-            .then(
-                function (response) {
-                    if (response.status !== 200 || !response.data) {
-                        toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
-                    }
-                    else if (!response.data.success) {
-                        toastr.error(response.data.error.body, response.data.error.title);
-                    }
-                    else {
-                        $rootScope.user.fname = data.fname;
-                        $rootScope.user.lname = data.lname;
-                        $rootScope.user.avatar = data.avatar;
-                        $rootScope.user.color = data.color;
-                        toastr.success("Profile updated");
-                    }
-                }, function () {
-                    toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
-                }
-            );
     };
 
-    $scope.setFieldError = function (element, hasError) {
+    $scope.remove = function () {
+        if (!confirm('Once removing a profile it is unrecoverable.\nAre you sure you want to remove it?')) {
+            return;
+        }
+        $rootScope.removeProfile();
+    };
+
+    $scope.validateFields = function () {
+        $(this).each(function() {
+            var element = $(this);
+            switch (element.attr("id")) {
+                case "inputProfileName":
+                    var toast;
+                    if (element.data("committedChanged")) {
+                        toast = {body: "Profile name must not be empty"};
+                    }
+                    element.data("committedChanged", true);
+                    $scope.setFieldError(element, element.val(), toast);
+                    break;
+            }
+        });
+    };
+
+    $scope.setFieldError = function (element, isValid, errorToast) {
         var parent = element;
         while (parent && !parent.hasClass("form-group")) {
             parent = parent.parent();
         }
         if (parent) {
-            if (hasError) {
-                parent.addClass("has-error");
+            var indicator = parent.find(".form-control-feedback");
+            if (isValid) {
+                parent.removeClass("has-error").addClass("has-success");
+                indicator.addClass("ion-checkmark-circled").removeClass("ion-android-cancel");
             }
             else {
-                parent.removeClass("has-error");
+                parent.addClass("has-error").removeClass("has-success");
+                indicator.removeClass("ion-checkmark-circled").addClass("ion-android-cancel");
+                if (errorToast) {
+                    toastr.error(errorToast.body, errorToast.title);
+                }
             }
         }
     };
+
+    $("body").on("change", ".validatable", $scope.validateFields);
+    angular.element(document).ready(function () {
+        $(".validatable").trigger('change');
+        $("#inputProfileName").trigger("focus");
+    });
+    $scope.$on("$destroy", function () {
+        $("body").off("change", ".validatable", $scope.validateFields);
+    });
 
 }
 
@@ -344,7 +318,7 @@ function pathGeneratorCtrl($scope, comparator) {
 
 function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $stateParams) {
 
-    if (typeof $rootScope.servers === "undefined") {
+    if (typeof $rootScope.profile === "undefined") {
         $rootScope.pendingRedirect = {
             state: $state.current.name,
             params: $stateParams
@@ -355,8 +329,8 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
     $("title").text("Edit Servers - BlueMonitor");
 
     $scope.findServer = function (id) {
-        for (var i = 0; i < $rootScope.servers.length; i++) {
-            var server = $rootScope.servers[i];
+        for (var i = 0; i < $rootScope.profile.servers.length; i++) {
+            var server = $rootScope.profile.servers[i];
             if (server.id === id) {
                 return server;
             }
@@ -365,10 +339,10 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
     };
 
     $scope.removeServerInstance = function (id) {
-        for (var i = 0; i < $rootScope.servers.length; i++) {
-            var server = $rootScope.servers[i];
+        for (var i = 0; i < $rootScope.profile.servers.length; i++) {
+            var server = $rootScope.profile.servers[i];
             if (server.id === id) {
-                $rootScope.servers.splice(i, 1);
+                $rootScope.profile.servers.splice(i, 1);
             }
         }
     };
@@ -378,12 +352,12 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         if (index === null) {
             return;
         }
-        $rootScope.servers.splice(toIndex, 0, $rootScope.servers.splice(index, 1)[0]);
+        $rootScope.profile.servers.splice(toIndex, 0, $rootScope.profile.servers.splice(index, 1)[0]);
     };
 
     $scope.findServerIndex = function (id) {
-        for (var i = 0; i < $rootScope.servers.length; i++) {
-            var server = $rootScope.servers[i];
+        for (var i = 0; i < $rootScope.profile.servers.length; i++) {
+            var server = $rootScope.profile.servers[i];
             if (server.id === id) {
                 return i;
             }
@@ -469,10 +443,15 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
                 case "inputServerURL":
                 case "inputServerMethod":
                     $scope.getSampleData($scope.currentServer.method, $scope.currentServer.url, function (success) {
-                        callback(success, {
-                            title: "No Server Response",
-                            body: "Try changing the given URL or HTTP Method"
-                        });
+                        if ($scope.currentServer.url !== '') {
+                            callback(success, {
+                                title: "No Server Response",
+                                body: "Try changing the given URL or HTTP Method"
+                            });
+                        }
+                        else {
+                            callback(success);
+                        }
                     });
                     break;
                 case "inputMeterTitle":
@@ -604,7 +583,21 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         }
     });
 
-    $scope.onParticipantTypeChange = function () {
+    $scope.onParticipantTypeChange = function (participant) {
+        switch (participant.type) {
+            case "INSTANCE":
+                delete participant["collectionPath"];
+                delete participant["titlePath"];
+                participant.title = "";
+                participant.valuePath = [];
+                break;
+            case "COLLECTION":
+                delete participant["title"];
+                participant.collectionPath = [];
+                participant.titlePath = [];
+                participant.valuePath = [];
+                break;
+        }
         $scope.$$postDigest(function() {
             $scope.validateFields.apply($(".validatable"));
         });
@@ -1124,9 +1117,9 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             var entry = idsToRemove[i];
             $("#tree").jstree("delete_node", entry.id, entry.parent);
         }
-        if ($rootScope.servers.length > 0) {
+        if ($rootScope.profile.servers.length > 0) {
             $scope.$$postDigest(function () {
-                $("#tree").jstree("deselect_all").jstree("select_node", $rootScope.servers[0].id);
+                $("#tree").jstree("deselect_all").jstree("select_node", $rootScope.profile.servers[0].id);
             });
         }
         else {
@@ -1156,7 +1149,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         var newServer = cloneObject($scope.findServer(serverId));
         newServer.id = guid();
         newServer.title = "Copy of " + newServer.title;
-        $rootScope.servers.push(newServer);
+        $rootScope.profile.servers.push(newServer);
         if (newServer.meters) {
             for (var i = 0; i < newServer.meters.length; i++) {
                 newServer.meters[i].id = guid();
@@ -1193,7 +1186,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             method: "GET",
             meters: []
         };
-        $rootScope.servers.push(server);
+        $rootScope.profile.servers.push(server);
         $("#tree").jstree("create_node", "#", $scope.serverToTreeNodes(server)[0], "last");
         $scope.$$postDigest(function () {
             $("#tree").jstree("deselect_all").jstree("select_node", server.id);
@@ -1300,197 +1293,127 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
     };
 
     $scope.treeData = [];
-    for (var i = 0; i < $rootScope.servers.length; i++) {
-        var nodes = $scope.serverToTreeNodes($rootScope.servers[i]);
+    for (var i = 0; i < $rootScope.profile.servers.length; i++) {
+        var nodes = $scope.serverToTreeNodes($rootScope.profile.servers[i]);
         for (var j = 0; j < nodes.length; j++) {
             $scope.treeData.push(nodes[j]);
         }
     }
 
-    function cloneObject(object) {
-        return JSON.parse(JSON.stringify(object));
-    }
-
-    function guid() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-            s4() + '-' + s4() + s4() + s4();
-    }
-
 }
 
-function loginCtrl($scope, $http, $rootScope, baSidebarService, $state, toastr) {
+function loginCtrl($scope, $rootScope, baSidebarService, $state, toastr) {
 
     $("title").text($state.current.title);
 
     $scope.initialized = false;
 
-    $rootScope.logout = function () {
-        $rootScope.loggedIn = false;
-        if (typeof(Storage) !== "undefined") {
-            localStorage.removeItem("email");
-            localStorage.removeItem("password");
+    if (typeof(Storage) === "undefined") {
+        $rootScope.browserNotSupported = true;
+        angular.element(document).ready(function () {
+            $("#browserSupport").removeClass("hidden");
+        });
+        return;
+    }
+
+    $rootScope.AVATARS = [
+        {name: "abraham", title: "Neat Abraham"},
+        {name: "helen", title: "Organized Helen"},
+        {name: "holly", title: "Genius Holly"},
+        {name: "jim", title: "Furious Jim"},
+        {name: "jones", title: "Mr. Jones"},
+        {name: "leroy", title: "Experienced Leroy"},
+        {name: "natalie", title: "Vigorous Natalie"},
+        {name: "sandra", title: "Sweet Sandra"}
+    ];
+
+    $rootScope.COLORS = [
+        '#209e91',
+        '#2dacd1',
+        '#90b900',
+        '#dfb81c',
+        '#e85656',
+        "#a5a5a5",
+        "#505050",
+        "#ececec"
+    ];
+
+    var allProfilesData = localStorage.getItem("allProfiles");
+    $rootScope.allProfiles = allProfilesData ? JSON.parse(allProfilesData) : [];
+
+    $rootScope.reloadSidebar = function () {
+        baSidebarService.clearStaticItems();
+        for (var i = 0; i < $rootScope.profile.servers.length; i++) {
+            var server = $rootScope.profile.servers[i];
+            baSidebarService.addStaticItem({
+                title: server.title,
+                server: {
+                    title: server.title,
+                    url: server.url,
+                    method: server.method
+                },
+                stateRef: 'monitor',
+                stateParams: {serverId: server.id}
+            });
         }
-        $state.go('login');
+        baSidebarService.addStaticItem({
+            title: 'New Server',
+            icon: 'ion-android-add-circle',
+            stateRef: 'edit'
+        });
     };
 
-    $rootScope.getUserName = function () {
-        if (!$rootScope.user) {
-            return '';
-        }
-        var result = "";
-        if ($rootScope.user.fname) {
-            result += $rootScope.user.fname;
-        }
-        if ($rootScope.user.lname) {
-            if ($rootScope.user.fname) {
-                result += " ";
-            }
-            result += $rootScope.user.lname;
-        }
-        if (result === "") {
-            result = $rootScope.user.email;
-        }
-        return result;
-    };
-
-    $scope.login = function () {
-        var password = $scope.validateField("inputPassword3", "Password is required", "Required Field");
-        var email = $scope.validateField("inputEmail3", "Email is required", "Required Field");
-        if (email && password) {
-            $scope.callLogin(email, password);
-        }
-    };
-
-    $scope.callLogin = function (email, password) {
-        $http({
-            method: 'POST',
-            url: '/login',
-            data: JSON.stringify({email: email, password: password})
-        })
-            .then(
-                function (response) {
-                    if (response.status !== 200 || !response.data) {
-                        toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
-                    }
-                    else if (!response.data.success) {
-                        toastr.error(response.data.error.body, response.data.error.title);
-                        $scope.setFieldError("inputEmail3", true);
-                        $scope.setFieldError("inputPassword3", true);
-                    }
-                    else {
-                        if (typeof(Storage) !== "undefined") {
-                            localStorage.setItem("email", email);
-                            localStorage.setItem("password", password);
-                        }
-                        $rootScope.user = response.data.result;
-                        $rootScope.servers = $rootScope.user.servers;
-                        baSidebarService.clearStaticItems();
-                        for (var i = 0; i < $rootScope.servers.length; i++) {
-                            var server = $rootScope.servers[i];
-                            baSidebarService.addStaticItem({
-                                title: server.title,
-                                server: {
-                                    title: server.title,
-                                    url: server.url,
-                                    method: server.method
-                                },
-                                stateRef: 'monitor',
-                                stateParams: {serverId: server.id}
-                            });
-                        }
-                        baSidebarService.addStaticItem({
-                            title: 'New Server',
-                            icon: 'ion-android-add-circle',
-                            stateRef: 'edit'
-                        });
-                        $rootScope.loggedIn = true;
-                        $scope.goHome();
-                    }
-                }, function () {
-                    toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
-                }
-            );
-    };
-
-    $scope.register = function () {
-        var password = $scope.validateField("inputPassword3", "Password is required", "Required Field");
-        var email = $scope.validateField("inputEmail3", "Email is required", "Required Field");
-        var adminPassword = $scope.validateField("inputName3", "Admin password is required", "Required Field");
-        if (adminPassword && email && password) {
-            $http({
-                method: 'POST',
-                url: '/register',
-                data: JSON.stringify({adminPassword: adminPassword, email: email, password: password})
-            })
-                .then(
-                    function (response) {
-                        if (response.status !== 200 || !response.data) {
-                            toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
-                        }
-                        else if (!response.data.success) {
-                            toastr.error(response.data.error.body, response.data.error.title);
-                            $scope.setFieldError("inputName3", true);
-                            $scope.setFieldError("inputEmail3", true);
-                            $scope.setFieldError("inputPassword3", true);
-                        }
-                        else {
-                            $rootScope.email = email;
-                            if (typeof(Storage) !== "undefined") {
-                                localStorage.setItem("email", email);
-                                localStorage.setItem("password", password);
-                            }
-                            $rootScope.user = response.data.result;
-                            $rootScope.servers = $rootScope.user.servers;
-                            baSidebarService.clearStaticItems();
-                            baSidebarService.addStaticItem({
-                                title: 'New Server',
-                                icon: 'ion-android-add-circle',
-                                stateRef: 'edit'
-                            });
-                            $rootScope.loggedIn = true;
-                            $scope.goHome();
-                        }
-                    }, function () {
-                        toastr.error("Could not communicate with BlurMonitor Server", "Oops!");
-                    }
-                );
-        }
-    };
-
-    $scope.validateField = function (id, messageBody, messageTitle) {
-        var field = $("#" + id);
-        var value = null;
-        if (field.get(0).checkValidity()) {
-            value = field.val();
-        }
-        if (value) {
-            $scope.setFieldError(id, false);
-        }
-        else {
-            toastr.error(messageBody, messageTitle);
-            $scope.setFieldError(id, true);
-        }
-        return value;
-    };
-
-    $scope.setFieldError = function (id, hasError) {
-        var parent = $("#" + id);
-        while (parent && !parent.hasClass("form-group")) {
-            parent = parent.parent();
-        }
-        if (parent) {
-            if (hasError) {
-                parent.addClass("has-error");
-            }
-            else {
-                parent.removeClass("has-error");
+    $rootScope.getProfileById = function (id) {
+        for (var i = 0; i < $rootScope.allProfiles.length; i++) {
+            var profile = $rootScope.allProfiles[i];
+            if (profile.id == id) {
+                return profile;
             }
         }
+        return null;
+    };
+
+    $rootScope.saveProfile = function () {
+        var current = $scope.profile;
+        if (!current) {
+            return;
+        }
+        for (var i = 0; i < $rootScope.allProfiles.length; i++) {
+            var profile = $rootScope.allProfiles[i];
+            if (profile.id == current.id) {
+                $rootScope.allProfiles[i] = current;
+                localStorage.setItem("allProfiles", JSON.stringify($rootScope.allProfiles));
+                $rootScope.reloadSidebar();
+                return;
+            }
+        }
+    };
+
+    $rootScope.removeProfile = function () {
+        var current = $scope.profile;
+        if (!current) {
+            return;
+        }
+        for (var i = 0; i < $rootScope.allProfiles.length; i++) {
+            var profile = $rootScope.allProfiles[i];
+            if (profile.id == current.id) {
+                $rootScope.allProfiles.splice(i, 1);
+                localStorage.setItem("allProfiles", JSON.stringify($rootScope.allProfiles));
+                return $rootScope.logout();
+            }
+        }
+    };
+
+    $rootScope.reloadProfile = function () {
+        var current = $scope.profile;
+        if (!current) {
+            return;
+        }
+        $rootScope.profile = $scope.getProfileById(current.id);
+        if (!$rootScope.profile) {
+            return;
+        }
+        $rootScope.reloadSidebar();
     };
 
     $scope.goHome = function () {
@@ -1499,36 +1422,93 @@ function loginCtrl($scope, $http, $rootScope, baSidebarService, $state, toastr) 
             $rootScope.pendingRedirect = null;
             return;
         }
-        if ($rootScope.servers.length > 0) {
-            $state.go('monitor', {serverId: $rootScope.servers[0].id});
+        if ($rootScope.profile.servers.length > 0) {
+            $state.go('monitor', {serverId: $rootScope.profile.servers[0].id});
         }
         else {
-            $state.go('new');
+            $state.go('edit');
         }
     };
 
-    if ($rootScope.loggedIn) {
+    $rootScope.logout = function () {
+        $rootScope.loggedIn = false;
+        localStorage.removeItem("activeProfileId");
+        $state.go('login');
+    };
+
+    $scope.login = function (profileId) {
+        $rootScope.profile = $scope.getProfileById(profileId);
+        if (!$rootScope.profile) {
+            toastr.error("This profile doesn't exist anymore", "Oops!");
+            $rootScope.loggedIn = false;
+            localStorage.removeItem("activeProfileId");
+            return;
+        }
+        localStorage.setItem("activeProfileId", profileId);
+        $rootScope.reloadSidebar();
+        $rootScope.loggedIn = true;
         $scope.goHome();
+    };
+
+    $scope.register = function () {
+        var id = guid();
+        $rootScope.allProfiles.push({
+            id: id,
+            name: "",
+            avatar: random($rootScope.AVATARS).name,
+            color: random($rootScope.COLORS),
+            servers: []
+        });
+        localStorage.setItem("allProfiles", JSON.stringify($rootScope.allProfiles));
+        $rootScope.firstProfileUpdate = true;
+        $rootScope.pendingRedirect = {state: "profile"};
+        $scope.login(id);
+    };
+
+    $rootScope.profile = null;
+    var activeProfileId = localStorage.getItem("activeProfileId");
+    if (activeProfileId) {
+        return $scope.login(activeProfileId);
     }
 
-    if (typeof(Storage) !== "undefined") {
-        var email = localStorage.getItem("email");
-        var password = localStorage.getItem("password");
-        if (email && password) {
-            $scope.callLogin(email, password);
-        }
-        else {
-            $scope.initialized = true;
-        }
-    } else {
-        $scope.initialized = true;
-    }
+    $scope.initialized = true;
+
+    // $scope.validateField = function (id, messageBody, messageTitle) {
+    //     var field = $("#" + id);
+    //     var value = null;
+    //     if (field.get(0).checkValidity()) {
+    //         value = field.val();
+    //     }
+    //     if (value) {
+    //         $scope.setFieldError(id, false);
+    //     }
+    //     else {
+    //         toastr.error(messageBody, messageTitle);
+    //         $scope.setFieldError(id, true);
+    //     }
+    //     return value;
+    // };
+    //
+    // $scope.setFieldError = function (id, hasError) {
+    //     var parent = $("#" + id);
+    //     while (parent && !parent.hasClass("form-group")) {
+    //         parent = parent.parent();
+    //     }
+    //     if (parent) {
+    //         if (hasError) {
+    //             parent.addClass("has-error");
+    //         }
+    //         else {
+    //             parent.removeClass("has-error");
+    //         }
+    //     }
+    // };
 
 }
 
 function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPaths, $state) {
 
-    if (typeof $rootScope.servers === "undefined") {
+    if (typeof $rootScope.profile.servers === "undefined") {
         $rootScope.pendingRedirect = {
             state: $state.current.name,
             params: $stateParams
@@ -1542,8 +1522,8 @@ function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPa
     }
 
     $scope.server = null;
-    for (var i = 0; i < $rootScope.servers.length; i++) {
-        var server = $rootScope.servers[i];
+    for (var i = 0; i < $rootScope.profile.servers.length; i++) {
+        var server = $rootScope.profile.servers[i];
         if (server.id == $scope.serverId) {
             $scope.server = server;
             break;
@@ -2328,3 +2308,21 @@ Set.prototype.toArray = function () {
     }
     return result;
 };
+
+function cloneObject(object) {
+    return JSON.parse(JSON.stringify(object));
+}
+
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+}
+
+function random(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}

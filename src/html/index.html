@@ -40,7 +40,17 @@
 </head>
 <body>
 <div class="body-bg"></div>
-<div ui-view style="height: 100%; width: 100%;"></div>
+<div ng-if="browserNotSupported" id="browserSupport" class="hidden" style="height: 100%; width: 100%;">
+    <main class="auth-main">
+        <div class="auth-block">
+            <h1>Snap! Your Browser Is Too Old :(</h1>
+            <p>BlurMonitor requires a modern web-browser, how about
+                <a href="https://www.google.com/chrome/" target="_blank">Chrome</a> or
+                <a href="https://www.mozilla.org/en-US/firefox/" target="_blank">FireFox</a>?</p>
+        </div>
+    </main>
+</div>
+<div ng-if="!browserNotSupported" ui-view style="height: 100%; width: 100%;"></div>
 
 <script src="/bower_components/jquery/dist/jquery.js"></script>
 <script src="/bower_components/jquery-ui/jquery-ui.js"></script>

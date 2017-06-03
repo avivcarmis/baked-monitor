@@ -16,7 +16,7 @@
                         <div class="col-md-5">
                             <h3 class="with-line" style="padding-top: 0;">Servers Tree</h3>
                             <div id="tree" js-tree="treeConfig" ng-model="treeData" tree-events-obj="treeEventsObj"></div>
-                            <div ng-if="servers.length === 0" style="text-align: center; padding: 30px 20px;">
+                            <div ng-if="profile.servers.length === 0" style="text-align: center; padding: 30px 20px;">
                                 <p>You have not created any monitored servers.</p>
                                 <button type="button" class="btn btn-default btn-with-icon btn-lg blinker" ng-click="addNewServer()">
                                     <i class="fa fa-plus-circle"></i>Add Your First Server!
@@ -173,7 +173,7 @@
 
                                         <div class="form-group has-feedback">
                                             <label for="inputMeterParticipantType">Type</label>
-                                            <select id="inputMeterParticipantType" class="form-control validatable always-valid" ng-model="participant.type" ng-change="onParticipantTypeChange()">
+                                            <select id="inputMeterParticipantType" class="form-control validatable always-valid" ng-model="participant.type" ng-change="onParticipantTypeChange(participant)">
                                                 <option value="INSTANCE">Single Participant</option>
                                                 <option value="COLLECTION">Collection of Participants</option>
                                             </select>
@@ -387,7 +387,7 @@
 
                     </div>
 
-                    <div style="border-top: 1px solid #ffffff; margin-top: 10px; padding-top: 10px;">
+                    <div class="bottom-buttons">
                         <div class="row">
                             <div class="col-md-12">
                                 <ul class="btn-list pull-right">

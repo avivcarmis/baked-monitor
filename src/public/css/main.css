@@ -192,10 +192,10 @@ option {
     transform: rotate(720deg);
   }
 }
-.edit-page .form-control-feedback {
+.form-control-feedback {
   transition: color 300ms ease;
 }
-.edit-page .help-block {
+.help-block {
   color: #ffffff !important;
 }
 @media (min-width: 992px) {
@@ -293,6 +293,66 @@ option {
   background-color: rgba(0, 0, 0, 0.2);
   color: #ffffff;
 }
+.bottom-buttons {
+  border-top: 1px solid #ffffff;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+.login-box {
+  position: relative;
+  display: inline-block;
+  background: #2b2b2b;
+  color: #8a8a8a !important;
+  border-color: #3a3a3a;
+  padding: 28px 20px 5px 20px;
+}
+.login-box:hover {
+  border-color: #565656 !important;
+  color: #afafaf !important;
+}
+.login-box .bg {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  top: 20px;
+}
+.login-box img {
+  width: 120px;
+  position: relative;
+  z-index: 2;
+}
+.login-box .desc {
+  text-align: center;
+  position: relative;
+  z-index: 3;
+  font-size: 15px;
+  margin: 10px 0;
+  width: 120px;
+}
+.login-box .new-profile {
+  background: #4e4e4e;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  color: #2b2b2b;
+  transition: background-color 150ms ease;
+}
+.login-box .new-profile i {
+  font-size: 135px;
+  position: relative;
+  top: -12px;
+}
+.login-box:hover .new-profile {
+  background: #585858;
+}
+
+
+
+
+
+
+
 
 
 

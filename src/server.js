@@ -11,8 +11,6 @@ var INDEX_PAGES = [
     "/monitor",
     "/monitor/*",
     "/login",
-    "/register",
-    "/new",
     "/edit",
     "/edit/*",
     "/profile"
