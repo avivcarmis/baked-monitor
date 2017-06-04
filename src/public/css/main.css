@@ -346,6 +346,15 @@ option {
 .login-box:hover .new-profile {
   background: #585858;
 }
+.tree-icon.has-changes:after {
+  content: '';
+  background: #dfb81c;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  margin: -3px 0 0 -1px;
+}
 
 
 

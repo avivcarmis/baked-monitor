@@ -14,7 +14,7 @@
                     <div class="row">
 
                         <div class="col-md-5">
-                            <h3 class="with-line" style="padding-top: 0;">Servers Tree</h3>
+                            <h3 class="with-line" style="padding-top: 0;">Servers Tree&nbsp;&nbsp;<small style="color: white; opacity: .7;">(Right click to edit)</small></h3>
                             <div id="tree" js-tree="treeConfig" ng-model="treeData" tree-events-obj="treeEventsObj"></div>
                             <div ng-if="profile.servers.length === 0" style="text-align: center; padding: 30px 20px;">
                                 <p>You have not created any monitored servers.</p>
@@ -54,6 +54,18 @@
                                     </div>
                                     <i class="form-control-feedback" aria-hidden="true"></i>
                                     <span class="help-block sub-little-text">A URL that returns a JSON representation of the server monitoring data.</span>
+                                </div>
+
+                                <div class="row" ng-if="!currentServer.meters || currentServer.meters.length === 0">
+                                    <div class="col-md-12">
+                                        <ul class="btn-list pull-right">
+                                            <li>
+                                                <button type="button" class="btn btn-default btn-with-icon" ng-click="addMeter(currentServer.id)">
+                                                    <i class="fa fa-list"></i>Add Meter
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
 
                             </div>
@@ -392,7 +404,7 @@
                             <div class="col-md-12">
                                 <ul class="btn-list pull-right">
                                     <li>
-                                        <button type="button" class="btn btn-default btn-with-icon btn-xm" ng-click="save()">
+                                        <button type="button" class="btn btn-default btn-with-icon btn-xm" ng-click="cancel()">
                                             <i class="ion-android-cancel"></i>Cancel
                                         </button>
                                     </li>

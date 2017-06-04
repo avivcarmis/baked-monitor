@@ -22,7 +22,8 @@ angular
     .controller('MonitorCtrl', monitorCtrl)
     .controller('EditCtrl', editCtrl)
     .controller('ProfileCtrl', profileCtrl)
-    .controller('PathGeneratorCtrl', pathGeneratorCtrl);
+    .controller('PathGeneratorCtrl', pathGeneratorCtrl)
+    .controller('ConfirmCtrl', confirmCtrl);
 
 function routesConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -100,7 +101,7 @@ function comparatorFactory() {
     return {test: equals}
 }
 
-function profileCtrl($scope, $http, $rootScope, $state, toastr) {
+function profileCtrl($scope, $rootScope, $state, toastr) {
 
     if (typeof $rootScope.profile === "undefined") {
         $rootScope.pendingRedirect = {
@@ -136,9 +137,17 @@ function profileCtrl($scope, $http, $rootScope, $state, toastr) {
         $scope.color = ($scope.color + 1) % $rootScope.COLORS.length;
     };
 
-    $scope.update = function () {
+    $scope.validateSwitch = function () {
         if ($(".has-error").length > 0) {
-            return toastr.error("Fix all errors before moving on.", "Oops!");
+            toastr.error("Fix all errors before moving on.", "Oops!");
+            return false;
+        }
+        return true;
+    };
+
+    $scope.update = function () {
+        if (!$scope.validateSwitch()) {
+            return;
         }
         var redirect = $rootScope.firstProfileUpdate;
         $rootScope.firstProfileUpdate = false;
@@ -153,10 +162,11 @@ function profileCtrl($scope, $http, $rootScope, $state, toastr) {
     };
 
     $scope.remove = function () {
-        if (!confirm('Once removing a profile it is unrecoverable.\nAre you sure you want to remove it?')) {
-            return;
-        }
-        $rootScope.removeProfile();
+        $rootScope.confirm(
+            'Once removing a profile it is unrecoverable. Are you sure you want to remove it?',
+            'Remove Profile',
+            $rootScope.removeProfile
+        );
     };
 
     $scope.validateFields = function () {
@@ -204,6 +214,13 @@ function profileCtrl($scope, $http, $rootScope, $state, toastr) {
     $scope.$on("$destroy", function () {
         $("body").off("change", ".validatable", $scope.validateFields);
     });
+
+}
+
+function confirmCtrl($scope) {
+
+    $scope.title = $scope.$resolve.data.title;
+    $scope.body = $scope.$resolve.data.body;
 
 }
 
@@ -260,25 +277,40 @@ function pathGeneratorCtrl($scope, comparator) {
             }
         }
     }
-    var root = $scope.walkPathArray([], $scope.$resolve.data.current.length, $scope.$resolve.data.pre);
+    if ($scope.$resolve.data.enableKeys) {
+        var prePathArray = $scope.$resolve.data.pre;
+        if (prePathArray.length > 0 && prePathArray[prePathArray.length - 1] === chooseAny) {
+            var collection = $scope.walkPathArray([], 0, prePathArray.slice(0, prePathArray.length - 1));
+            var keys = [];
+            var hasMore = false;
+            for (var key in collection) {
+                if (collection.hasOwnProperty(key)) {
+                    if (keys.length > 2) {
+                        hasMore = true;
+                        break;
+                    }
+                    keys.push(trimString(key, 20));
+                }
+            }
+            keys = keys.join(", ");
+            if (hasMore) {
+                keys += ", ...";
+            }
+            $scope.pathTreeData.push({
+                id: "{{key}}",
+                parent: "#",
+                type: "value",
+                text: 'root key (i.e. ' + keys + ')',
+                state: {
+                    selected: $scope.result === "{{key}}",
+                    disabled: !$scope.isLeaf
+                },
+                data: {path: "{{key}}"}
+            });
+        }
+    }
+    var root = $scope.walkPathArray([], 0, $scope.$resolve.data.pre);
     createTreeData("root", root, "#", []);
-
-    function immutableArrayAdd(array, newEntry) {
-        var result = [];
-        for (var i = 0; i < array.length; i++) {
-            result.push(array[i]);
-        }
-        result.push(newEntry);
-        return result;
-    }
-
-    function trimString(input, length) {
-        input = input + "";
-        if (input.length <= length) {
-            return input;
-        }
-        return input.substr(0, length - 3) + "...";
-    }
 
     $scope.pathTreeConfig = {
         core: {
@@ -406,6 +438,20 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             if (element.data("lastValue") && element.data("lastValue") === element.val()) {
                 return;
             }
+            var notFirstVisit = element.data("visited");
+            if (notFirstVisit) {
+                $scope.hasChanges(true);
+                if ($scope.mode === 'server') {
+                    $scope.markChanges($scope.currentServer.id);
+                }
+                else {
+                    $scope.markChanges($scope.currentMeter.id);
+                    $scope.markChanges($scope.currentMeter.serverId);
+                }
+            }
+            else {
+                element.data("visited", true);
+            }
             if (element.val()) {
                 element.data("lastValue", element.val());
             }
@@ -413,13 +459,13 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
                 delete element.data()["lastValue"];
             }
             $scope.setFieldStatus(element, FIELD_STATUS_PENDING);
-            $scope.validate(element, function (valid, errorToast) {
+            $scope.validate(element, notFirstVisit, function (valid, errorToast) {
                 $scope.setFieldStatus(element, valid ? FIELD_STATUS_VALID : FIELD_STATUS_INVALID, errorToast);
             })
         });
     };
 
-    $scope.validate = function (element, callback) {
+    $scope.validate = function (element, notFirstVisit, callback) {
         try {
             if (!element.hasClass("validatable")) {
                 return callback(true);
@@ -431,12 +477,19 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
                 case "inputMeterType":
                     if (element.val()) {
                         $('#tree').jstree(true).set_type($scope.currentMeter.id, element.val().toLowerCase());
+                        if (notFirstVisit) {
+                            $scope.markChanges($scope.currentMeter.id);
+                            $scope.markChanges($scope.currentMeter.serverId);
+                        }
                     }
                     callback(true);
                     break;
                 case "inputServerTitle":
                     if (element.val()) {
                         $('#tree').jstree("set_text", $scope.currentServer.id, element.val());
+                        if (notFirstVisit) {
+                            $scope.markChanges($scope.currentServer.id);
+                        }
                     }
                     callback(element.val());
                     break;
@@ -457,6 +510,10 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
                 case "inputMeterTitle":
                     if (element.val()) {
                         $('#tree').jstree("set_text", $scope.currentMeter.id, element.val());
+                        if (notFirstVisit) {
+                            $scope.markChanges($scope.currentMeter.id);
+                            $scope.markChanges($scope.currentMeter.serverId);
+                        }
                     }
                     callback(element.val());
                     break;
@@ -466,7 +523,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
                     break;
                 case "inputMeterPrototypeTitlePath":
                     stopIndex = $scope.currentMeter.prototypeCollection.titlePath.length;
-                    callback($scope.detectPathType($scope.currentMeter.prototypeCollection.titlePath, stopIndex, [$scope.currentMeter.prototypeCollection.collectionPath, $scope.chooseAny]) === "VALUE");
+                    callback($scope.detectPathType($scope.currentMeter.prototypeCollection.titlePath, stopIndex, [$scope.currentMeter.prototypeCollection.collectionPath, chooseAny]) === "VALUE");
                     break;
                 case "inputMeterPath":
                     stopIndex = $scope.currentMeter.config.path.length;
@@ -677,6 +734,9 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
     };
 
     $scope.beautifyPath = function (pathArray) {
+        if (pathArray === "{{key}}") {
+            return "root key";
+        }
         var result = "";
         if (pathArray) {
             for (var i = 0; i < pathArray.length; i++) {
@@ -704,6 +764,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             $scope.currentMeter.prototypeCollection.collectionPath,
             [],
             false,
+            false,
             function (path) {
                 $scope.currentMeter.prototypeCollection.collectionPath = path;
                 $scope.$$postDigest(function() {
@@ -717,7 +778,8 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         $scope.generatePath(
             'Prototype Title',
             $scope.currentMeter.prototypeCollection.titlePath,
-            [$scope.currentMeter.prototypeCollection.collectionPath, $scope.chooseAny],
+            [$scope.currentMeter.prototypeCollection.collectionPath, chooseAny],
+            true,
             true,
             function (path) {
                 $scope.currentMeter.prototypeCollection.titlePath = path;
@@ -734,6 +796,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             participant.collectionPath,
             $scope.currentMeterPrePathArray(),
             false,
+            false,
             function (path) {
                 participant.collectionPath = path;
                 $scope.$$postDigest(function() {
@@ -748,6 +811,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             'Participant Title',
             participant.titlePath,
             $scope.participantPrePathArray(participant),
+            true,
             true,
             function (path) {
                 participant.titlePath = path;
@@ -764,6 +828,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             participant.valuePath,
             $scope.participantPrePathArray(participant),
             true,
+            false,
             function (path) {
                 participant.valuePath = path;
                 $scope.$$postDigest(function() {
@@ -779,6 +844,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             $scope.currentMeter.config.path,
             $scope.currentMeterPrePathArray(),
             true,
+            false,
             function (path) {
                 $scope.currentMeter.config.path = path;
                 $scope.$$postDigest(function() {
@@ -793,6 +859,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             $scope.currentMeter.title + ' Collection',
             $scope.currentMeter.config.table.collectionPath,
             $scope.currentMeterPrePathArray(),
+            false,
             false,
             function (path) {
                 $scope.currentMeter.config.table.collectionPath = path;
@@ -809,6 +876,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             $scope.currentMeter.config.table.titlePath,
             $scope.tablePrePathArray(),
             true,
+            true,
             function (path) {
                 $scope.currentMeter.config.table.titlePath = path;
                 $scope.$$postDigest(function() {
@@ -824,6 +892,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             value.valuePath,
             $scope.tablePrePathArray(),
             true,
+            false,
             function (path) {
                 value.valuePath = path;
                 $scope.$$postDigest(function() {
@@ -831,6 +900,28 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
                 });
             }
         )
+    };
+
+    $scope.generatePath = function (title, pathArray, prePathArrays, isLeaf, enableKeys, callback) {
+        var modal = $uibModal.open({
+            animation: true,
+            templateUrl: 'app/path.html',
+            controller: 'PathGeneratorCtrl',
+            size: 'lg',
+            scope: $scope,
+            resolve: {
+                data: function () {
+                    return {
+                        title: title,
+                        current: pathArray,
+                        pre: prePathArrays,
+                        isLeaf: isLeaf,
+                        enableKeys: enableKeys
+                    }
+                }
+            }
+        });
+        modal.result.then(callback);
     };
 
     $scope.addColumn = function () {
@@ -872,14 +963,14 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
 
     $scope.currentMeterPrePathArray = function () {
         return $scope.currentMeter.isPrototype ?
-            [$scope.currentMeter.prototypeCollection.collectionPath, $scope.chooseAny] : [];
+            [$scope.currentMeter.prototypeCollection.collectionPath, chooseAny] : [];
     };
 
     $scope.participantPrePathArray = function (participant) {
         var prePathArray = $scope.currentMeterPrePathArray();
         if (participant.type === "COLLECTION") {
             prePathArray.push(participant.collectionPath);
-            prePathArray.push($scope.chooseAny);
+            prePathArray.push(chooseAny);
         }
         return prePathArray;
     };
@@ -887,29 +978,8 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
     $scope.tablePrePathArray = function () {
         var prePathArray = $scope.currentMeterPrePathArray();
         prePathArray.push($scope.currentMeter.config.table.collectionPath);
-        prePathArray.push($scope.chooseAny);
+        prePathArray.push(chooseAny);
         return prePathArray;
-    };
-
-    $scope.generatePath = function (title, pathArray, prePathArrays, isLeaf, callback) {
-        var modal = $uibModal.open({
-            animation: true,
-            templateUrl: 'app/path.html',
-            controller: 'PathGeneratorCtrl',
-            size: 'lg',
-            scope: $scope,
-            resolve: {
-                data: function () {
-                    return {
-                        title: title,
-                        current: pathArray,
-                        pre: prePathArrays,
-                        isLeaf: isLeaf
-                    }
-                }
-            }
-        });
-        modal.result.then(callback);
     };
 
     $scope.detectPathType = function (pathArray, stopIndex, prePathArrays) {
@@ -923,21 +993,15 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         return "VALUE";
     };
 
-    $scope.chooseAny = function (collection) {
-        for (var key in collection) {
-            if (collection.hasOwnProperty(key)) {
-                return collection[key];
-            }
-        }
-        return [];
-    };
-
     $scope.walkPathArray = function (pathArray, stopIndex, prePathArrays) {
         var input = $scope.currentSample;
         if (prePathArrays) {
             for (var i = 0; i < prePathArrays.length; i++) {
                 var currentPathArray = prePathArrays[i];
                 if (typeof currentPathArray === "function") {
+                    if (i === prePathArrays.length - 1 && currentPathArray === chooseAny && pathArray === "{{key}}") {
+                        return "key";
+                    }
                     input = currentPathArray(input);
                 }
                 else {
@@ -1098,10 +1162,17 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
                 break;
             }
         }
+        $scope.hasChanges(true);
         $("#tree").jstree("delete_node", meterId, serverId);
-        $scope.$$postDigest(function () {
-            $("#tree").jstree("deselect_all").jstree("select_node", serverId);
-        });
+        if ($scope.mode === 'meter' && $scope.currentMeter.id == meterId) {
+            $scope.$$postDigest(function () {
+                $("#tree").jstree("deselect_all").jstree("select_node", serverId);
+                $scope.markChanges(serverId);
+            });
+        }
+        else {
+            $scope.markChanges(serverId);
+        }
     };
 
     $scope.removeServer = function (serverId) {
@@ -1118,18 +1189,24 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             $("#tree").jstree("delete_node", entry.id, entry.parent);
         }
         if ($rootScope.profile.servers.length > 0) {
-            $scope.$$postDigest(function () {
-                $("#tree").jstree("deselect_all").jstree("select_node", $rootScope.profile.servers[0].id);
-            });
+            if ($scope.mode === 'server' && $scope.currentServer.id == serverId) {
+                $scope.$$postDigest(function () {
+                    $("#tree").jstree("deselect_all").jstree("select_node", $rootScope.profile.servers[0].id);
+                });
+            }
         }
         else {
             $scope.mode = null;
             $scope.currentServer = null;
             $scope.currentMeter = null;
         }
+        $scope.hasChanges(true);
     };
 
     $scope.duplicateMeter = function (serverId, meterId) {
+        if (!$scope.validateSwitch()) {
+            return;
+        }
         var currentMeter = $scope.findMeter(serverId, meterId);
         var newMeter = cloneObject(currentMeter);
         newMeter.id = guid();
@@ -1139,13 +1216,20 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             server.meters = [];
         }
         server.meters.push(newMeter);
+        $scope.hasChanges(true);
         $("#tree").jstree("create_node", server.id, $scope.meterToTreeNode(server.id, newMeter), "last");
         $scope.$$postDigest(function () {
             $('#tree').jstree("deselect_all").jstree("select_node", newMeter.id);
+            setTimeout(function () {
+                $scope.markChanges(newMeter.id);
+            }, 10);
         });
     };
 
     $scope.duplicateServer = function (serverId) {
+        if (!$scope.validateSwitch()) {
+            return;
+        }
         var newServer = cloneObject($scope.findServer(serverId));
         newServer.id = guid();
         newServer.title = "Copy of " + newServer.title;
@@ -1159,25 +1243,49 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         for (i = 0; i < allTreeNodes.length; i++) {
             $("#tree").jstree("create_node", allTreeNodes[i].parent, allTreeNodes[i], "last");
         }
+        $scope.hasChanges(true);
         $scope.$$postDigest(function () {
             $('#tree').jstree("deselect_all").jstree("select_node", newServer.id);
+            $scope.markChanges(newServer.id);
         });
     };
 
     $scope.addMeter = function (serverId) {
+        if (!$scope.validateSwitch()) {
+            return;
+        }
+        $scope.hasChanges(true);
         var server = $scope.findServer(serverId);
         if (!server.meters) {
             server.meters = [];
         }
-        var meter = $scope.newMeter(serverId);
+        var meter = {
+            id: guid(),
+            serverId: serverId,
+            title: "New Meter",
+            width: 12,
+            type: "GRAPH",
+            config: {
+                maxHistory: 120,
+                participants: []
+            }
+        };
         server.meters.push(meter);
         $("#tree").jstree("create_node", serverId, $scope.meterToTreeNode(serverId, meter), "last");
         $scope.$$postDigest(function () {
             $("#tree").jstree("deselect_all").jstree("select_node", meter.id);
+            setTimeout(function () {
+                $scope.markChanges(serverId);
+                $scope.markChanges(meter.id);
+            }, 10);
         });
     };
 
     $scope.addNewServer = function () {
+        if (!$scope.validateSwitch()) {
+            return;
+        }
+        $scope.hasChanges(true);
         var server = {
             id: guid(),
             user: $rootScope.email,
@@ -1190,22 +1298,21 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         $("#tree").jstree("create_node", "#", $scope.serverToTreeNodes(server)[0], "last");
         $scope.$$postDigest(function () {
             $("#tree").jstree("deselect_all").jstree("select_node", server.id);
+            $scope.markChanges(server.id);
         });
         return server.id;
     };
 
-    $scope.newMeter = function (serverId) {
-        return {
-            id: guid(),
-            serverId: serverId,
-            title: "New Meter",
-            width: 12,
-            type: "GRAPH",
-            config: {
-                maxHistory: 120,
-                participants: []
-            }
-        };
+    $scope.markChanges = function (resourceId) {
+        $("#tree").jstree(true).get_node(resourceId, true).children(".jstree-anchor").find(".tree-icon").addClass("has-changes");
+    };
+
+    $scope.validateSwitch = function () {
+        if ($(".has-error").length > 0) {
+            toastr.error("Fix all errors before moving on.", "Oops!");
+            return false;
+        }
+        return true;
     };
 
     $scope.treeEventsObj = {
@@ -1214,8 +1321,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
                 $scope.pendingSelectError = false;
                 return;
             }
-            if ($(".has-error").length > 0) {
-                toastr.error("Fix all errors before selecting another meter or server");
+            if (!$scope.validateSwitch()) {
                 $scope.pendingSelectError = true;
                 $("#tree").jstree("deselect_all").jstree("select_node", $scope.selected);
                 return;
@@ -1292,6 +1398,49 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         };
     };
 
+    var unloadWarningMessage = "You have made some unsaved changes. Are you sure you want to leave without saving them first?";
+    $scope.hasChangesValue = false;
+    $scope.hasChanges = function (value) {
+        if (value) {
+            window.onbeforeunload = function(){
+                return unloadWarningMessage;
+            };
+        }
+        else {
+            window.onbeforeunload = null;
+        }
+        $scope.hasChangesValue = value;
+    };
+    $scope.$on('$stateChangeStart', function(event) {
+        if ($scope.hasChangesValue) {
+            if (confirm(unloadWarningMessage)) {
+                $rootScope.reloadProfile();
+            }
+            else {
+                event.preventDefault();
+            }
+        }
+    });
+
+    $scope.cancel = function () {
+        $rootScope.confirm(
+            'Are you sure you wish to cancel all changes to ' + $rootScope.profile.name + ' profile?',
+            'Cancel Changes',
+            function () {
+                $scope.hasChanges(false);
+                $rootScope.reloadProfile();
+                $rootScope.goHome();
+            }
+        );
+    };
+
+    $scope.save = function () {
+        $scope.hasChanges(false);
+        $rootScope.saveProfile();
+        window.onbeforeunload = null;
+        $rootScope.goHome();
+    };
+
     $scope.treeData = [];
     for (var i = 0; i < $rootScope.profile.servers.length; i++) {
         var nodes = $scope.serverToTreeNodes($rootScope.profile.servers[i]);
@@ -1302,7 +1451,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
 
 }
 
-function loginCtrl($scope, $rootScope, baSidebarService, $state, toastr) {
+function loginCtrl($scope, $rootScope, baSidebarService, $state, toastr, $uibModal) {
 
     $("title").text($state.current.title);
 
@@ -1340,6 +1489,21 @@ function loginCtrl($scope, $rootScope, baSidebarService, $state, toastr) {
 
     var allProfilesData = localStorage.getItem("allProfiles");
     $rootScope.allProfiles = allProfilesData ? JSON.parse(allProfilesData) : [];
+
+    $rootScope.confirm = function (body, title, onYesCallback, onNoCallback) {
+        var modal = $uibModal.open({
+            animation: true,
+            templateUrl: 'app/confirm.html',
+            controller: 'ConfirmCtrl',
+            size: 'sm',
+            resolve: {
+                data: function () {
+                    return {title: title, body: body};
+                }
+            }
+        });
+        modal.result.then(onYesCallback, onNoCallback);
+    };
 
     $rootScope.reloadSidebar = function () {
         baSidebarService.clearStaticItems();
@@ -1409,14 +1573,14 @@ function loginCtrl($scope, $rootScope, baSidebarService, $state, toastr) {
         if (!current) {
             return;
         }
-        $rootScope.profile = $scope.getProfileById(current.id);
+        $rootScope.profile = cloneObject($scope.getProfileById(current.id));
         if (!$rootScope.profile) {
             return;
         }
         $rootScope.reloadSidebar();
     };
 
-    $scope.goHome = function () {
+    $rootScope.goHome = function () {
         if ($rootScope.pendingRedirect) {
             $state.go($rootScope.pendingRedirect.state, $rootScope.pendingRedirect.params);
             $rootScope.pendingRedirect = null;
@@ -1437,7 +1601,7 @@ function loginCtrl($scope, $rootScope, baSidebarService, $state, toastr) {
     };
 
     $scope.login = function (profileId) {
-        $rootScope.profile = $scope.getProfileById(profileId);
+        $rootScope.profile = cloneObject($scope.getProfileById(profileId));
         if (!$rootScope.profile) {
             toastr.error("This profile doesn't exist anymore", "Oops!");
             $rootScope.loggedIn = false;
@@ -1447,7 +1611,7 @@ function loginCtrl($scope, $rootScope, baSidebarService, $state, toastr) {
         localStorage.setItem("activeProfileId", profileId);
         $rootScope.reloadSidebar();
         $rootScope.loggedIn = true;
-        $scope.goHome();
+        $rootScope.goHome();
     };
 
     $scope.register = function () {
@@ -1473,42 +1637,11 @@ function loginCtrl($scope, $rootScope, baSidebarService, $state, toastr) {
 
     $scope.initialized = true;
 
-    // $scope.validateField = function (id, messageBody, messageTitle) {
-    //     var field = $("#" + id);
-    //     var value = null;
-    //     if (field.get(0).checkValidity()) {
-    //         value = field.val();
-    //     }
-    //     if (value) {
-    //         $scope.setFieldError(id, false);
-    //     }
-    //     else {
-    //         toastr.error(messageBody, messageTitle);
-    //         $scope.setFieldError(id, true);
-    //     }
-    //     return value;
-    // };
-    //
-    // $scope.setFieldError = function (id, hasError) {
-    //     var parent = $("#" + id);
-    //     while (parent && !parent.hasClass("form-group")) {
-    //         parent = parent.parent();
-    //     }
-    //     if (parent) {
-    //         if (hasError) {
-    //             parent.addClass("has-error");
-    //         }
-    //         else {
-    //             parent.removeClass("has-error");
-    //         }
-    //     }
-    // };
-
 }
 
 function monitorCtrl($scope, $stateParams, $http, $rootScope, baConfig, layoutPaths, $state) {
 
-    if (typeof $rootScope.profile.servers === "undefined") {
+    if (typeof $rootScope.profile === "undefined") {
         $rootScope.pendingRedirect = {
             state: $state.current.name,
             params: $stateParams
@@ -2325,4 +2458,30 @@ function guid() {
 
 function random(array) {
     return array[Math.floor(Math.random() * array.length)];
+}
+
+function immutableArrayAdd(array, newEntry) {
+    var result = [];
+    for (var i = 0; i < array.length; i++) {
+        result.push(array[i]);
+    }
+    result.push(newEntry);
+    return result;
+}
+
+function trimString(input, length) {
+    input = input + "";
+    if (input.length <= length) {
+        return input;
+    }
+    return input.substr(0, length - 3) + "...";
+}
+
+function chooseAny(collection) {
+    for (var key in collection) {
+        if (collection.hasOwnProperty(key)) {
+            return collection[key];
+        }
+    }
+    return [];
 }
