@@ -1165,6 +1165,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         $scope.hasChanges(true);
         $("#tree").jstree("delete_node", meterId, serverId);
         if ($scope.mode === 'meter' && $scope.currentMeter.id == meterId) {
+            $(".has-error").removeClass("has-error");
             $scope.$$postDigest(function () {
                 $("#tree").jstree("deselect_all").jstree("select_node", serverId);
                 $scope.markChanges(serverId);
@@ -1190,6 +1191,7 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         }
         if ($rootScope.profile.servers.length > 0) {
             if ($scope.mode === 'server' && $scope.currentServer.id == serverId) {
+                $(".has-error").removeClass("has-error");
                 $scope.$$postDigest(function () {
                     $("#tree").jstree("deselect_all").jstree("select_node", $rootScope.profile.servers[0].id);
                 });
@@ -1265,6 +1267,13 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
             title: "New Meter",
             width: 12,
             type: "GRAPH",
+            isPrototype: false,
+            prototypeCollection: {
+                collectionPath: [],
+                titlePrefix: "",
+                titleSuffix: "",
+                titlePath: []
+            },
             config: {
                 maxHistory: 120,
                 participants: []
@@ -1411,14 +1420,18 @@ function editCtrl($scope, $http, $rootScope, $state, toastr, $uibModal, $statePa
         }
         $scope.hasChangesValue = value;
     };
-    $scope.$on('$stateChangeStart', function(event) {
+    $scope.$on('$stateChangeStart', function(event, toState, toParams) {
         if ($scope.hasChangesValue) {
-            if (confirm(unloadWarningMessage)) {
-                $rootScope.reloadProfile();
-            }
-            else {
-                event.preventDefault();
-            }
+            event.preventDefault();
+            $rootScope.confirm(
+                unloadWarningMessage,
+                "Before You Leave",
+                function () {
+                    $scope.hasChanges(false);
+                    $rootScope.reloadProfile();
+                    $state.go(toState.name, toParams);
+                }
+            );
         }
     });
 
