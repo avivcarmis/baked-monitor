@@ -14,6 +14,18 @@
   font-weight: bold;
   text-transform: uppercase;
   z-index: 1;
+  background: rgba(0,0,0,0.7);
+  padding: 6px 9px;
+  top: 9px;
+  border-radius: 4px;
+}
+.panel-title:hover {
+  z-index: 7;
+  position: relative;
+  background: rgba(0,0,0,.7);
+  padding: 8px;
+  margin: -8px;
+  border-radius: 4px;
 }
 .meter-refresh-warning .warning {
   animation: blinker 1350ms linear infinite;
