@@ -1,0 +1,32 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+            <em class="ion-ios-close-empty sn-link-close"></em>
+        </button>
+        <h4 class="modal-title">Export All Profiles</h4>
+    </div>
+    <div class="modal-body">
+        <p>Use either button below to export all the configured profiles, servers and meters. Use it later to import it on another machine.</p>
+        <div class="btn-list-centered" style="margin: 20px;">
+            <a class="btn btn-primary btn-with-icon btn-xm"
+               href="data:text/json;charset=utf-8,{{encodedExportData()}}"
+               download="BlurMonitorExport.json">
+                <i class="fa fa-floppy-o"></i>Save To File
+            </a>
+            <button class="btn btn-default-flipped btn-with-icon btn-xm"
+                    ng-click="showDataClicked()">
+                <i class="fa fa-font"></i>Copy Export Data
+            </button>
+        </div>
+        <textarea readonly class="form-control" id="copy-area" style="margin-bottom: 10px; width: 100%; resize:vertical;" ng-if="showData">{{exportData()}}</textarea>
+    </div>
+    <div class="modal-footer">
+        <ul class="btn-list pull-right">
+            <li>
+                <button type="button" class="btn btn-default btn-with-icon" ng-click="$dismiss()">
+                    <i class="ion-android-cancel"></i>Close
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>

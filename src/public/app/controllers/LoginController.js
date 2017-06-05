@@ -93,6 +93,24 @@
                     return $state.current.name == state && comparator.test(params, $rootScope.stateParams);
                 };
 
+                $rootScope.export = function () {
+                    $uibModal.open({
+                        animation: true,
+                        templateUrl: 'app/export.html',
+                        controller: 'ImportExportCtrl',
+                        size: 'md'
+                    });
+                };
+
+                $rootScope.import = function () {
+                    $uibModal.open({
+                        animation: true,
+                        templateUrl: 'app/import.html',
+                        controller: 'ImportExportCtrl',
+                        size: 'md'
+                    });
+                };
+
                 $rootScope.getProfileById = function (id) {
                     for (var i = 0; i < $rootScope.allProfiles.length; i++) {
                         var profile = $rootScope.allProfiles[i];

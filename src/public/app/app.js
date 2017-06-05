@@ -16,4 +16,5 @@
             'angular-progress-button-styles',
             'BlurAdmin.theme'
         ]);
+
 })();

@@ -2,64 +2,48 @@
     <div class="auth-block">
         <h1>Sign in to BlurMonitor</h1>
 
-        <ul class="list-inline" style="text-align: center;">
-            <li ng-repeat="profile in allProfiles" class="profile-thumbnail">
-                <a href="javascript:void(0)" ng-click="login(profile.id)" class="thumbnail login-box">
-                    <div class="bg" style="background-color: {{profile.color}};"></div>
-                    <img ng-src="/assets/img/app/avatar/{{profile.avatar}}.png">
-                    <div class="desc">{{profile.name}}</div>
-                </a>
-            </li>
-            <li class="profile-thumbnail">
-                <a href="javascript:void(0)" ng-click="register()" class="thumbnail login-box">
-                    <div class="bg"></div>
-                    <div class="new-profile"><i class="ion-ios-person"></i></div>
-                    <div class="desc">Create Profile...</div>
-                </a>
-            </li>
-        </ul>
+        <div>
+            <ul class="list-inline" style="text-align: center;">
+                <li ng-repeat="profile in allProfiles" class="profile-thumbnail">
+                    <a href="javascript:void(0)" ng-click="login(profile.id)" class="thumbnail login-box">
+                        <div class="bg" style="background-color: {{profile.color}};"></div>
+                        <img ng-src="/assets/img/app/avatar/{{profile.avatar}}.png">
+                        <div class="desc">{{profile.name}}</div>
+                    </a>
+                </li>
+                <li class="profile-thumbnail">
+                    <a href="javascript:void(0)" ng-click="register()" class="thumbnail login-box">
+                        <div class="bg"></div>
+                        <div class="new-profile"><i class="ion-ios-person"></i></div>
+                        <div class="desc">Create Profile...</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
+        <div class="auth-sep"><span><span>Live monitoring tools for server applications.</span></span></div>
 
-        <!--<a href="/register" class="auth-link">Don't have a profile? Sign up!</a>-->
+        <!--<ul class="btn-list clearfix">-->
+            <!--<li>-->
+                <!--<button type="button" class="btn btn-default btn-with-icon" ng-click="import()">-->
+                    <!--<i class="fa fa-cloud-download"></i>Import-->
+                <!--</button>-->
+            <!--</li>-->
+            <!--<li>-->
+                <!--<button type="button" class="btn btn-default btn-with-icon" ng-click="export()">-->
+                    <!--<i class="fa fa-cloud-upload"></i>Export-->
+                <!--</button>-->
+            <!--</li>-->
+        <!--</ul>-->
 
-        <!--<form class="form-horizontal">-->
-            <!--<div class="form-group">-->
-                <!--<label for="inputEmail3" class="col-sm-3 control-label">Email</label>-->
-
-                <!--<div class="col-sm-9">-->
-                    <!--<div class="field-wrapper">-->
-                        <!--<input type="email" class="form-control" id="inputEmail3" placeholder="Email">-->
-                        <!--<i class="ion-android-cancel form-control-feedback" aria-hidden="true"></i>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="form-group">-->
-                <!--<label for="inputPassword3" class="col-sm-3 control-label">Password</label>-->
-
-                <!--<div class="col-sm-9">-->
-                    <!--<div class="field-wrapper">-->
-                        <!--<input type="password" class="form-control" id="inputPassword3" placeholder="Password">-->
-                        <!--<i class="ion-android-cancel form-control-feedback" aria-hidden="true"></i>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="form-group">-->
-                <!--<div class="col-sm-offset-3 col-sm-9">-->
-                    <!--<button ng-click="login()" class="btn btn-default btn-auth">Sign in</button>-->
-                    <!--&lt;!&ndash;<a href class="forgot-pass">Forgot password?</a>&ndash;&gt;-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</form>-->
-
-        <!--<div class="auth-sep"><span><span>or Sign in with one click</span></span></div>-->
-
-        <!--<div class="al-share-auth">-->
-            <!--<ul class="al-share clearfix">-->
-                <!--<li><i class="socicon socicon-facebook" title="Share on Facebook"></i></li>-->
-                <!--<li><i class="socicon socicon-twitter" title="Share on Twitter"></i></li>-->
-                <!--<li><i class="socicon socicon-google" title="Share on Google Plus"></i></li>-->
-            <!--</ul>-->
-        <!--</div>-->
+        <div class="btn-list-centered">
+            <button type="button" class="btn btn-default btn-with-icon" ng-click="import()">
+                <i class="fa fa-cloud-download"></i>Import
+            </button>
+            <button type="button" class="btn btn-default btn-with-icon" ng-click="export()">
+                <i class="fa fa-cloud-upload"></i>Export
+            </button>
+        </div>
 
     </div>
 </main>

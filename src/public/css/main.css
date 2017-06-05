@@ -295,15 +295,13 @@ option {
   border-bottom: none;
   padding: 20px;
 }
-.btn.btn-default {
-  border-width: 1px;
-  color: #ffffff;
+.btn.btn-default-flipped {
   background: transparent;
-  border-color: #ffffff;
+  border: 1px solid #7d7d7d;
+  color: #7d7d7d;
 }
-.btn.btn-default:active, .btn.btn-default:target {
+.btn.btn-default-flipped:active, .btn.btn-default-flipped:target {
   background-color: rgba(0, 0, 0, 0.2);
-  color: #ffffff;
 }
 .bottom-buttons {
   border-top: 1px solid #ffffff;
@@ -366,6 +364,16 @@ option {
   border-radius: 50%;
   position: absolute;
   margin: -3px 0 0 -1px;
+}
+.btn-list-centered {
+  text-align: center;
+}
+.btn-list-centered > * {
+  display: inline-block;
+  margin-right: 18px;
+}
+.btn-list-centered > *:last-child {
+  margin-right: 0;
 }
 
 
@@ -1713,14 +1721,14 @@ label.custom-input-danger > span:hover:before {
 .dropdown-menu {
   border-radius: 5px; }
 
-.bootstrap-select.btn-group button.btn.btn-default {
+.bootstrap-select.btn-group .btn.btn-default {
   background: transparent;
   color: #ffffff; }
-  .bootstrap-select.btn-group button.btn.btn-default:hover {
+  .bootstrap-select.btn-group .btn.btn-default:hover {
     background: rgba(0, 0, 0, 0.2);
     box-shadow: none;
     outline: 0 !important; }
-  .bootstrap-select.btn-group button.btn.btn-default:active {
+  .bootstrap-select.btn-group .btn.btn-default:active {
     background: rgba(0, 0, 0, 0.2);
     box-shadow: none; }
 
@@ -2738,141 +2746,141 @@ a.learn-more {
   background-color: #c54949;
   border-color: #c54949; }
 
-button.btn.btn-primary {
+.btn.btn-primary {
   background: #209e91;
   border-color: #209e91; }
-  button.btn.btn-primary.disabled, button.btn.btn-primary[disabled], fieldset[disabled] button.btn.btn-primary, button.btn.btn-primary.disabled:hover, button.btn.btn-primary[disabled]:hover,
-  fieldset[disabled] button.btn.btn-primary:hover, button.btn.btn-primary.disabled:focus, button.btn.btn-primary[disabled]:focus, fieldset[disabled] button.btn.btn-primary:focus, button.btn.btn-primary.disabled.focus, button.btn.btn-primary[disabled].focus, fieldset[disabled] button.btn.btn-primary.focus, button.btn.btn-primary.disabled:active, button.btn.btn-primary[disabled]:active, fieldset[disabled] button.btn.btn-primary:active, button.btn.btn-primary.disabled.active, button.btn.btn-primary[disabled].active,
-  fieldset[disabled] button.btn.btn-primary.active {
+  .btn.btn-primary.disabled, .btn.btn-primary[disabled], fieldset[disabled] .btn.btn-primary, .btn.btn-primary.disabled:hover, .btn.btn-primary[disabled]:hover,
+  fieldset[disabled] .btn.btn-primary:hover, .btn.btn-primary.disabled:focus, .btn.btn-primary[disabled]:focus, fieldset[disabled] .btn.btn-primary:focus, .btn.btn-primary.disabled.focus, .btn.btn-primary[disabled].focus, fieldset[disabled] .btn.btn-primary.focus, .btn.btn-primary.disabled:active, .btn.btn-primary[disabled]:active, fieldset[disabled] .btn.btn-primary:active, .btn.btn-primary.disabled.active, .btn.btn-primary[disabled].active,
+  fieldset[disabled] .btn.btn-primary.active {
     background: #209e91;
     border-color: #2caa9d; }
-    button.btn.btn-primary.disabled:hover, button.btn.btn-primary[disabled]:hover, fieldset[disabled] button.btn.btn-primary:hover, button.btn.btn-primary.disabled:hover:hover, button.btn.btn-primary[disabled]:hover:hover,
-    fieldset[disabled] button.btn.btn-primary:hover:hover, button.btn.btn-primary.disabled:focus:hover, button.btn.btn-primary[disabled]:focus:hover, fieldset[disabled] button.btn.btn-primary:focus:hover, button.btn.btn-primary.disabled.focus:hover, button.btn.btn-primary[disabled].focus:hover, fieldset[disabled] button.btn.btn-primary.focus:hover, button.btn.btn-primary.disabled:active:hover, button.btn.btn-primary[disabled]:active:hover, fieldset[disabled] button.btn.btn-primary:active:hover, button.btn.btn-primary.disabled.active:hover, button.btn.btn-primary[disabled].active:hover,
-    fieldset[disabled] button.btn.btn-primary.active:hover {
+    .btn.btn-primary.disabled:hover, .btn.btn-primary[disabled]:hover, fieldset[disabled] .btn.btn-primary:hover, .btn.btn-primary.disabled:hover:hover, .btn.btn-primary[disabled]:hover:hover,
+    fieldset[disabled] .btn.btn-primary:hover:hover, .btn.btn-primary.disabled:focus:hover, .btn.btn-primary[disabled]:focus:hover, fieldset[disabled] .btn.btn-primary:focus:hover, .btn.btn-primary.disabled.focus:hover, .btn.btn-primary[disabled].focus:hover, fieldset[disabled] .btn.btn-primary.focus:hover, .btn.btn-primary.disabled:active:hover, .btn.btn-primary[disabled]:active:hover, fieldset[disabled] .btn.btn-primary:active:hover, .btn.btn-primary.disabled.active:hover, .btn.btn-primary[disabled].active:hover,
+    fieldset[disabled] .btn.btn-primary.active:hover {
       -webkit-transform: none;
               transform: none; }
-  button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-primary.focus, button.btn.btn-primary:active, button.btn.btn-primary.active {
+  .btn.btn-primary:hover, .btn.btn-primary:focus, .btn.btn-primary.focus, .btn.btn-primary:active, .btn.btn-primary.active {
     background: #209e91;
     border-color: #088679; }
-  button.btn.btn-primary:active, button.btn.btn-primary:target {
+  .btn.btn-primary:active, .btn.btn-primary:target {
     background-color: #1b867b; }
 
-button.btn.btn-default {
+.btn.btn-default {
   border-width: 1px;
   color: #ffffff;
   background: transparent;
   border-color: #ffffff; }
-  button.btn.btn-default.disabled, button.btn.btn-default[disabled], fieldset[disabled] button.btn.btn-default, button.btn.btn-default.disabled:hover, button.btn.btn-default[disabled]:hover,
-  fieldset[disabled] button.btn.btn-default:hover, button.btn.btn-default.disabled:focus, button.btn.btn-default[disabled]:focus, fieldset[disabled] button.btn.btn-default:focus, button.btn.btn-default.disabled.focus, button.btn.btn-default[disabled].focus, fieldset[disabled] button.btn.btn-default.focus, button.btn.btn-default.disabled:active, button.btn.btn-default[disabled]:active, fieldset[disabled] button.btn.btn-default:active, button.btn.btn-default.disabled.active, button.btn.btn-default[disabled].active,
-  fieldset[disabled] button.btn.btn-default.active {
+  .btn.btn-default.disabled, .btn.btn-default[disabled], fieldset[disabled] .btn.btn-default, .btn.btn-default.disabled:hover, .btn.btn-default[disabled]:hover,
+  fieldset[disabled] .btn.btn-default:hover, .btn.btn-default.disabled:focus, .btn.btn-default[disabled]:focus, fieldset[disabled] .btn.btn-default:focus, .btn.btn-default.disabled.focus, .btn.btn-default[disabled].focus, fieldset[disabled] .btn.btn-default.focus, .btn.btn-default.disabled:active, .btn.btn-default[disabled]:active, fieldset[disabled] .btn.btn-default:active, .btn.btn-default.disabled.active, .btn.btn-default[disabled].active,
+  fieldset[disabled] .btn.btn-default.active {
     background: transparent;
     border-color: white; }
-    button.btn.btn-default.disabled:hover, button.btn.btn-default[disabled]:hover, fieldset[disabled] button.btn.btn-default:hover, button.btn.btn-default.disabled:hover:hover, button.btn.btn-default[disabled]:hover:hover,
-    fieldset[disabled] button.btn.btn-default:hover:hover, button.btn.btn-default.disabled:focus:hover, button.btn.btn-default[disabled]:focus:hover, fieldset[disabled] button.btn.btn-default:focus:hover, button.btn.btn-default.disabled.focus:hover, button.btn.btn-default[disabled].focus:hover, fieldset[disabled] button.btn.btn-default.focus:hover, button.btn.btn-default.disabled:active:hover, button.btn.btn-default[disabled]:active:hover, fieldset[disabled] button.btn.btn-default:active:hover, button.btn.btn-default.disabled.active:hover, button.btn.btn-default[disabled].active:hover,
-    fieldset[disabled] button.btn.btn-default.active:hover {
+    .btn.btn-default.disabled:hover, .btn.btn-default[disabled]:hover, fieldset[disabled] .btn.btn-default:hover, .btn.btn-default.disabled:hover:hover, .btn.btn-default[disabled]:hover:hover,
+    fieldset[disabled] .btn.btn-default:hover:hover, .btn.btn-default.disabled:focus:hover, .btn.btn-default[disabled]:focus:hover, fieldset[disabled] .btn.btn-default:focus:hover, .btn.btn-default.disabled.focus:hover, .btn.btn-default[disabled].focus:hover, fieldset[disabled] .btn.btn-default.focus:hover, .btn.btn-default.disabled:active:hover, .btn.btn-default[disabled]:active:hover, fieldset[disabled] .btn.btn-default:active:hover, .btn.btn-default.disabled.active:hover, .btn.btn-default[disabled].active:hover,
+    fieldset[disabled] .btn.btn-default.active:hover {
       -webkit-transform: none;
               transform: none; }
-  button.btn.btn-default:hover, button.btn.btn-default:focus, button.btn.btn-default.focus, button.btn.btn-default:active, button.btn.btn-default.active {
+  .btn.btn-default:hover, .btn.btn-default:focus, .btn.btn-default.focus, .btn.btn-default:active, .btn.btn-default.active {
     background: transparent;
     border-color: #e7e7e7; }
-  button.btn.btn-default:active, button.btn.btn-default:target {
+  .btn.btn-default:active, .btn.btn-default:target {
     background-color: rgba(0, 0, 0, 0.2);
     color: #ffffff; }
 
-button.btn.btn-success {
+.btn.btn-success {
   background: #90b900;
   border-color: #90b900; }
-  button.btn.btn-success.disabled, button.btn.btn-success[disabled], fieldset[disabled] button.btn.btn-success, button.btn.btn-success.disabled:hover, button.btn.btn-success[disabled]:hover,
-  fieldset[disabled] button.btn.btn-success:hover, button.btn.btn-success.disabled:focus, button.btn.btn-success[disabled]:focus, fieldset[disabled] button.btn.btn-success:focus, button.btn.btn-success.disabled.focus, button.btn.btn-success[disabled].focus, fieldset[disabled] button.btn.btn-success.focus, button.btn.btn-success.disabled:active, button.btn.btn-success[disabled]:active, fieldset[disabled] button.btn.btn-success:active, button.btn.btn-success.disabled.active, button.btn.btn-success[disabled].active,
-  fieldset[disabled] button.btn.btn-success.active {
+  .btn.btn-success.disabled, .btn.btn-success[disabled], fieldset[disabled] .btn.btn-success, .btn.btn-success.disabled:hover, .btn.btn-success[disabled]:hover,
+  fieldset[disabled] .btn.btn-success:hover, .btn.btn-success.disabled:focus, .btn.btn-success[disabled]:focus, fieldset[disabled] .btn.btn-success:focus, .btn.btn-success.disabled.focus, .btn.btn-success[disabled].focus, fieldset[disabled] .btn.btn-success.focus, .btn.btn-success.disabled:active, .btn.btn-success[disabled]:active, fieldset[disabled] .btn.btn-success:active, .btn.btn-success.disabled.active, .btn.btn-success[disabled].active,
+  fieldset[disabled] .btn.btn-success.active {
     background: #90b900;
     border-color: #9cc50c; }
-    button.btn.btn-success.disabled:hover, button.btn.btn-success[disabled]:hover, fieldset[disabled] button.btn.btn-success:hover, button.btn.btn-success.disabled:hover:hover, button.btn.btn-success[disabled]:hover:hover,
-    fieldset[disabled] button.btn.btn-success:hover:hover, button.btn.btn-success.disabled:focus:hover, button.btn.btn-success[disabled]:focus:hover, fieldset[disabled] button.btn.btn-success:focus:hover, button.btn.btn-success.disabled.focus:hover, button.btn.btn-success[disabled].focus:hover, fieldset[disabled] button.btn.btn-success.focus:hover, button.btn.btn-success.disabled:active:hover, button.btn.btn-success[disabled]:active:hover, fieldset[disabled] button.btn.btn-success:active:hover, button.btn.btn-success.disabled.active:hover, button.btn.btn-success[disabled].active:hover,
-    fieldset[disabled] button.btn.btn-success.active:hover {
+    .btn.btn-success.disabled:hover, .btn.btn-success[disabled]:hover, fieldset[disabled] .btn.btn-success:hover, .btn.btn-success.disabled:hover:hover, .btn.btn-success[disabled]:hover:hover,
+    fieldset[disabled] .btn.btn-success:hover:hover, .btn.btn-success.disabled:focus:hover, .btn.btn-success[disabled]:focus:hover, fieldset[disabled] .btn.btn-success:focus:hover, .btn.btn-success.disabled.focus:hover, .btn.btn-success[disabled].focus:hover, fieldset[disabled] .btn.btn-success.focus:hover, .btn.btn-success.disabled:active:hover, .btn.btn-success[disabled]:active:hover, fieldset[disabled] .btn.btn-success:active:hover, .btn.btn-success.disabled.active:hover, .btn.btn-success[disabled].active:hover,
+    fieldset[disabled] .btn.btn-success.active:hover {
       -webkit-transform: none;
               transform: none; }
-  button.btn.btn-success:hover, button.btn.btn-success:focus, button.btn.btn-success.focus, button.btn.btn-success:active, button.btn.btn-success.active {
+  .btn.btn-success:hover, .btn.btn-success:focus, .btn.btn-success.focus, .btn.btn-success:active, .btn.btn-success.active {
     background: #90b900;
     border-color: #78a100; }
-  button.btn.btn-success:active, button.btn.btn-success:target {
+  .btn.btn-success:active, .btn.btn-success:target {
     background-color: #7a9d00; }
 
-button.btn.btn-info {
+.btn.btn-info {
   background: #2dacd1;
   border-color: #2dacd1; }
-  button.btn.btn-info.disabled, button.btn.btn-info[disabled], fieldset[disabled] button.btn.btn-info, button.btn.btn-info.disabled:hover, button.btn.btn-info[disabled]:hover,
-  fieldset[disabled] button.btn.btn-info:hover, button.btn.btn-info.disabled:focus, button.btn.btn-info[disabled]:focus, fieldset[disabled] button.btn.btn-info:focus, button.btn.btn-info.disabled.focus, button.btn.btn-info[disabled].focus, fieldset[disabled] button.btn.btn-info.focus, button.btn.btn-info.disabled:active, button.btn.btn-info[disabled]:active, fieldset[disabled] button.btn.btn-info:active, button.btn.btn-info.disabled.active, button.btn.btn-info[disabled].active,
-  fieldset[disabled] button.btn.btn-info.active {
+  .btn.btn-info.disabled, .btn.btn-info[disabled], fieldset[disabled] .btn.btn-info, .btn.btn-info.disabled:hover, .btn.btn-info[disabled]:hover,
+  fieldset[disabled] .btn.btn-info:hover, .btn.btn-info.disabled:focus, .btn.btn-info[disabled]:focus, fieldset[disabled] .btn.btn-info:focus, .btn.btn-info.disabled.focus, .btn.btn-info[disabled].focus, fieldset[disabled] .btn.btn-info.focus, .btn.btn-info.disabled:active, .btn.btn-info[disabled]:active, fieldset[disabled] .btn.btn-info:active, .btn.btn-info.disabled.active, .btn.btn-info[disabled].active,
+  fieldset[disabled] .btn.btn-info.active {
     background: #2dacd1;
     border-color: #39b8dd; }
-    button.btn.btn-info.disabled:hover, button.btn.btn-info[disabled]:hover, fieldset[disabled] button.btn.btn-info:hover, button.btn.btn-info.disabled:hover:hover, button.btn.btn-info[disabled]:hover:hover,
-    fieldset[disabled] button.btn.btn-info:hover:hover, button.btn.btn-info.disabled:focus:hover, button.btn.btn-info[disabled]:focus:hover, fieldset[disabled] button.btn.btn-info:focus:hover, button.btn.btn-info.disabled.focus:hover, button.btn.btn-info[disabled].focus:hover, fieldset[disabled] button.btn.btn-info.focus:hover, button.btn.btn-info.disabled:active:hover, button.btn.btn-info[disabled]:active:hover, fieldset[disabled] button.btn.btn-info:active:hover, button.btn.btn-info.disabled.active:hover, button.btn.btn-info[disabled].active:hover,
-    fieldset[disabled] button.btn.btn-info.active:hover {
+    .btn.btn-info.disabled:hover, .btn.btn-info[disabled]:hover, fieldset[disabled] .btn.btn-info:hover, .btn.btn-info.disabled:hover:hover, .btn.btn-info[disabled]:hover:hover,
+    fieldset[disabled] .btn.btn-info:hover:hover, .btn.btn-info.disabled:focus:hover, .btn.btn-info[disabled]:focus:hover, fieldset[disabled] .btn.btn-info:focus:hover, .btn.btn-info.disabled.focus:hover, .btn.btn-info[disabled].focus:hover, fieldset[disabled] .btn.btn-info.focus:hover, .btn.btn-info.disabled:active:hover, .btn.btn-info[disabled]:active:hover, fieldset[disabled] .btn.btn-info:active:hover, .btn.btn-info.disabled.active:hover, .btn.btn-info[disabled].active:hover,
+    fieldset[disabled] .btn.btn-info.active:hover {
       -webkit-transform: none;
               transform: none; }
-  button.btn.btn-info:hover, button.btn.btn-info:focus, button.btn.btn-info.focus, button.btn.btn-info:active, button.btn.btn-info.active {
+  .btn.btn-info:hover, .btn.btn-info:focus, .btn.btn-info.focus, .btn.btn-info:active, .btn.btn-info.active {
     background: #2dacd1;
     border-color: #1594b9; }
-  button.btn.btn-info:active, button.btn.btn-info:target {
+  .btn.btn-info:active, .btn.btn-info:target {
     background-color: #2692b2; }
 
-button.btn.btn-warning {
+.btn.btn-warning {
   background: #dfb81c;
   border-color: #dfb81c; }
-  button.btn.btn-warning.disabled, button.btn.btn-warning[disabled], fieldset[disabled] button.btn.btn-warning, button.btn.btn-warning.disabled:hover, button.btn.btn-warning[disabled]:hover,
-  fieldset[disabled] button.btn.btn-warning:hover, button.btn.btn-warning.disabled:focus, button.btn.btn-warning[disabled]:focus, fieldset[disabled] button.btn.btn-warning:focus, button.btn.btn-warning.disabled.focus, button.btn.btn-warning[disabled].focus, fieldset[disabled] button.btn.btn-warning.focus, button.btn.btn-warning.disabled:active, button.btn.btn-warning[disabled]:active, fieldset[disabled] button.btn.btn-warning:active, button.btn.btn-warning.disabled.active, button.btn.btn-warning[disabled].active,
-  fieldset[disabled] button.btn.btn-warning.active {
+  .btn.btn-warning.disabled, .btn.btn-warning[disabled], fieldset[disabled] .btn.btn-warning, .btn.btn-warning.disabled:hover, .btn.btn-warning[disabled]:hover,
+  fieldset[disabled] .btn.btn-warning:hover, .btn.btn-warning.disabled:focus, .btn.btn-warning[disabled]:focus, fieldset[disabled] .btn.btn-warning:focus, .btn.btn-warning.disabled.focus, .btn.btn-warning[disabled].focus, fieldset[disabled] .btn.btn-warning.focus, .btn.btn-warning.disabled:active, .btn.btn-warning[disabled]:active, fieldset[disabled] .btn.btn-warning:active, .btn.btn-warning.disabled.active, .btn.btn-warning[disabled].active,
+  fieldset[disabled] .btn.btn-warning.active {
     background: #dfb81c;
     border-color: #ebc428; }
-    button.btn.btn-warning.disabled:hover, button.btn.btn-warning[disabled]:hover, fieldset[disabled] button.btn.btn-warning:hover, button.btn.btn-warning.disabled:hover:hover, button.btn.btn-warning[disabled]:hover:hover,
-    fieldset[disabled] button.btn.btn-warning:hover:hover, button.btn.btn-warning.disabled:focus:hover, button.btn.btn-warning[disabled]:focus:hover, fieldset[disabled] button.btn.btn-warning:focus:hover, button.btn.btn-warning.disabled.focus:hover, button.btn.btn-warning[disabled].focus:hover, fieldset[disabled] button.btn.btn-warning.focus:hover, button.btn.btn-warning.disabled:active:hover, button.btn.btn-warning[disabled]:active:hover, fieldset[disabled] button.btn.btn-warning:active:hover, button.btn.btn-warning.disabled.active:hover, button.btn.btn-warning[disabled].active:hover,
-    fieldset[disabled] button.btn.btn-warning.active:hover {
+    .btn.btn-warning.disabled:hover, .btn.btn-warning[disabled]:hover, fieldset[disabled] .btn.btn-warning:hover, .btn.btn-warning.disabled:hover:hover, .btn.btn-warning[disabled]:hover:hover,
+    fieldset[disabled] .btn.btn-warning:hover:hover, .btn.btn-warning.disabled:focus:hover, .btn.btn-warning[disabled]:focus:hover, fieldset[disabled] .btn.btn-warning:focus:hover, .btn.btn-warning.disabled.focus:hover, .btn.btn-warning[disabled].focus:hover, fieldset[disabled] .btn.btn-warning.focus:hover, .btn.btn-warning.disabled:active:hover, .btn.btn-warning[disabled]:active:hover, fieldset[disabled] .btn.btn-warning:active:hover, .btn.btn-warning.disabled.active:hover, .btn.btn-warning[disabled].active:hover,
+    fieldset[disabled] .btn.btn-warning.active:hover {
       -webkit-transform: none;
               transform: none; }
-  button.btn.btn-warning:hover, button.btn.btn-warning:focus, button.btn.btn-warning.focus, button.btn.btn-warning:active, button.btn.btn-warning.active {
+  .btn.btn-warning:hover, .btn.btn-warning:focus, .btn.btn-warning.focus, .btn.btn-warning:active, .btn.btn-warning.active {
     background: #dfb81c;
     border-color: #c7a004; }
-  button.btn.btn-warning:active, button.btn.btn-warning:target {
+  .btn.btn-warning:active, .btn.btn-warning:target {
     background-color: #be9c18; }
 
-button.btn.btn-danger {
+.btn.btn-danger {
   background: #e85656;
   border-color: #e85656; }
-  button.btn.btn-danger.disabled, button.btn.btn-danger[disabled], fieldset[disabled] button.btn.btn-danger, button.btn.btn-danger.disabled:hover, button.btn.btn-danger[disabled]:hover,
-  fieldset[disabled] button.btn.btn-danger:hover, button.btn.btn-danger.disabled:focus, button.btn.btn-danger[disabled]:focus, fieldset[disabled] button.btn.btn-danger:focus, button.btn.btn-danger.disabled.focus, button.btn.btn-danger[disabled].focus, fieldset[disabled] button.btn.btn-danger.focus, button.btn.btn-danger.disabled:active, button.btn.btn-danger[disabled]:active, fieldset[disabled] button.btn.btn-danger:active, button.btn.btn-danger.disabled.active, button.btn.btn-danger[disabled].active,
-  fieldset[disabled] button.btn.btn-danger.active {
+  .btn.btn-danger.disabled, .btn.btn-danger[disabled], fieldset[disabled] .btn.btn-danger, .btn.btn-danger.disabled:hover, .btn.btn-danger[disabled]:hover,
+  fieldset[disabled] .btn.btn-danger:hover, .btn.btn-danger.disabled:focus, .btn.btn-danger[disabled]:focus, fieldset[disabled] .btn.btn-danger:focus, .btn.btn-danger.disabled.focus, .btn.btn-danger[disabled].focus, fieldset[disabled] .btn.btn-danger.focus, .btn.btn-danger.disabled:active, .btn.btn-danger[disabled]:active, fieldset[disabled] .btn.btn-danger:active, .btn.btn-danger.disabled.active, .btn.btn-danger[disabled].active,
+  fieldset[disabled] .btn.btn-danger.active {
     background: #e85656;
     border-color: #f46262; }
-    button.btn.btn-danger.disabled:hover, button.btn.btn-danger[disabled]:hover, fieldset[disabled] button.btn.btn-danger:hover, button.btn.btn-danger.disabled:hover:hover, button.btn.btn-danger[disabled]:hover:hover,
-    fieldset[disabled] button.btn.btn-danger:hover:hover, button.btn.btn-danger.disabled:focus:hover, button.btn.btn-danger[disabled]:focus:hover, fieldset[disabled] button.btn.btn-danger:focus:hover, button.btn.btn-danger.disabled.focus:hover, button.btn.btn-danger[disabled].focus:hover, fieldset[disabled] button.btn.btn-danger.focus:hover, button.btn.btn-danger.disabled:active:hover, button.btn.btn-danger[disabled]:active:hover, fieldset[disabled] button.btn.btn-danger:active:hover, button.btn.btn-danger.disabled.active:hover, button.btn.btn-danger[disabled].active:hover,
-    fieldset[disabled] button.btn.btn-danger.active:hover {
+    .btn.btn-danger.disabled:hover, .btn.btn-danger[disabled]:hover, fieldset[disabled] .btn.btn-danger:hover, .btn.btn-danger.disabled:hover:hover, .btn.btn-danger[disabled]:hover:hover,
+    fieldset[disabled] .btn.btn-danger:hover:hover, .btn.btn-danger.disabled:focus:hover, .btn.btn-danger[disabled]:focus:hover, fieldset[disabled] .btn.btn-danger:focus:hover, .btn.btn-danger.disabled.focus:hover, .btn.btn-danger[disabled].focus:hover, fieldset[disabled] .btn.btn-danger.focus:hover, .btn.btn-danger.disabled:active:hover, .btn.btn-danger[disabled]:active:hover, fieldset[disabled] .btn.btn-danger:active:hover, .btn.btn-danger.disabled.active:hover, .btn.btn-danger[disabled].active:hover,
+    fieldset[disabled] .btn.btn-danger.active:hover {
       -webkit-transform: none;
               transform: none; }
-  button.btn.btn-danger:hover, button.btn.btn-danger:focus, button.btn.btn-danger.focus, button.btn.btn-danger:active, button.btn.btn-danger.active {
+  .btn.btn-danger:hover, .btn.btn-danger:focus, .btn.btn-danger.focus, .btn.btn-danger:active, .btn.btn-danger.active {
     background: #e85656;
     border-color: #d03e3e; }
-  button.btn.btn-danger:active, button.btn.btn-danger:target {
+  .btn.btn-danger:active, .btn.btn-danger:target {
     background-color: #c54949; }
 
-button.btn.btn-inverse {
+.btn.btn-inverse {
   background: #eeeeee;
   border-color: #eeeeee;
   color: #ffffff; }
-  button.btn.btn-inverse.disabled, button.btn.btn-inverse[disabled], fieldset[disabled] button.btn.btn-inverse, button.btn.btn-inverse.disabled:hover, button.btn.btn-inverse[disabled]:hover,
-  fieldset[disabled] button.btn.btn-inverse:hover, button.btn.btn-inverse.disabled:focus, button.btn.btn-inverse[disabled]:focus, fieldset[disabled] button.btn.btn-inverse:focus, button.btn.btn-inverse.disabled.focus, button.btn.btn-inverse[disabled].focus, fieldset[disabled] button.btn.btn-inverse.focus, button.btn.btn-inverse.disabled:active, button.btn.btn-inverse[disabled]:active, fieldset[disabled] button.btn.btn-inverse:active, button.btn.btn-inverse.disabled.active, button.btn.btn-inverse[disabled].active,
-  fieldset[disabled] button.btn.btn-inverse.active {
+  .btn.btn-inverse.disabled, .btn.btn-inverse[disabled], fieldset[disabled] .btn.btn-inverse, .btn.btn-inverse.disabled:hover, .btn.btn-inverse[disabled]:hover,
+  fieldset[disabled] .btn.btn-inverse:hover, .btn.btn-inverse.disabled:focus, .btn.btn-inverse[disabled]:focus, fieldset[disabled] .btn.btn-inverse:focus, .btn.btn-inverse.disabled.focus, .btn.btn-inverse[disabled].focus, fieldset[disabled] .btn.btn-inverse.focus, .btn.btn-inverse.disabled:active, .btn.btn-inverse[disabled]:active, fieldset[disabled] .btn.btn-inverse:active, .btn.btn-inverse.disabled.active, .btn.btn-inverse[disabled].active,
+  fieldset[disabled] .btn.btn-inverse.active {
     background: #eeeeee;
     border-color: #fafafa; }
-    button.btn.btn-inverse.disabled:hover, button.btn.btn-inverse[disabled]:hover, fieldset[disabled] button.btn.btn-inverse:hover, button.btn.btn-inverse.disabled:hover:hover, button.btn.btn-inverse[disabled]:hover:hover,
-    fieldset[disabled] button.btn.btn-inverse:hover:hover, button.btn.btn-inverse.disabled:focus:hover, button.btn.btn-inverse[disabled]:focus:hover, fieldset[disabled] button.btn.btn-inverse:focus:hover, button.btn.btn-inverse.disabled.focus:hover, button.btn.btn-inverse[disabled].focus:hover, fieldset[disabled] button.btn.btn-inverse.focus:hover, button.btn.btn-inverse.disabled:active:hover, button.btn.btn-inverse[disabled]:active:hover, fieldset[disabled] button.btn.btn-inverse:active:hover, button.btn.btn-inverse.disabled.active:hover, button.btn.btn-inverse[disabled].active:hover,
-    fieldset[disabled] button.btn.btn-inverse.active:hover {
+    .btn.btn-inverse.disabled:hover, .btn.btn-inverse[disabled]:hover, fieldset[disabled] .btn.btn-inverse:hover, .btn.btn-inverse.disabled:hover:hover, .btn.btn-inverse[disabled]:hover:hover,
+    fieldset[disabled] .btn.btn-inverse:hover:hover, .btn.btn-inverse.disabled:focus:hover, .btn.btn-inverse[disabled]:focus:hover, fieldset[disabled] .btn.btn-inverse:focus:hover, .btn.btn-inverse.disabled.focus:hover, .btn.btn-inverse[disabled].focus:hover, fieldset[disabled] .btn.btn-inverse.focus:hover, .btn.btn-inverse.disabled:active:hover, .btn.btn-inverse[disabled]:active:hover, fieldset[disabled] .btn.btn-inverse:active:hover, .btn.btn-inverse.disabled.active:hover, .btn.btn-inverse[disabled].active:hover,
+    fieldset[disabled] .btn.btn-inverse.active:hover {
       -webkit-transform: none;
               transform: none; }
-  button.btn.btn-inverse:hover, button.btn.btn-inverse:focus, button.btn.btn-inverse.focus, button.btn.btn-inverse:active, button.btn.btn-inverse.active {
+  .btn.btn-inverse:hover, .btn.btn-inverse:focus, .btn.btn-inverse.focus, .btn.btn-inverse:active, .btn.btn-inverse.active {
     background: #eeeeee;
     border-color: #d6d6d6; }
-  button.btn.btn-inverse:active, button.btn.btn-inverse:target, button.btn.btn-inverse:hover {
+  .btn.btn-inverse:active, .btn.btn-inverse:target, .btn.btn-inverse:hover {
     background-color: #eeeeee;
     color: #ffffff; }
 
@@ -2883,29 +2891,29 @@ button.btn.btn-inverse {
   -webkit-transform: none;
           transform: none; }
 
-.btn-group button.btn.btn-primary {
+.btn-group .btn.btn-primary {
   border-color: #149285; }
-  .btn-group button.btn.btn-primary:hover {
+  .btn-group .btn.btn-primary:hover {
     border-color: #088679; }
 
-.btn-group button.btn.btn-danger {
+.btn-group .btn.btn-danger {
   border-color: #dc4a4a; }
-  .btn-group button.btn.btn-danger:hover {
+  .btn-group .btn.btn-danger:hover {
     border-color: #d03e3e; }
 
-.btn-group button.btn.btn-info {
+.btn-group .btn.btn-info {
   border-color: #21a0c5; }
-  .btn-group button.btn.btn-info:hover {
+  .btn-group .btn.btn-info:hover {
     border-color: #1594b9; }
 
-.btn-group button.btn.btn-success {
+.btn-group .btn.btn-success {
   border-color: #84ad00; }
-  .btn-group button.btn.btn-success:hover {
+  .btn-group .btn.btn-success:hover {
     border-color: #78a100; }
 
-.btn-group button.btn.btn-warning {
+.btn-group .btn.btn-warning {
   border-color: #d3ac10; }
-  .btn-group button.btn.btn-warning:hover {
+  .btn-group .btn.btn-warning:hover {
     border-color: #c7a004; }
 
 .btn-group .dropdown-menu {
@@ -2933,118 +2941,118 @@ button.progress-button.progress-button-style-shrink.btn.disabled.progress-button
   -webkit-transform: scaleX(0.1);
           transform: scaleX(0.1); }
 
-button.progress-button.btn.btn-primary {
+button.progress-.btn.btn-primary {
   border-radius: 0; }
-  button.progress-button.btn.btn-primary .content:after, button.progress-button.btn.btn-primary .content:before {
+  button.progress-.btn.btn-primary .content:after, button.progress-.btn.btn-primary .content:before {
     color: black; }
-  button.progress-button.btn.btn-primary.progress-button-style-move-up .content, button.progress-button.btn.btn-primary.progress-button-style-slide-down .content {
+  button.progress-.btn.btn-primary.progress-button-style-move-up .content, button.progress-.btn.btn-primary.progress-button-style-slide-down .content {
     background-color: #17746a; }
-  button.progress-button.btn.btn-primary.progress-button-style-lateral-lines .progress-inner {
+  button.progress-.btn.btn-primary.progress-button-style-lateral-lines .progress-inner {
     border-color: #17746a;
     background: 0 0; }
-  button.progress-button.btn.btn-primary .progress {
+  button.progress-.btn.btn-primary .progress {
     background-color: #17746a;
     box-shadow: 0 1px 0 #17746a; }
-  button.progress-button.btn.btn-primary .progress-inner {
+  button.progress-.btn.btn-primary .progress-inner {
     background-color: #0f4943; }
-  button.progress-button.btn.btn-primary.progress-button-perspective {
+  button.progress-.btn.btn-primary.progress-button-perspective {
     background: none; }
-    button.progress-button.btn.btn-primary.progress-button-perspective .content {
+    button.progress-.btn.btn-primary.progress-button-perspective .content {
       background-color: #209e91; }
 
-button.progress-button.btn.btn-default {
+button.progress-.btn.btn-default {
   border-radius: 0; }
-  button.progress-button.btn.btn-default .content:after, button.progress-button.btn.btn-default .content:before {
+  button.progress-.btn.btn-default .content:after, button.progress-.btn.btn-default .content:before {
     color: rgba(0, 0, 0, 0.2); }
-  button.progress-button.btn.btn-default.progress-button-style-move-up .content, button.progress-button.btn.btn-default.progress-button-style-slide-down .content {
+  button.progress-.btn.btn-default.progress-button-style-move-up .content, button.progress-.btn.btn-default.progress-button-style-slide-down .content {
     background-color: rgba(0, 0, 0, 0.2); }
-  button.progress-button.btn.btn-default.progress-button-style-lateral-lines .progress-inner {
+  button.progress-.btn.btn-default.progress-button-style-lateral-lines .progress-inner {
     border-color: rgba(0, 0, 0, 0.2);
     background: 0 0; }
-  button.progress-button.btn.btn-default .progress {
+  button.progress-.btn.btn-default .progress {
     background-color: rgba(0, 0, 0, 0.2);
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); }
-  button.progress-button.btn.btn-default .progress-inner {
+  button.progress-.btn.btn-default .progress-inner {
     background-color: rgba(0, 0, 0, 0.2); }
-  button.progress-button.btn.btn-default.progress-button-perspective {
+  button.progress-.btn.btn-default.progress-button-perspective {
     background: none; }
-    button.progress-button.btn.btn-default.progress-button-perspective .content {
+    button.progress-.btn.btn-default.progress-button-perspective .content {
       background-color: rgba(0, 0, 0, 0.2); }
 
-button.progress-button.btn.btn-success {
+button.progress-.btn.btn-success {
   border-radius: 0; }
-  button.progress-button.btn.btn-success .content:after, button.progress-button.btn.btn-success .content:before {
+  button.progress-.btn.btn-success .content:after, button.progress-.btn.btn-success .content:before {
     color: black; }
-  button.progress-button.btn.btn-success.progress-button-style-move-up .content, button.progress-button.btn.btn-success.progress-button-style-slide-down .content {
+  button.progress-.btn.btn-success.progress-button-style-move-up .content, button.progress-.btn.btn-success.progress-button-style-slide-down .content {
     background-color: #688600; }
-  button.progress-button.btn.btn-success.progress-button-style-lateral-lines .progress-inner {
+  button.progress-.btn.btn-success.progress-button-style-lateral-lines .progress-inner {
     border-color: #688600;
     background: 0 0; }
-  button.progress-button.btn.btn-success .progress {
+  button.progress-.btn.btn-success .progress {
     background-color: #688600;
     box-shadow: 0 1px 0 #688600; }
-  button.progress-button.btn.btn-success .progress-inner {
+  button.progress-.btn.btn-success .progress-inner {
     background-color: #415300; }
-  button.progress-button.btn.btn-success.progress-button-perspective {
+  button.progress-.btn.btn-success.progress-button-perspective {
     background: none; }
-    button.progress-button.btn.btn-success.progress-button-perspective .content {
+    button.progress-.btn.btn-success.progress-button-perspective .content {
       background-color: #90b900; }
 
-button.progress-button.btn.btn-info {
+button.progress-.btn.btn-info {
   border-radius: 0; }
-  button.progress-button.btn.btn-info .content:after, button.progress-button.btn.btn-info .content:before {
+  button.progress-.btn.btn-info .content:after, button.progress-.btn.btn-info .content:before {
     color: #092229; }
-  button.progress-button.btn.btn-info.progress-button-style-move-up .content, button.progress-button.btn.btn-info.progress-button-style-slide-down .content {
+  button.progress-.btn.btn-info.progress-button-style-move-up .content, button.progress-.btn.btn-info.progress-button-style-slide-down .content {
     background-color: #2489a7; }
-  button.progress-button.btn.btn-info.progress-button-style-lateral-lines .progress-inner {
+  button.progress-.btn.btn-info.progress-button-style-lateral-lines .progress-inner {
     border-color: #2489a7;
     background: 0 0; }
-  button.progress-button.btn.btn-info .progress {
+  button.progress-.btn.btn-info .progress {
     background-color: #2489a7;
     box-shadow: 0 1px 0 #2489a7; }
-  button.progress-button.btn.btn-info .progress-inner {
+  button.progress-.btn.btn-info .progress-inner {
     background-color: #1b677d; }
-  button.progress-button.btn.btn-info.progress-button-perspective {
+  button.progress-.btn.btn-info.progress-button-perspective {
     background: none; }
-    button.progress-button.btn.btn-info.progress-button-perspective .content {
+    button.progress-.btn.btn-info.progress-button-perspective .content {
       background-color: #2dacd1; }
 
-button.progress-button.btn.btn-warning {
+button.progress-.btn.btn-warning {
   border-radius: 0; }
-  button.progress-button.btn.btn-warning .content:after, button.progress-button.btn.btn-warning .content:before {
+  button.progress-.btn.btn-warning .content:after, button.progress-.btn.btn-warning .content:before {
     color: #2a2205; }
-  button.progress-button.btn.btn-warning.progress-button-style-move-up .content, button.progress-button.btn.btn-warning.progress-button-style-slide-down .content {
+  button.progress-.btn.btn-warning.progress-button-style-move-up .content, button.progress-.btn.btn-warning.progress-button-style-slide-down .content {
     background-color: #b29316; }
-  button.progress-button.btn.btn-warning.progress-button-style-lateral-lines .progress-inner {
+  button.progress-.btn.btn-warning.progress-button-style-lateral-lines .progress-inner {
     border-color: #b29316;
     background: 0 0; }
-  button.progress-button.btn.btn-warning .progress {
+  button.progress-.btn.btn-warning .progress {
     background-color: #b29316;
     box-shadow: 0 1px 0 #b29316; }
-  button.progress-button.btn.btn-warning .progress-inner {
+  button.progress-.btn.btn-warning .progress-inner {
     background-color: #846d11; }
-  button.progress-button.btn.btn-warning.progress-button-perspective {
+  button.progress-.btn.btn-warning.progress-button-perspective {
     background: none; }
-    button.progress-button.btn.btn-warning.progress-button-perspective .content {
+    button.progress-.btn.btn-warning.progress-button-perspective .content {
       background-color: #dfb81c; }
 
-button.progress-button.btn.btn-danger {
+button.progress-.btn.btn-danger {
   border-radius: 0; }
-  button.progress-button.btn.btn-danger .content:after, button.progress-button.btn.btn-danger .content:before {
+  button.progress-.btn.btn-danger .content:after, button.progress-.btn.btn-danger .content:before {
     color: #640e0e; }
-  button.progress-button.btn.btn-danger.progress-button-style-move-up .content, button.progress-button.btn.btn-danger.progress-button-style-slide-down .content {
+  button.progress-.btn.btn-danger.progress-button-style-move-up .content, button.progress-.btn.btn-danger.progress-button-style-slide-down .content {
     background-color: #e22929; }
-  button.progress-button.btn.btn-danger.progress-button-style-lateral-lines .progress-inner {
+  button.progress-.btn.btn-danger.progress-button-style-lateral-lines .progress-inner {
     border-color: #e22929;
     background: 0 0; }
-  button.progress-button.btn.btn-danger .progress {
+  button.progress-.btn.btn-danger .progress {
     background-color: #e22929;
     box-shadow: 0 1px 0 #e22929; }
-  button.progress-button.btn.btn-danger .progress-inner {
+  button.progress-.btn.btn-danger .progress-inner {
     background-color: #be1a1a; }
-  button.progress-button.btn.btn-danger.progress-button-perspective {
+  button.progress-.btn.btn-danger.progress-button-perspective {
     background: none; }
-    button.progress-button.btn.btn-danger.progress-button-perspective .content {
+    button.progress-.btn.btn-danger.progress-button-perspective .content {
       background-color: #e85656; }
 
 .btn-raised {
@@ -3058,17 +3066,17 @@ button.progress-button.btn.btn-danger {
   padding: 8px 14px;
   font-size: 16px; }
 
-.dropdown button.btn.btn-default.dropdown-toggle {
+.dropdown .btn.btn-default.dropdown-toggle {
   color: #ffffff;
   border: 1px solid #ffffff;
   background-color: transparent; }
-  .dropdown button.btn.btn-default.dropdown-toggle:focus, .dropdown button.btn.btn-default.dropdown-toggle:active {
+  .dropdown .btn.btn-default.dropdown-toggle:focus, .dropdown .btn.btn-default.dropdown-toggle:active {
     background-color: rgba(0, 0, 0, 0.2); }
 
 .bootstrap-select .dropdown-toggle:focus {
   outline: none !important; }
 
-.bootstrap-select button.btn-default:focus {
+.bootstrap-select .btn-default:focus {
   color: rgba(0, 0, 0, 0.2); }
 
 .bootstrap-select .btn {
@@ -3078,14 +3086,14 @@ button.progress-button.btn.btn-danger {
   -webkit-transform: scale(1);
           transform: scale(1); }
 
-.datepicker button.btn.btn-default {
+.datepicker .btn.btn-default {
   background-color: transparent; }
 
-.datepicker button.btn.btn-default.active {
+.datepicker .btn.btn-default.active {
   background-color: #2dacd1;
   color: white; }
 
-.datepicker button.btn.active span.ng-binding.text-info {
+.datepicker .btn.active span.ng-binding.text-info {
   color: white; }
 
 .uib-datepicker-wrap {
@@ -3098,9 +3106,9 @@ button.progress-button.btn.btn-danger {
   background-color: #ffffff;
   border-width: 0;
   color: black; }
-  .uib-datepicker-popup button.btn {
+  .uib-datepicker-popup .btn {
     color: black; }
-    .uib-datepicker-popup button.btn .text-muted {
+    .uib-datepicker-popup .btn .text-muted {
       color: black; }
   .uib-datepicker-popup .glyphicon {
     color: black; }
