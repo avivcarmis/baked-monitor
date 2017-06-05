@@ -56,6 +56,19 @@
                                     <span class="help-block sub-little-text">A URL that returns a JSON representation of the server monitoring data.</span>
                                 </div>
 
+                                <div class="form-group has-feedback">
+                                    <label for="inputMeterRefreshRate">Refresh Rate</label>
+                                    <select id="inputMeterRefreshRate" class="form-control validatable always-valid" ng-model="currentServer.refreshRate">
+                                        <option value="1">1 Second</option>
+                                        <option value="5">5 Seconds</option>
+                                        <option value="10">10 Seconds</option>
+                                        <option value="15">15 Seconds</option>
+                                        <option value="20">20 Seconds</option>
+                                        <option value="30">30 Seconds</option>
+                                    </select>
+                                    <span class="help-block sub-little-text">The interval in which BlurMonitor should request data from the server.</span>
+                                </div>
+
                                 <div class="row" ng-if="!currentServer.meters || currentServer.meters.length === 0">
                                     <div class="col-md-12">
                                         <ul class="btn-list pull-right">
@@ -81,7 +94,7 @@
 
                                 <div class="form-group has-feedback">
                                     <label for="inputMeterWidth">Width (?/12)</label>
-                                    <select id="inputMeterWidth" class="form-control validatable" ng-model="currentMeter.width">
+                                    <select id="inputMeterWidth" class="form-control validatable always-valid" ng-model="currentMeter.width">
                                         <option value="12">12 (100%)</option>
                                         <option value="11">11 (91%)</option>
                                         <option value="10">10 (83%)</option>

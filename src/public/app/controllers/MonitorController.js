@@ -28,7 +28,7 @@
                     }
                 }
                 if (!$scope.server) {
-                    return $state.go('new');
+                    return $state.go('edit');
                 }
 
                 $("title").text($scope.server.title + " - BlurMonitor");
@@ -93,7 +93,7 @@
                                 $scope.serverIsUp = false;
                             }
                         );
-                    setTimeout($scope.update, 5000);
+                    setTimeout($scope.update, $scope.server.refreshRate * 1000);
                 };
 
                 $scope.draw = function () {

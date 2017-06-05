@@ -139,9 +139,6 @@
                             return callback(true);
                         }
                         switch (element.attr("id")) {
-                            case "inputMeterWidth":
-                                callback(true);
-                                break;
                             case "inputMeterType":
                                 if (element.val()) {
                                     if (notFirstVisit) {
@@ -934,6 +931,7 @@
                         title: "New Server",
                         url: "",
                         method: "GET",
+                        refreshRate: "5",
                         meters: []
                     };
                     $rootScope.profile.servers.push(server);
