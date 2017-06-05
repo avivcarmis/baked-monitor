@@ -6,18 +6,32 @@
         <h4 class="modal-title">Import Profiles</h4>
     </div>
     <div class="modal-body">
-        <p>Choose an import method. If you have an exported JSON file use the import file method, if you have an exported data text, use the paste export data method.</p>
-        <div class="btn-list-centered" style="margin: 20px;">
-            <label class="btn btn-primary btn-with-icon btn-xm">
-                <i class="fa fa-folder-open-o"></i>Import File
-                <input type="file" style="display: none;">
-            </label>
-            <button class="btn btn-default-flipped btn-with-icon btn-xm"
-                    ng-click="showDataClicked()">
-                <i class="fa fa-font"></i>Paste Export Data
-            </button>
+        <div ng-if="!showData">
+            <p>Choose an import method. If you have an exported JSON file use the import file method, if you have an exported data text, use the paste export data method.</p>
+            <div class="btn-list-centered" style="margin: 37px 0 20px 0;">
+                <label class="btn btn-success btn-with-icon btn-xm">
+                    <i class="fa fa-folder-open-o"></i>Import File
+                    <input id="importFile" type="file" style="display: none;" onchange="angular.element(this).scope().importFile()">
+                </label>
+                <button class="btn btn-default btn-with-icon btn-xm"
+                        ng-click="showPasteExportData()">
+                    <i class="fa fa-font"></i>Paste Export Data
+                </button>
+            </div>
         </div>
-        <textarea readonly class="form-control" id="copy-area" style="margin-bottom: 10px; width: 100%; resize:vertical;" ng-if="showData">{{exportData()}}</textarea>
+        <div ng-if="showData">
+            <div style="margin-bottom: 10px;">
+                    <textarea class="form-control"
+                              id="paste-area"
+                              style="width: 100%; resize:vertical;"
+                              placeholder="Paste export here and click import button below..."></textarea>
+            </div>
+            <div>
+                <button class="btn btn-success btn-with-icon btn-xm" ng-click="importPaste()">
+                    <i class="ion-android-checkmark-circle"></i>Import
+                </button>
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <ul class="btn-list pull-right">

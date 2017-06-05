@@ -238,19 +238,28 @@ option {
   margin-bottom: 0;
 }
 .modal-header {
-  background: #f2f2f2;
+  background: #101010;
   padding: 16px !important;
 }
 .modal-footer {
   padding-top: 6px !important;
   padding-bottom: 0 !important;
-  background: #f2f2f2;
+  background: #101010;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
-.modal-footer .btn-default {
-  border-color: #7d7d7d !important;
-  color: #7d7d7d !important;;
+.modal-body {
+  background: rgb(33, 33, 33) !important;
+  padding: 27px !important;
+}
+.modal-header .modal-title {
+  color: #505050;
+  text-transform: uppercase;
+}
+body .modal .modal-dialog .modal-body p,
+body .modal .modal-dialog .modal-body div,
+body .modal .modal-dialog .modal-body span {
+  color: #e4e4e4;
 }
 .bg-primary {
   background: #209e91 !important;
@@ -315,6 +324,8 @@ option {
   color: #8a8a8a !important;
   border-color: #3a3a3a;
   padding: 28px 20px 5px 20px;
+  margin-bottom: 8px;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.5);
 }
 .login-box:hover {
   border-color: #565656 !important;

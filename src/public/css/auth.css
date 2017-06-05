@@ -1252,7 +1252,6 @@ body {
 .auth-main {
   display: -webkit-box;
   display: -ms-flexbox;
-  display: flex;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -1261,7 +1260,7 @@ body {
 
 .auth-block {
   width: 540px;
-  margin: 0 auto;
+  margin: 50px auto;
   border-radius: 5px;
   background: rgba(0, 0, 0, 0.55);
   color: #fff;
@@ -1269,6 +1268,7 @@ body {
   .auth-block h1 {
     font-weight: 300;
     margin-bottom: 28px;
+    text-transform: uppercase;
     text-align: center; }
   .auth-block p {
     font-size: 16px; }

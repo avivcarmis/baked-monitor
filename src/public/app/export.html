@@ -7,13 +7,13 @@
     </div>
     <div class="modal-body">
         <p>Use either button below to export all the configured profiles, servers and meters. Use it later to import it on another machine.</p>
-        <div class="btn-list-centered" style="margin: 20px;">
-            <a class="btn btn-primary btn-with-icon btn-xm"
+        <div class="btn-list-centered" style="margin: 37px 0 20px 0;">
+            <a class="btn btn-success btn-with-icon btn-xm"
                href="data:text/json;charset=utf-8,{{encodedExportData()}}"
                download="BlurMonitorExport.json">
                 <i class="fa fa-floppy-o"></i>Save To File
             </a>
-            <button class="btn btn-default-flipped btn-with-icon btn-xm"
+            <button class="btn btn-default btn-with-icon btn-xm"
                     ng-click="showDataClicked()">
                 <i class="fa fa-font"></i>Copy Export Data
             </button>

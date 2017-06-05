@@ -1,10 +1,11 @@
 <main class="auth-main" ng-if="initialized">
     <div class="auth-block">
-        <h1>Sign in to BlurMonitor</h1>
+        
+        <h1>Sign in to <span class="text-primary">Blur</span>Monitor</h1>
 
         <div>
             <ul class="list-inline" style="text-align: center;">
-                <li ng-repeat="profile in allProfiles" class="profile-thumbnail">
+                <li ng-repeat="profile in allProfiles track by $index" class="profile-thumbnail">
                     <a href="javascript:void(0)" ng-click="login(profile.id)" class="thumbnail login-box">
                         <div class="bg" style="background-color: {{profile.color}};"></div>
                         <img ng-src="/assets/img/app/avatar/{{profile.avatar}}.png">
@@ -22,19 +23,6 @@
         </div>
 
         <div class="auth-sep"><span><span>Live monitoring tools for server applications.</span></span></div>
-
-        <!--<ul class="btn-list clearfix">-->
-            <!--<li>-->
-                <!--<button type="button" class="btn btn-default btn-with-icon" ng-click="import()">-->
-                    <!--<i class="fa fa-cloud-download"></i>Import-->
-                <!--</button>-->
-            <!--</li>-->
-            <!--<li>-->
-                <!--<button type="button" class="btn btn-default btn-with-icon" ng-click="export()">-->
-                    <!--<i class="fa fa-cloud-upload"></i>Export-->
-                <!--</button>-->
-            <!--</li>-->
-        <!--</ul>-->
 
         <div class="btn-list-centered">
             <button type="button" class="btn btn-default btn-with-icon" ng-click="import()">
