@@ -15,14 +15,14 @@
                     });
                 $stateProvider
                     .state('edit', {
-                        url: '/edit/:resourceId',
+                        url: '/edit',
                         title: 'Edit Servers',
                         templateUrl: 'app/edit.html',
                         controller: 'EditCtrl'
                     });
                 $stateProvider
                     .state('monitor', {
-                        url: '/monitor/:serverId',
+                        url: '/monitor',
                         title: 'Monitor',
                         templateUrl: 'app/monitor.html',
                         controller: 'MonitorCtrl'
