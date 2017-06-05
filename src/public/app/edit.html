@@ -100,7 +100,7 @@
 
                                 <div class="form-group has-feedback">
                                     <label for="inputMeterType">Type</label>
-                                    <select id="inputMeterType" class="form-control validatable" ng-model="currentMeter.type">
+                                    <select id="inputMeterType" class="form-control validatable" ng-model="currentMeter.type" ng-change="onMeterTypeChange()">
                                         <option value="GRAPH">Graph</option>
                                         <option value="PIE">Pie Chart</option>
                                         <option value="TABLE">Table</option>
@@ -111,7 +111,7 @@
 
                                 <div class="form-group has-feedback">
                                     <label class="checkbox-inline custom-checkbox nowrap">
-                                        <input type="checkbox" id="inputMeterIsPrototype" ng-model="currentMeter.isPrototype">
+                                        <input type="checkbox" id="inputMeterIsPrototype" ng-model="currentMeter.isPrototype" ng-change="onIsPrototypeChange()">
                                         <span>Is Prototype</span>
                                     </label>
                                     <span class="help-block sub-little-text">Makes the meter non-concrete, but a set of meters depending on a given collection of objects.</span>

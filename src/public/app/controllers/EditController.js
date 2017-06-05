@@ -92,31 +92,39 @@
                     return null;
                 };
 
+                $scope.getElementData = function (element) {
+                    var resourceId = $scope.mode === 'server' ? $scope.currentServer.id : $scope.currentMeter.id;
+                    if (!element.data(resourceId)) {
+                        element.data(resourceId, {});
+                    }
+                    return element.data(resourceId);
+                };
+
                 $scope.validateFields = function () {
                     $(this).each(function () {
                         var element = $(this);
-                        if (element.data("lastValue") && element.data("lastValue") === element.val()) {
+                        var elementData = $scope.getElementData(element);
+                        if (elementData.lastValue && elementData.lastValue === element.val()) {
                             return;
                         }
-                        var notFirstVisit = element.data("visited");
+                        var notFirstVisit = elementData.visited;
                         if (notFirstVisit) {
-                            $scope.hasChanges(true);
                             if ($scope.mode === 'server') {
-                                $scope.markChanges($scope.currentServer.id);
+                                $scope.resourceChanged($scope.currentServer.id);
                             }
                             else {
-                                $scope.markChanges($scope.currentMeter.id);
-                                $scope.markChanges($scope.currentMeter.serverId);
+                                $scope.resourceChanged($scope.currentMeter.id);
+                                $scope.resourceChanged($scope.currentMeter.serverId);
                             }
                         }
                         else {
-                            element.data("visited", true);
+                            elementData.visited = true;
                         }
                         if (element.val()) {
-                            element.data("lastValue", element.val());
+                            elementData.lastValue = element.val();
                         }
                         else {
-                            delete element.data()["lastValue"];
+                            delete elementData.lastValue;
                         }
                         $scope.setFieldStatus(element, FIELD_STATUS_PENDING);
                         $scope.validate(element, notFirstVisit, function (valid, errorToast) {
@@ -136,10 +144,10 @@
                                 break;
                             case "inputMeterType":
                                 if (element.val()) {
-                                    $('#tree').jstree(true).set_type($scope.currentMeter.id, element.val().toLowerCase());
                                     if (notFirstVisit) {
-                                        $scope.markChanges($scope.currentMeter.id);
-                                        $scope.markChanges($scope.currentMeter.serverId);
+                                        $('#tree').jstree(true).set_type($scope.currentMeter.id, element.val().toLowerCase() + "-changed");
+                                        $scope.resourceChanged($scope.currentMeter.id);
+                                        $scope.resourceChanged($scope.currentMeter.serverId);
                                     }
                                 }
                                 callback(true);
@@ -148,7 +156,7 @@
                                 if (element.val()) {
                                     $('#tree').jstree("set_text", $scope.currentServer.id, element.val());
                                     if (notFirstVisit) {
-                                        $scope.markChanges($scope.currentServer.id);
+                                        $scope.resourceChanged($scope.currentServer.id);
                                     }
                                 }
                                 callback(element.val());
@@ -171,8 +179,8 @@
                                 if (element.val()) {
                                     $('#tree').jstree("set_text", $scope.currentMeter.id, element.val());
                                     if (notFirstVisit) {
-                                        $scope.markChanges($scope.currentMeter.id);
-                                        $scope.markChanges($scope.currentMeter.serverId);
+                                        $scope.resourceChanged($scope.currentMeter.id);
+                                        $scope.resourceChanged($scope.currentMeter.serverId);
                                     }
                                 }
                                 callback(element.val());
@@ -245,19 +253,16 @@
                     }
                 };
 
-                $scope.$watch('currentMeter.isPrototype', function (value) {
-                    if (value) {
+                $scope.onIsPrototypeChange = function () {
+                    if ($scope.currentMeter.isPrototype) {
                         $scope.$$postDigest(function () {
                             $scope.validateFields.apply($(".validatable, .prototype-path"));
                         });
                     }
-                });
+                };
 
-                $scope.$watch('currentMeter.type', function (value, oldValue) {
-                    if (!oldValue || value === oldValue) {
-                        return;
-                    }
-                    switch (value) {
+                $scope.onMeterTypeChange = function () {
+                    switch ($scope.currentMeter.type) {
                         case "GRAPH":
                             $scope.currentMeter.config = {
                                 maxHistory: 120,
@@ -298,7 +303,7 @@
                             });
                             break;
                     }
-                });
+                };
 
                 $scope.onParticipantTypeChange = function (participant) {
                     switch (participant.type) {
@@ -667,10 +672,11 @@
                         multiple: false,
                         check_callback: function (operation, node, nodeParent) {
                             if (operation === "move_node") {
-                                if (node.type === "server") {
+                                if (node.type === "server" || node.type === "server-changed") {
                                     return nodeParent.type === "#";
                                 }
-                                return nodeParent.type === "server" && node.data.server === nodeParent.data.key;
+                                return (nodeParent.type === "server" || nodeParent.type === "server-changed") &&
+                                    node.data.server === nodeParent.data.key;
                             }
                             return true;
                         },
@@ -683,27 +689,42 @@
                         check_while_dragging: true
                     },
                     types: {
-                        server: {
+                        "server": {
                             icon: 'tree-icon fa fa-server'
                         },
-                        graph: {
+                        "graph": {
                             icon: 'tree-icon fa fa-area-chart'
                         },
-                        pie: {
+                        "pie": {
                             icon: 'tree-icon fa fa-pie-chart'
                         },
-                        table: {
+                        "table": {
                             icon: 'tree-icon fa fa-table'
                         },
-                        value: {
+                        "value": {
                             icon: 'tree-icon fa fa-info'
+                        },
+                        "server-changed": {
+                            icon: 'tree-icon fa fa-server has-changes'
+                        },
+                        "graph-changed": {
+                            icon: 'tree-icon fa fa-area-chart has-changes'
+                        },
+                        "pie-changed": {
+                            icon: 'tree-icon fa fa-pie-chart has-changes'
+                        },
+                        "table-changed": {
+                            icon: 'tree-icon fa fa-table has-changes'
+                        },
+                        "value-changed": {
+                            icon: 'tree-icon fa fa-info has-changes'
                         }
                     },
                     contextmenu: {
                         select_node: false,
                         show_at_node: false,
                         items: function (node) {
-                            if (node.type === 'server') {
+                            if (node.type === 'server' || node.type === 'server-changed') {
                                 return {
                                     addMeter: {
                                         label: "Add new meter",
@@ -782,17 +803,13 @@
                             break;
                         }
                     }
-                    $scope.hasChanges(true);
+                    $scope.resourceChanged(serverId);
                     $("#tree").jstree("delete_node", meterId, serverId);
                     if ($scope.mode === 'meter' && $scope.currentMeter.id == meterId) {
                         $(".has-error").removeClass("has-error");
                         $scope.$$postDigest(function () {
                             $("#tree").jstree("deselect_all").jstree("select_node", serverId);
-                            $scope.markChanges(serverId);
                         });
-                    }
-                    else {
-                        $scope.markChanges(serverId);
                     }
                 };
 
@@ -805,6 +822,7 @@
                         }
                     }
                     $scope.removeServerInstance(serverId);
+                    $scope.resourceChanged(serverId);
                     for (i = 0; i < idsToRemove.length; i++) {
                         var entry = idsToRemove[i];
                         $("#tree").jstree("delete_node", entry.id, entry.parent);
@@ -822,7 +840,6 @@
                         $scope.currentServer = null;
                         $scope.currentMeter = null;
                     }
-                    $scope.hasChanges(true);
                 };
 
                 $scope.duplicateMeter = function (serverId, meterId) {
@@ -838,13 +855,11 @@
                         server.meters = [];
                     }
                     server.meters.push(newMeter);
-                    $scope.hasChanges(true);
                     $("#tree").jstree("create_node", server.id, $scope.meterToTreeNode(server.id, newMeter), "last");
                     $scope.$$postDigest(function () {
                         $('#tree').jstree("deselect_all").jstree("select_node", newMeter.id);
-                        setTimeout(function () {
-                            $scope.markChanges(newMeter.id);
-                        }, 10);
+                        $scope.resourceChanged(newMeter.id);
+                        $scope.resourceChanged(server.id);
                     });
                 };
 
@@ -865,10 +880,12 @@
                     for (i = 0; i < allTreeNodes.length; i++) {
                         $("#tree").jstree("create_node", allTreeNodes[i].parent, allTreeNodes[i], "last");
                     }
-                    $scope.hasChanges(true);
                     $scope.$$postDigest(function () {
                         $('#tree').jstree("deselect_all").jstree("select_node", newServer.id);
-                        $scope.markChanges(newServer.id);
+                        $scope.resourceChanged(newServer.id);
+                        for (i = 0; i < newServer.meters.length; i++) {
+                            $scope.resourceChanged(newServer.meters[i].id);
+                        }
                     });
                 };
 
@@ -876,7 +893,6 @@
                     if (!$scope.validateSwitch()) {
                         return;
                     }
-                    $scope.hasChanges(true);
                     var server = $scope.findServer(serverId);
                     if (!server.meters) {
                         server.meters = [];
@@ -903,10 +919,8 @@
                     $("#tree").jstree("create_node", serverId, $scope.meterToTreeNode(serverId, meter), "last");
                     $scope.$$postDigest(function () {
                         $("#tree").jstree("deselect_all").jstree("select_node", meter.id);
-                        setTimeout(function () {
-                            $scope.markChanges(serverId);
-                            $scope.markChanges(meter.id);
-                        }, 10);
+                        $scope.resourceChanged(serverId);
+                        $scope.resourceChanged(meter.id);
                     });
                 };
 
@@ -914,7 +928,6 @@
                     if (!$scope.validateSwitch()) {
                         return;
                     }
-                    $scope.hasChanges(true);
                     var server = {
                         id: utils.guid(),
                         user: $rootScope.email,
@@ -927,13 +940,9 @@
                     $("#tree").jstree("create_node", "#", $scope.serverToTreeNodes(server)[0], "last");
                     $scope.$$postDigest(function () {
                         $("#tree").jstree("deselect_all").jstree("select_node", server.id);
-                        $scope.markChanges(server.id);
+                        $scope.resourceChanged(server.id);
                     });
                     return server.id;
-                };
-
-                $scope.markChanges = function (resourceId) {
-                    $("#tree").jstree(true).get_node(resourceId, true).children(".jstree-anchor").find(".tree-icon").addClass("has-changes");
                 };
 
                 $scope.validateSwitch = function () {
@@ -956,7 +965,7 @@
                             return;
                         }
                         $scope.selected = data.node.id;
-                        if (data.node.type === 'server') {
+                        if (data.node.type === 'server' || data.node.type === 'server-changed') {
                             var server = $scope.findServer(data.node.data.key);
                         }
                         else {
@@ -964,7 +973,7 @@
                             server = $scope.findServer(meter.serverId)
                         }
                         $scope.getSampleData(server.method, server.url, function () {
-                            if (data.node.type === 'server') {
+                            if (data.node.type === 'server' || data.node.type === 'server-changed') {
                                 $scope.mode = 'server';
                                 $scope.currentServer = server;
                             }
@@ -973,12 +982,14 @@
                                 $scope.currentMeter = meter;
                             }
                             $scope.$$postDigest(function () {
-                                $(".validatable").trigger("change");
+                                $scope.$$postDigest(function () {
+                                    $(".validatable").trigger("change");
+                                });
                             });
                         });
                     },
                     move_node: function (e, data) {
-                        if (data.node.type === 'server') {
+                        if (data.node.type === 'server' || data.node.type === 'server-changed') {
                             $scope.moveServer(data.node.data.key, data.position);
                         }
                         else {
@@ -1028,26 +1039,38 @@
                 };
 
                 var unloadWarningMessage = "You have made some unsaved changes. Are you sure you want to leave without saving them first?";
-                $scope.hasChangesValue = false;
-                $scope.hasChanges = function (value) {
-                    if (value) {
-                        window.onbeforeunload = function () {
-                            return unloadWarningMessage;
-                        };
-                    }
-                    else {
-                        window.onbeforeunload = null;
-                    }
-                    $scope.hasChangesValue = value;
+                $scope.resourceChanged = function (resourceId) {
+                    $scope.changedResources[resourceId] = true;
+                    window.onbeforeunload = function () {
+                        return unloadWarningMessage;
+                    };
+                    var tree = $('#tree').jstree(true);
+                    var node = tree.get_node(resourceId);
+                    var type = node.type.substr(-8) === "-changed" ? node.type : node.type + "-changed";
+                    tree.set_type(resourceId, type);
                 };
+                $scope.clearChanges = function () {
+                    $scope.changedResources = {};
+                    window.onbeforeunload = null;
+                };
+                $scope.changesMade = function () {
+                    for (var key in $scope.changedResources) {
+                        if ($scope.changedResources.hasOwnProperty(key)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+                $scope.clearChanges();
+
                 $scope.$on('$stateChangeStart', function (event, toState, toParams) {
-                    if ($scope.hasChangesValue) {
+                    if ($scope.changesMade()) {
                         event.preventDefault();
                         $rootScope.confirm(
                             unloadWarningMessage,
                             "Before You Leave",
                             function () {
-                                $scope.hasChanges(false);
+                                $scope.clearChanges();
                                 $rootScope.reloadProfile();
                                 $state.go(toState.name, toParams);
                             }
@@ -1060,7 +1083,7 @@
                         'Are you sure you wish to cancel all changes to ' + $rootScope.profile.name + ' profile?',
                         'Cancel Changes',
                         function () {
-                            $scope.hasChanges(false);
+                            $scope.clearChanges();
                             $rootScope.reloadProfile();
                             $rootScope.goHome();
                         }
@@ -1068,9 +1091,8 @@
                 };
 
                 $scope.save = function () {
-                    $scope.hasChanges(false);
+                    $scope.clearChanges();
                     $rootScope.saveProfile();
-                    window.onbeforeunload = null;
                     $rootScope.goHome();
                 };
 
