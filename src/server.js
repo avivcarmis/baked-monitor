@@ -5,18 +5,16 @@ var path = require("path");
 var INDEX_PAGES = [
     "/",
     "/monitor",
-    "/monitor/*",
     "/login",
     "/edit",
-    "/edit/*",
     "/profile"
 ];
 
 for (var i = 0; i < INDEX_PAGES.length; i++) {
-    app.get(INDEX_PAGES[i], index);
+    app.get('/blur-monitor' + INDEX_PAGES[i], index);
 }
 
-app.use(express.static('src/public'));
+app.use('/blur-monitor', express.static('src/public'));
 
 app.use(function(req, res){
     res.status(404);
