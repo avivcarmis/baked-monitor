@@ -53,15 +53,15 @@
                         var profile = data[i];
                         if (!profile.hasOwnProperty("id")) {
                             var message = "Skipping " + (failed === 0 ? "one" : "another") + " invalid profile";
-                            if (profile.hasOwnProperty("title")) {
-                                message += " (" + profile.title + ")";
+                            if (profile.hasOwnProperty("name")) {
+                                message += " (" + profile.name + ")";
                             }
                             toastr.error(message, "Oops!");
                             failed++;
                             continue;
                         }
                         if ($scope.hasProfile(profile.id)) {
-                            toastr.error("Profile " + profile.title + " already exist", "Oops!");
+                            toastr.error("Profile " + profile.name + " already exist", "Oops!");
                             failed++;
                             continue;
                         }
