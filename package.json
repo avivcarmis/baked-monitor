@@ -1,16 +1,11 @@
 {
   "name": "blur_monitor",
   "version": "1.0.0",
-  "devDependencies": {
-    "main-bower-files": "~2.13.1"
-  },
   "scripts": {
-    "postinstall": "cd src/public && bower install"
+    "postinstall": "bower install"
   },
-  "dependencies": {
-    "body-parser": "^1.17.2",
-    "express": "^4.15.2",
-    "md5": "^2.2.1",
-    "sqlite3": "^3.1.8"
+  "devDependencies": {
+    "browser-sync": "^2.18.12",
+    "gulp": "^3.9.1"
   }
 }
