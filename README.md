@@ -1,48 +1,22 @@
-[![Build Status](https://travis-ci.org/akveo/blur-admin.svg?branch=master)](https://travis-ci.org/akveo/blur-admin)
+[![Build Status](https://api.travis-ci.org/avivcarmis/blur-monitor.svg?branch=master)](https://api.travis-ci.org/avivcarmis/blur-monitor.svg?branch=master)
 
-# BlurAdmin Angular admin panel front-end framework
+# BlurMonitor - Live Monitoring Tools for Backend Applications
+BlurMonitor UI is based and forked from [Akveo](https://github.com/akveo "Akveo") talented team's [BlurAdmin](https://github.com/akveo/blur-admin "BlurAdmin").
 
-Customizable admin panel framework made with :heart: by [Akveo team](http://akveo.com/). Follow us on [Twitter](https://twitter.com/akveo_inc) to get latest news about this template first!
+### In a Nutshell
+BlurMonitor is a client side web application* aimed to provide dynamic tools to get live status and monitoring statistics of a web application.
 
-### Demo
-**[Mint version demo](http://akveo.com/blur-admin-mint/)**             |  **[Blur version demo](http://akveo.com/blur-admin/)**
-:-------------------------:|:-------------------------:
-![Mint version demo](http://i.imgur.com/A3TMviJ.png)  |  ![Blur version demo](http://i.imgur.com/EAoiK2O.jpg)
+BlurMonitor connects to your servers via any endpoint providing JSON response and containing any data your would like to expose for monitoring. Then, this exposed JSON data can be used to build histogram graphs, pie charts, data tables and static monitoring values.
+More on that on monitoring tools page.
 
-## Angular 2 version
-Here you can find Angular2 based version: [ng2-admin](https://github.com/akveo/ng2-admin).
+\**Client side application* means that no data is stored on any server, all the configuration and monitoring profiles are stored on the user local machine using [HTML5 Web Storage](https://www.google.co.il/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwiJh7rLsKzUAhVB1RoKHRIXDWMQFggmMAA&url=https%3A%2F%2Fwww.w3schools.com%2Fhtml%2Fhtml5_webstorage.asp&usg=AFQjCNEZkSNg7SD0ortJ3k-9y2RmD82lHA&sig2=OKk-0DLJKAXH0Vm6eqlrYA "HTML5 Web Storage").
+More on that in Importing and exporting data page.
 
-### Documentation
-Installation, customization and other useful articles: https://akveo.github.io/blur-admin/
+### Getting Started
+All you need to know in the project WIKI page.
 
-*If you have problems installing and just want to download JS and css files, you can find download links here*: http://akveo.github.io/blur-admin/articles/091-downloads/
+### License
+BlurMonitor is registered under <a href=/LICENSE.txt target="_blank">MIT</a> license.
 
-## How can I support developers?
-- Star our GitHub repo
-- Create pull requests, submit bugs, suggest new features or documentation updates
-- Follow us on [Twitter](https://twitter.com/akveo_inc)
-- Like our page on [Facebook](https://www.facebook.com/akveo/)
-
-## Can I hire you guys?
-Yes! We are available for hire. Visit [our homepage](http://akveo.com/) or simply leave us a note to contact@akveo.com. We will be happy to work with you!
-
-## Features
-* Responsive layout
-* High resolution
-* Bootstrap CSS Framework
-* Sass
-* Gulp build
-* AngularJS
-* Jquery
-* Charts (amChart, Chartist, Chart.js, Morris)
-* Maps (Google, Leaflet, amMap)
-* etc
-
-License
--------------
-<a href=/LICENSE.txt target="_blank">MIT</a> license.
-
-### From akveo
-
-Enjoy!
-We're always happy to hear your feedback.
+### Contribution
+Really, any kind of contribution will be warmly accepted. (:
