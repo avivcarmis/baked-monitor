@@ -44,6 +44,7 @@
                     if (index === null) {
                         return;
                     }
+                    $scope.resourceChanged(id);
                     $rootScope.profile.servers.splice(toIndex, 0, $rootScope.profile.servers.splice(index, 1)[0]);
                 };
 
@@ -79,6 +80,8 @@
                     if (index === null) {
                         return;
                     }
+                    $scope.resourceChanged(serverId);
+                    $scope.resourceChanged(meterId);
                     server.meters.splice(toIndex, 0, server.meters.splice(index, 1)[0]);
                 };
 
