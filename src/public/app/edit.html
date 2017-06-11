@@ -6,7 +6,26 @@
     <div class="al-main">
         <div class="al-content">
 
-            <content-top></content-top>
+            <div class="content-top clearfix">
+
+                <div class="row">
+
+                    <div class="col-sm-7">
+                        <h1 class="al-title" style="line-height: 34px;">Edit Servers</h1>
+                    </div>
+                    <div class="col-sm-5">
+                        <ul class="btn-list pull-right" style="padding: 0;">
+                            <li style="margin: 0;">
+                                <a href="https://github.com/avivcarmis/blur-monitor/wiki#server" target="_blank" class="help btn btn-default btn-with-icon">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>Help
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
 
             <div ba-panel class="edit-page">
                 <div class="panel-content">
@@ -112,17 +131,6 @@
                                 </div>
 
                                 <div class="form-group has-feedback">
-                                    <label for="inputMeterType">Type</label>
-                                    <select id="inputMeterType" class="form-control validatable" ng-model="currentMeter.type" ng-change="onMeterTypeChange()">
-                                        <option value="GRAPH">Graph</option>
-                                        <option value="PIE">Pie Chart</option>
-                                        <option value="TABLE">Table</option>
-                                        <option value="VALUE">Single Value Monitor</option>
-                                    </select>
-                                    <span class="help-block sub-little-text">The type of the meter.</span>
-                                </div>
-
-                                <div class="form-group has-feedback">
                                     <label class="checkbox-inline custom-checkbox nowrap">
                                         <input type="checkbox" id="inputMeterIsPrototype" ng-model="currentMeter.isPrototype" ng-change="onIsPrototypeChange()">
                                         <span>Is Prototype</span>
@@ -168,6 +176,17 @@
 
                                 </div>
 
+                                <div class="form-group has-feedback">
+                                    <label for="inputMeterType">Type</label>
+                                    <select id="inputMeterType" class="form-control validatable" ng-model="currentMeter.type" ng-change="onMeterTypeChange()">
+                                        <option value="GRAPH">Histogram Graph</option>
+                                        <option value="PIE">Pie Chart</option>
+                                        <option value="TABLE">Data Table</option>
+                                        <option value="VALUE">Single Value Monitor</option>
+                                    </select>
+                                    <span class="help-block sub-little-text">The type of the meter.</span>
+                                </div>
+
                                 <div ng-if="currentMeter.type === 'GRAPH'">
 
                                     <div class="form-group has-feedback">
@@ -184,7 +203,7 @@
                                             <option value="270">270 Seconds (4.5 Minutes)</option>
                                             <option value="300">300 Seconds (5 Minutes)</option>
                                         </select>
-                                        <span class="help-block sub-little-text">How long ago should the chart data span at any time.</span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">How long ago should the chart data span at any time.</a></span>
                                     </div>
 
                                 </div>
@@ -192,17 +211,17 @@
                                 <div ng-if="currentMeter.type === 'GRAPH' || currentMeter.type === 'PIE'">
 
                                     <label>Chart Participants</label>
-                                    <span class="help-block sub-little-text">The data to be shown in the chart.</span>
+                                    <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">The data to be shown in the chart.</a></span>
 
                                     <div ng-repeat="participant in currentMeter.config.participants track by $index" class="group">
 
                                         <div class="form-group has-feedback">
                                             <label for="inputMeterParticipantType">Type</label>
                                             <select id="inputMeterParticipantType" class="form-control validatable always-valid" ng-model="participant.type" ng-change="onParticipantTypeChange(participant)">
-                                                <option value="INSTANCE">Single Participant</option>
-                                                <option value="COLLECTION">Collection of Participants</option>
+                                                <option value="INSTANCE">Single Line</option>
+                                                <option value="COLLECTION">Multiple Lines</option>
                                             </select>
-                                            <span class="help-block sub-little-text">Whether should the current participant be a single one, or a collection of participants.</span>
+                                            <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">Whether should the current participant be a single one, or a collection of participants.</a></span>
                                         </div>
 
                                         <div ng-if="participant.type === 'INSTANCE'">
@@ -225,7 +244,7 @@
                                                     <input id="inputMeterParticipantCollectionPath{{$index}}" type="text" class="participant-collection-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.collectionPath)}}" disabled>
                                                 </div>
                                                 <i class="form-control-feedback" aria-hidden="true"></i>
-                                                <span class="help-block sub-little-text">Path to a collection of objects representing the different participants.</span>
+                                                <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">Path to a collection of objects representing the different participants.</a></span>
                                             </div>
 
                                             <div class="form-group has-feedback">
@@ -235,7 +254,7 @@
                                                     <input id="inputMeterParticipantTitlePath{{$index}}" type="text" class="participant-title-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.titlePath)}}" disabled>
                                                 </div>
                                                 <i class="form-control-feedback" aria-hidden="true"></i>
-                                                <span class="help-block sub-little-text">Path from a collection object to the value of the concrete participants title.</span>
+                                                <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">Path from a collection object to the value of the concrete participants title.</a></span>
                                             </div>
 
                                             <div class="form-group has-feedback">
@@ -261,7 +280,7 @@
                                                 <input id="inputMeterParticipantValuePath{{$index}}" type="text" class="participant-value-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.valuePath)}}" disabled>
                                             </div>
                                             <i class="form-control-feedback" aria-hidden="true"></i>
-                                            <span class="help-block sub-little-text">Path to the data to be presented.</span>
+                                            <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">Path to the data to be presented.</a></span>
                                         </div>
 
                                         <div class="row">
@@ -269,7 +288,7 @@
                                                 <ul class="btn-list pull-right">
                                                     <li>
                                                         <button type="button" class="btn btn-default btn-with-icon" ng-click="removeParticipant($index)">
-                                                            <i class="fa fa-list"></i>Remove Participant
+                                                            <i class="fa fa-trash"></i>Remove Participant
                                                         </button>
                                                     </li>
                                                 </ul>
@@ -283,7 +302,7 @@
                                             <ul class="btn-list pull-right">
                                                 <li>
                                                     <button type="button" class="btn btn-default btn-with-icon" ng-click="addParticipant()">
-                                                        <i class="fa fa-list"></i>Add Participant
+                                                        <i class="fa fa-line-chart"></i>Add Participant
                                                     </button>
                                                 </li>
                                             </ul>
@@ -315,7 +334,7 @@
                                             <input id="inputMeterPath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.path)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text">Path to the data to be presented.</span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#single-value-monitor" target="_blank" class="help">Path to the data to be presented.</a></span>
                                     </div>
 
                                 </div>
@@ -329,7 +348,7 @@
                                             <input id="inputMeterTableCollectionPath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.collectionPath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text">Path to a collection of objects representing the different table rows.</span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#data-table" target="_blank" class="help">Path to a collection of objects representing the different table rows.</a></span>
                                     </div>
 
                                     <div class="form-group has-feedback">
@@ -339,7 +358,7 @@
                                             <input id="inputMeterTableTitlePath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.titlePath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text">Path from a collection object to the value of the concrete row title.</span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#data-table" target="_blank" class="help">Path from a collection object to the value of the concrete row title.</a></span>
                                     </div>
 
                                     <div class="form-group has-feedback">
@@ -357,7 +376,7 @@
                                     </div>
 
                                     <label>Table Columns</label>
-                                    <span class="help-block sub-little-text">The columns of the table, each contains a concrete column title and path to the cell data.</span>
+                                    <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#data-table" target="_blank" class="help">The columns of the table, each contains a concrete column title and path to the cell data.</a></span>
 
                                     <div ng-repeat="value in currentMeter.config.table.values track by $index" class="group">
 
@@ -383,7 +402,7 @@
                                                 <ul class="btn-list pull-right">
                                                     <li>
                                                         <button type="button" class="btn btn-default btn-with-icon" ng-click="removeColumn($index)">
-                                                            <i class="fa fa-list"></i>Remove Column
+                                                            <i class="fa fa-trash"></i>Remove Column
                                                         </button>
                                                     </li>
                                                 </ul>
@@ -397,7 +416,7 @@
                                             <ul class="btn-list pull-right">
                                                 <li>
                                                     <button type="button" class="btn btn-default btn-with-icon" ng-click="addColumn()">
-                                                        <i class="fa fa-list"></i>Add Column
+                                                        <i class="fa fa-columns"></i>Add Column
                                                     </button>
                                                 </li>
                                             </ul>

@@ -675,8 +675,7 @@
                                 if (node.type === "server" || node.type === "server-changed") {
                                     return nodeParent.type === "#";
                                 }
-                                return (nodeParent.type === "server" || nodeParent.type === "server-changed") &&
-                                    node.data.server === nodeParent.data.key;
+                                return nodeParent.type === "server" || nodeParent.type === "server-changed";
                             }
                             return true;
                         },

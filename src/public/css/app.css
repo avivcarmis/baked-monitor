@@ -384,3 +384,7 @@ body .modal .modal-dialog .modal-body span {
 .btn-list-centered > *:last-child {
     margin-right: 0;
 }
+a.help {
+    cursor:help;
+    color: white !important;
+}

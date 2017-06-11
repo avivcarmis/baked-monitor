@@ -421,7 +421,7 @@
                 };
 
                 $scope.getEntryByPath = function (pathArray, sample) {
-                    return pathManager.walkPath(sample, pathArray, pathArray.length);
+                    return $scope.normalizeValue(pathManager.walkPath(sample, pathArray, pathArray.length));
                 };
 
                 $scope.getTitle = function (titlePath, key, sample, prefix, suffix) {
