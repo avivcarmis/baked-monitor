@@ -62,7 +62,7 @@
     opacity: 0.0;
 }
 .health-indicator.healthy:after {
-    border-color: #90b900;
+    border-color: #72ab57;
 }
 .health-indicator.unhealthy:after {
     border-color: #e85656;
@@ -260,13 +260,13 @@ body .modal .modal-dialog .modal-body span {
     color: #e4e4e4;
 }
 .bg-primary {
-    background: #209e91 !important;
+    background: #90b900 !important;
 }
 .bg-info {
-    background: #2dacd1 !important;
+    background: #40a1a0 !important;
 }
 .bg-success {
-    background: #90b900 !important;
+    background: #72ab57 !important;
 }
 .bg-warning {
     background: #dfb81c !important;
@@ -275,13 +275,13 @@ body .modal .modal-dialog .modal-body span {
     background: #e85656 !important;
 }
 .text-primary {
-    color: #209e91 !important;
+    color: #90b900 !important;
 }
 .text-info {
-    color: #2dacd1 !important;
+    color: #40a1a0 !important;
 }
 .text-success {
-    color: #90b900 !important;
+    color: #72ab57 !important;
 }
 .text-warning {
     color: #dfb81c !important;
@@ -387,4 +387,10 @@ body .modal .modal-dialog .modal-body span {
 a.help {
     cursor:help;
     color: white !important;
+}
+.user-profile {
+    transition: color 300ms ease;
+}
+.user-profile:hover {
+    color: #90b900;
 }

@@ -16,7 +16,7 @@
                     <div class="col-sm-5">
                         <ul class="btn-list pull-right" style="padding: 0;">
                             <li style="margin: 0;">
-                                <a href="https://github.com/avivcarmis/blur-monitor/wiki#server" target="_blank" class="help btn btn-default btn-with-icon">
+                                <a href="https://github.com/avivcarmis/baked-monitor/wiki#server" target="_blank" class="help btn btn-default btn-with-icon">
                                     <i class="fa fa-question-circle" aria-hidden="true"></i>Help
                                 </a>
                             </li>
@@ -85,7 +85,7 @@
                                         <option value="20">20 Seconds</option>
                                         <option value="30">30 Seconds</option>
                                     </select>
-                                    <span class="help-block sub-little-text">The interval in which BlurMonitor should request data from the server.</span>
+                                    <span class="help-block sub-little-text">The interval in which BakedMonitor should request data from the server.</span>
                                 </div>
 
                                 <div class="row" ng-if="!currentServer.meters || currentServer.meters.length === 0">
@@ -135,7 +135,7 @@
                                         <input type="checkbox" id="inputMeterIsPrototype" ng-model="currentMeter.isPrototype" ng-change="onIsPrototypeChange()">
                                         <span>Is Prototype</span>
                                     </label>
-                                    <span class="help-block sub-little-text">Makes the meter non-concrete, but a set of meters depending on a given collection of objects.</span>
+                                    <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#meter-as-a-prototype" target="_blank" class="help">Makes the meter non-concrete, but a set of meters depending on a given collection of objects.</a></span>
                                 </div>
 
                                 <div ng-if="currentMeter.isPrototype">
@@ -147,7 +147,7 @@
                                             <input id="inputMeterPrototypeCollectionPath" type="text" class="prototype-path form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.prototypeCollection.collectionPath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text">Path to a collection of objects representing the different meters of this prototype.</span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#meter-as-a-prototype" target="_blank" class="help">Path to a collection of objects representing the different meters of this prototype.</a></span>
                                     </div>
 
                                     <div class="form-group has-feedback">
@@ -157,7 +157,7 @@
                                             <input id="inputMeterPrototypeTitlePath" type="text" class="prototype-path form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.prototypeCollection.titlePath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text">Path from a collection object to the value of the concrete meter title.</span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#meter-as-a-prototype" target="_blank" class="help">Path from a collection object to the value of the concrete meter title.</a></span>
                                     </div>
 
                                     <div class="form-group has-feedback">
@@ -203,7 +203,7 @@
                                             <option value="270">270 Seconds (4.5 Minutes)</option>
                                             <option value="300">300 Seconds (5 Minutes)</option>
                                         </select>
-                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">How long ago should the chart data span at any time.</a></span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#histogram-graph" target="_blank" class="help">How long ago should the chart data span at any time.</a></span>
                                     </div>
 
                                 </div>
@@ -211,7 +211,7 @@
                                 <div ng-if="currentMeter.type === 'GRAPH' || currentMeter.type === 'PIE'">
 
                                     <label>Chart Participants</label>
-                                    <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">The data to be shown in the chart.</a></span>
+                                    <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#histogram-graph" target="_blank" class="help">The data to be shown in the chart.</a></span>
 
                                     <div ng-repeat="participant in currentMeter.config.participants track by $index" class="group">
 
@@ -221,7 +221,7 @@
                                                 <option value="INSTANCE">Single Line</option>
                                                 <option value="COLLECTION">Multiple Lines</option>
                                             </select>
-                                            <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">Whether should the current participant be a single one, or a collection of participants.</a></span>
+                                            <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#histogram-graph" target="_blank" class="help">Whether should the current participant be a single one, or a collection of participants.</a></span>
                                         </div>
 
                                         <div ng-if="participant.type === 'INSTANCE'">
@@ -244,7 +244,7 @@
                                                     <input id="inputMeterParticipantCollectionPath{{$index}}" type="text" class="participant-collection-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.collectionPath)}}" disabled>
                                                 </div>
                                                 <i class="form-control-feedback" aria-hidden="true"></i>
-                                                <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">Path to a collection of objects representing the different participants.</a></span>
+                                                <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#histogram-graph" target="_blank" class="help">Path to a collection of objects representing the different participants.</a></span>
                                             </div>
 
                                             <div class="form-group has-feedback">
@@ -254,7 +254,7 @@
                                                     <input id="inputMeterParticipantTitlePath{{$index}}" type="text" class="participant-title-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.titlePath)}}" disabled>
                                                 </div>
                                                 <i class="form-control-feedback" aria-hidden="true"></i>
-                                                <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">Path from a collection object to the value of the concrete participants title.</a></span>
+                                                <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#histogram-graph" target="_blank" class="help">Path from a collection object to the value of the concrete participants title.</a></span>
                                             </div>
 
                                             <div class="form-group has-feedback">
@@ -280,7 +280,7 @@
                                                 <input id="inputMeterParticipantValuePath{{$index}}" type="text" class="participant-value-path form-control with-primary-addon validatable" value="{{beautifyPath(participant.valuePath)}}" disabled>
                                             </div>
                                             <i class="form-control-feedback" aria-hidden="true"></i>
-                                            <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#histogram-graph" target="_blank" class="help">Path to the data to be presented.</a></span>
+                                            <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#histogram-graph" target="_blank" class="help">Path to the data to be presented.</a></span>
                                         </div>
 
                                         <div class="row">
@@ -334,7 +334,7 @@
                                             <input id="inputMeterPath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.path)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#single-value-monitor" target="_blank" class="help">Path to the data to be presented.</a></span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#single-value-monitor" target="_blank" class="help">Path to the data to be presented.</a></span>
                                     </div>
 
                                 </div>
@@ -348,7 +348,7 @@
                                             <input id="inputMeterTableCollectionPath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.collectionPath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#data-table" target="_blank" class="help">Path to a collection of objects representing the different table rows.</a></span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#data-table" target="_blank" class="help">Path to a collection of objects representing the different table rows.</a></span>
                                     </div>
 
                                     <div class="form-group has-feedback">
@@ -358,7 +358,7 @@
                                             <input id="inputMeterTableTitlePath" type="text" class="form-control with-primary-addon validatable" value="{{beautifyPath(currentMeter.config.table.titlePath)}}" disabled>
                                         </div>
                                         <i class="form-control-feedback" aria-hidden="true"></i>
-                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#data-table" target="_blank" class="help">Path from a collection object to the value of the concrete row title.</a></span>
+                                        <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#data-table" target="_blank" class="help">Path from a collection object to the value of the concrete row title.</a></span>
                                     </div>
 
                                     <div class="form-group has-feedback">
@@ -376,7 +376,7 @@
                                     </div>
 
                                     <label>Table Columns</label>
-                                    <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/blur-monitor/wiki#data-table" target="_blank" class="help">The columns of the table, each contains a concrete column title and path to the cell data.</a></span>
+                                    <span class="help-block sub-little-text"><a href="https://github.com/avivcarmis/baked-monitor/wiki#data-table" target="_blank" class="help">The columns of the table, each contains a concrete column title and path to the cell data.</a></span>
 
                                     <div ng-repeat="value in currentMeter.config.table.values track by $index" class="group">
 

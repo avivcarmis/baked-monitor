@@ -14,9 +14,9 @@
 
     // main functional color scheme
     var colorScheme = {
-        primary: '#209e91',
-        info: '#2dacd1',
-        success: '#90b900',
+        primary: '#90b900',
+        info: '#40a1a0',
+        success: '#72ab57',
         warning: '#dfb81c',
         danger: '#e85656',
     };

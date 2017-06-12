@@ -37,7 +37,7 @@
                     return $state.go('edit');
                 }
 
-                $("title").text($scope.server.title + " - BlurMonitor");
+                $("title").text($scope.server.title + " - BakedMonitor");
 
                 $scope.serverIsUp = true;
 

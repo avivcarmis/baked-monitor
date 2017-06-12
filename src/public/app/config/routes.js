@@ -9,7 +9,7 @@
                 $stateProvider
                     .state('login', {
                         url: '/login',
-                        title: 'Sign In - BlurMonitor',
+                        title: 'Sign In - BakedMonitor',
                         templateUrl: 'app/login.html',
                         controller: 'LoginCtrl'
                     });
