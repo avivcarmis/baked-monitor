@@ -345,9 +345,13 @@ body .modal .modal-dialog .modal-body span {
     text-align: center;
     position: relative;
     z-index: 3;
-    font-size: 15px;
+    font-size: 14px;
     margin: 10px 0;
     width: 120px;
+    height: 21px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .login-box .new-profile {
     background: #4e4e4e;

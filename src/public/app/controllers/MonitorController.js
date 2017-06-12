@@ -3,27 +3,24 @@
 
     angular
         .module('BlurAdmin')
-        .controller('MonitorCtrl', ['$scope', '$http', '$rootScope', 'baConfig', 'layoutPaths', '$state', 'pathManager',
-            function ($scope, $http, $rootScope, baConfig, layoutPaths, $state, pathManager) {
+        .controller('MonitorCtrl', ['$scope', '$http', '$rootScope', 'baConfig', 'layoutPaths', '$state', '$stateParams', 'pathManager',
+            function ($scope, $http, $rootScope, baConfig, layoutPaths, $state, $stateParams, pathManager) {
 
                 if (typeof $rootScope.profile === "undefined") {
                     $rootScope.pendingRedirect = {
                         state: $state.current.name,
-                        params: $rootScope.stateParams
+                        params: $stateParams
                     };
                     return $state.go('login');
                 }
 
-                if (!$rootScope.stateParams) {
-                    $rootScope.stateParams = {};
-                }
-                if (!$rootScope.stateParams.serverId) {
+                if (!$stateParams.serverId) {
                     if ($rootScope.profile.servers.length === 0) {
-                        return $state.go('edit');
+                        return $state.go('edit', {serverId: 0});
                     }
-                    $rootScope.stateParams.serverId = $rootScope.profile.servers[0].id;
+                    $stateParams.serverId = $rootScope.profile.servers[0].id;
                 }
-                $scope.serverId = $rootScope.stateParams.serverId;
+                $scope.serverId = $stateParams.serverId;
 
                 $scope.server = null;
                 for (var i = 0; i < $rootScope.profile.servers.length; i++) {

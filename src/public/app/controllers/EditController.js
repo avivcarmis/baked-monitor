@@ -3,13 +3,13 @@
 
     angular
         .module('BlurAdmin')
-        .controller('EditCtrl', ['$scope', '$http', '$rootScope', '$state', 'toastr', '$uibModal', 'utils', 'pathManager',
-            function ($scope, $http, $rootScope, $state, toastr, $uibModal, utils, pathManager) {
+        .controller('EditCtrl', ['$scope', '$http', '$rootScope', '$state', '$stateParams', 'toastr', '$uibModal', 'utils', 'pathManager',
+            function ($scope, $http, $rootScope, $state, $stateParams, toastr, $uibModal, utils, pathManager) {
 
                 if (typeof $rootScope.profile === "undefined") {
                     $rootScope.pendingRedirect = {
                         state: $state.current.name,
-                        params: $rootScope.stateParams
+                        params: $stateParams
                     };
                     return $state.go('login');
                 }
@@ -997,11 +997,16 @@
                         }
                     },
                     ready: function () {
-                        if (!$rootScope.stateParams || !$rootScope.stateParams.resourceId) {
+                        if ($stateParams.resourceId === 0 || $stateParams.resourceId === "0") {
                             $scope.$$postDigest($scope.addNewServer);
                         }
+                        else if (!$stateParams.resourceId) {
+                            if ($rootScope.profile.servers.length > 0) {
+                                $("#tree").jstree("select_node", $rootScope.profile.servers[0].id);
+                            }
+                        }
                         else {
-                            $("#tree").jstree("select_node", $rootScope.stateParams.resourceId);
+                            $("#tree").jstree("select_node", $stateParams.resourceId);
                         }
                     }
                 };
@@ -1063,7 +1068,7 @@
                 };
                 $scope.clearChanges();
 
-                $scope.$on('$stateChangeStart', function (event, toState) {
+                $scope.$on('$stateChangeStart', function (event, toState, toParams) {
                     if ($scope.changesMade()) {
                         event.preventDefault();
                         $rootScope.confirm(
@@ -1072,7 +1077,7 @@
                             function () {
                                 $scope.clearChanges();
                                 $rootScope.reloadProfile();
-                                $rootScope.navigate(toState.name, $rootScope.stateParams);
+                                $state.go(toState.name, toParams);
                             }
                         );
                     }

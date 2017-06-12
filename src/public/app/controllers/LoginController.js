@@ -3,8 +3,8 @@
 
     angular
         .module('BlurAdmin')
-        .controller('LoginCtrl', ['$scope', '$rootScope', 'baSidebarService', '$state', 'toastr', '$uibModal', 'utils', 'comparator',
-            function ($scope, $rootScope, baSidebarService, $state, toastr, $uibModal, utils, comparator) {
+        .controller('LoginCtrl', ['$scope', '$rootScope', 'baSidebarService', '$state', '$stateParams', 'toastr', '$uibModal', 'utils', 'comparator',
+            function ($scope, $rootScope, baSidebarService, $state, $stateParams, toastr, $uibModal, utils, comparator) {
 
                 $("title").text($state.current.title);
 
@@ -80,17 +80,8 @@
                     });
                 };
 
-                $rootScope.navigate = function (state, params) {
-                    $rootScope.stateParams = params;
-                    $state.transitionTo(state, {}, {
-                        reload: true,
-                        inherit: false,
-                        notify: true
-                    });
-                };
-
                 $rootScope.currentState = function (state, params) {
-                    return $state.current.name == state && comparator.test(params, $rootScope.stateParams);
+                    return $state.current.name == state && (state == 'edit' ? true : comparator.test(params, $state.params));
                 };
 
                 $rootScope.export = function () {
@@ -166,12 +157,12 @@
 
                 $rootScope.goHome = function () {
                     if ($rootScope.pendingRedirect) {
-                        $rootScope.navigate($rootScope.pendingRedirect.state, $rootScope.pendingRedirect.params);
+                        $state.go($rootScope.pendingRedirect.state, $rootScope.pendingRedirect.params);
                         $rootScope.pendingRedirect = null;
                         return;
                     }
                     if ($rootScope.profile.servers.length > 0) {
-                        $rootScope.navigate('monitor', {serverId: $rootScope.profile.servers[0].id});
+                        $state.go('monitor', {serverId: $rootScope.profile.servers[0].id});
                     }
                     else {
                         $state.go('edit');
