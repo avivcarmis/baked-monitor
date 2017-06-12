@@ -1,0 +1,20 @@
+{
+  "name": "Go-To-Guy",
+  "description": "Live monitoring for backend applications.",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "icons": {
+    "16": "assets/img/favicon-16x16.png",
+    "128": "assets/img/favicon-128x128.png"
+  },
+  "permissions": [
+    "system.display",
+    "http://fonts.googleapis.com/",
+    "https://fonts.googleapis.com/"
+  ]
+}
