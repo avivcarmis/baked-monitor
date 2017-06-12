@@ -1,4 +1,4 @@
-var OUTPUT_DIR = "baked-monitor";
+var OUTPUT_DIR = "go-to-guy";
 var PUBLIC_FILE_EXTENSIONS = [
     "js",
     "html",
@@ -26,7 +26,7 @@ var browserSync = require('browser-sync').create();
 
 gulp.task('default', function () {
     console.log('AVAILABLE TASKS:');
-    console.log('`gulp build` - generates ./baked-monitor/ directory containing the BakedMonitor application.');
+    console.log('`gulp build` - generates ./go-to-guy/ directory containing the Go-To-Guy application.');
     console.log('`gulp serve` - runs `gulp build` task and then creates a local server running it.');
     console.log('`gulp watch` - watches for changes in the `src` directory and re-builds the project when a change is made.');
 });

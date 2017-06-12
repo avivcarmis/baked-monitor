@@ -1,11 +1,11 @@
 {
-  "name": "baked-monitor",
+  "name": "go-to-guy",
   "version": "1.0.0",
-  "homepage": "https://github.com/avivcarmis/baked-monitor",
+  "homepage": "https://github.com/avivcarmis/go-to-guy",
   "authors": [
     "avivcarmis"
   ],
-  "description": "Live monitoring tools for backend applications",
+  "description": "Live monitoring for backend applications",
   "license": "MIT",
   "ignore": [
     "**/.*",

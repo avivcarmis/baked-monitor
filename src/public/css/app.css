@@ -146,7 +146,7 @@ body #toast-container .toast {
     height: 45px;
 }
 option {
-    background: #5a7370;
+    background: #2e2e2c;
 }
 .edit-page .jstree-default > .jstree-no-dots .jstree-closed > .jstree-ocl,
 .edit-page .jstree-default > .jstree-no-dots .jstree-open > .jstree-ocl {
@@ -397,4 +397,7 @@ a.help {
 }
 .user-profile:hover {
     color: #90b900;
+}
+.vakata-context a {
+    color: black !important;
 }

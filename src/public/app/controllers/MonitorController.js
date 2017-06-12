@@ -34,7 +34,7 @@
                     return $state.go('edit');
                 }
 
-                $("title").text($scope.server.title + " - BakedMonitor");
+                $("title").text($scope.server.title + " - Go-To-Guy");
 
                 $scope.serverIsUp = true;
 

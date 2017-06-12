@@ -9,7 +9,7 @@
                 $stateProvider
                     .state('login', {
                         url: '/login',
-                        title: 'Sign In - BakedMonitor',
+                        title: 'Sign In - Go-To-Guy',
                         templateUrl: 'app/login.html',
                         controller: 'LoginCtrl'
                     });
