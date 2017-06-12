@@ -1,1 +1,4 @@
 .idea/
+bower_components/
+go-to-guy/
+node_modules/
