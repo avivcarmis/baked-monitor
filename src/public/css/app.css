@@ -67,6 +67,10 @@
 .health-indicator.unhealthy:after {
     border-color: #e85656;
 }
+.health-indicator.duration-4:after {
+    -webkit-animation-duration: 4s;
+    animation-duration: 4s;
+}
 .health-indicator.duration-5:after {
     -webkit-animation-duration: 5s;
     animation-duration: 5s;
@@ -78,14 +82,6 @@
 .health-indicator.duration-7:after {
     -webkit-animation-duration: 7s;
     animation-duration: 7s;
-}
-.health-indicator.duration-8:after {
-    -webkit-animation-duration: 8s;
-    animation-duration: 8s;
-}
-.health-indicator.duration-9:after {
-    -webkit-animation-duration: 9s;
-    animation-duration: 9s;
 }
 body #toast-container .toast {
     -moz-box-shadow: 0 0 12px #000;
@@ -400,4 +396,22 @@ a.help {
 }
 .vakata-context a {
     color: black !important;
+}
+.al-sidebar-list-link {
+    transition: all 400ms ease;
+}
+.al-sidebar-list-link.disabled {
+    background: rgb(0, 0, 0);
+    opacity: 0.2;
+    cursor: default;
+    color: white !important;
+    text-shadow:    0 0 6px rgba(255, 255, 255, .3),
+                    1px 1px 6px rgba(255, 255, 255, .3),
+                    -1px -1px 6px rgba(255, 255, 255, .3),
+                    -1px 1px 6px rgba(255, 255, 255, .3),
+                    1px -1px 6px rgba(255, 255, 255, .3),
+                    2px 2px 6px rgba(255, 255, 255, .3),
+                    -2px -2px 6px rgba(255, 255, 255, .3),
+                    -2px 2px 6px rgba(255, 255, 255, .3),
+                    2px -2px 6px rgba(255, 255, 255, .3);
 }

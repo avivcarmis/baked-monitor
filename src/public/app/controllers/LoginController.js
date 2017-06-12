@@ -65,10 +65,12 @@
                         baSidebarService.addStaticItem({
                             title: server.title,
                             server: {
+                                id: server.id,
                                 title: server.title,
                                 url: server.url,
                                 method: server.method
                             },
+                            enabled: server.enabled,
                             stateRef: 'monitor',
                             stateParams: {serverId: server.id}
                         });
@@ -76,8 +78,20 @@
                     baSidebarService.addStaticItem({
                         title: 'New Server',
                         icon: 'ion-android-add-circle',
+                        enabled: true,
                         stateRef: 'edit'
                     });
+                };
+
+                $rootScope.toggleServerStatus = function (serverId) {
+                    for (var i = 0; i < $rootScope.profile.servers.length; i++) {
+                        var server = $rootScope.profile.servers[i];
+                        if (server.id == serverId) {
+                            server.enabled = !server.enabled;
+                            $rootScope.saveProfile();
+                            return;
+                        }
+                    }
                 };
 
                 $rootScope.currentState = function (state, params) {

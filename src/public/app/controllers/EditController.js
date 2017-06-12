@@ -85,6 +85,22 @@
                     server.meters.splice(toIndex, 0, server.meters.splice(index, 1)[0]);
                 };
 
+                $scope.migrateMeter = function (serverId, meterId, toServerId, toIndex) {
+                    var server = $scope.findServer(serverId);
+                    if (!server.meters) {
+                        return;
+                    }
+                    var toServer = $scope.findServer(toServerId);
+                    var index = $scope.findMeterIndex(server.meters, meterId);
+                    if (index === null) {
+                        return;
+                    }
+                    $scope.resourceChanged(serverId);
+                    $scope.resourceChanged(meterId);
+                    $scope.resourceChanged(toServerId);
+                    toServer.meters.splice(toIndex, 0, server.meters.splice(index, 1)[0]);
+                };
+
                 $scope.findMeterIndex = function (meters, meterId) {
                     for (var i = 0; i < meters.length; i++) {
                         var meter = meters[i];
@@ -928,6 +944,7 @@
                         return;
                     }
                     var server = {
+                        enabled: true,
                         id: utils.guid(),
                         user: $rootScope.email,
                         title: "New Server",
@@ -993,7 +1010,13 @@
                             $scope.moveServer(data.node.data.key, data.position);
                         }
                         else {
-                            $scope.moveMeter(data.node.data.server, data.node.data.meter, data.position);
+                            if (data.node.data.server == data.node.parent) {
+                                $scope.moveMeter(data.node.data.server, data.node.data.meter, data.position);
+                            }
+                            else {
+                                data.node.data.server = data.node.parent;
+                                $scope.migrateMeter(data.node.data.server, data.node.id, data.node.parent.id, data.position);
+                            }
                         }
                     },
                     ready: function () {
