@@ -197,6 +197,11 @@
                         marginRight: 15,
                         dataProvider: data,
                         categoryField: 'time',
+                        numberFormatter: {
+                            precision: 2,
+                            decimalSeparator: '.',
+                            thousandsSeparator: ','
+                        },
                         valueAxes: [
                             {
                                 axisAlpha: 0,
@@ -284,6 +289,11 @@
                             autoMargins: false
                         },
                         innerRadius: '40%',
+                        numberFormatter: {
+                            precision: 2,
+                            decimalSeparator: '.',
+                            thousandsSeparator: ','
+                        },
                         defs: {
                             filter: [
                                 {
@@ -369,7 +379,7 @@
                         return;
                     }
                     var lastSample = config.getBaseData($scope.data[$scope.data.length - 1].data);
-                    var value = $scope.getEntryByPath(config.path, lastSample);
+                    var value = $scope.normalizeValue($scope.getEntryByPath(config.path, lastSample));
                     $("#meter" + index).addClass("value-view").html(config.prefix + value + config.suffix);
                 };
 
@@ -390,7 +400,8 @@
                         }
                         var row = [$scope.getTitle(config.table.titlePath, key, collection, config.table.titlePrefix, config.table.titleSuffix)];
                         for (i = 0; i < config.table.values.length; i++) {
-                            row.push($scope.getEntryByPath(config.table.values[i].valuePath, collection[key]));
+                            var value = $scope.normalizeValue($scope.getEntryByPath(config.table.values[i].valuePath, collection[key]));
+                            row.push(value);
                         }
                         tableValues.push(row);
                     }
@@ -418,7 +429,7 @@
                 };
 
                 $scope.getEntryByPath = function (pathArray, sample) {
-                    return $scope.normalizeValue(pathManager.walkPath(sample, pathArray, pathArray.length));
+                    return pathManager.walkPath(sample, pathArray, pathArray.length);
                 };
 
                 $scope.getTitle = function (titlePath, key, sample, prefix, suffix) {

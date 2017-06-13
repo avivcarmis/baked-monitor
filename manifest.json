@@ -14,7 +14,6 @@
   },
   "permissions": [
     "system.display",
-    "http://fonts.googleapis.com/",
-    "https://fonts.googleapis.com/"
+    "storage"
   ]
 }

@@ -11,7 +11,6 @@
 
             <a ng-mouseenter="hoverItem($event, item)"
                ng-if="item.server"
-               href="javascript:void(0)"
                ng-click="navigate($index, item.stateRef, item.stateParams)"
                data-server-id="{{item.server.id}}"
                ng-class="{'al-sidebar-list-link': true, 'server-menu-item': true, 'disabled': !item.enabled}">
@@ -21,7 +20,7 @@
 
             <a ng-mouseenter="hoverItem($event, item)"
                ng-if="!item.server"
-               ng-href="{{(item.fixedHref ? item.fixedHref: '')}}"
+               ui-sref="{{item.stateRef}}"
                class="al-sidebar-list-link">
                 <i class="{{item.icon}}"></i>
                 <span>{{item.title}}</span>
@@ -83,9 +82,9 @@
          ng-class="{'show-hover-elem': showHoverElem }"></div>
 
     <div style="text-align: center; z-index: 1; position: absolute; width: 100%; bottom: 77px; overflow: hidden;">
-        <a href="javascript:void(0)" ng-click="import()">Import</a>
+        <a ng-click="import()">Import</a>
         &nbsp;&nbsp;/&nbsp;&nbsp;
-        <a href="javascript:void(0)" ng-click="export()">Export</a>
+        <a ng-click="export()">Export</a>
     </div>
 
 </aside>

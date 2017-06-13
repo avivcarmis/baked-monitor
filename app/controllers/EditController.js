@@ -1069,9 +1069,9 @@
                 var unloadWarningMessage = "You have made some unsaved changes. Are you sure you want to leave without saving them first?";
                 $scope.resourceChanged = function (resourceId) {
                     $scope.changedResources[resourceId] = true;
-                    window.onbeforeunload = function () {
-                        return unloadWarningMessage;
-                    };
+                    // window.onbeforeunload = function () {
+                    //     return unloadWarningMessage;
+                    // };
                     var tree = $('#tree').jstree(true);
                     var node = tree.get_node(resourceId);
                     var type = node.type.substr(-8) === "-changed" ? node.type : node.type + "-changed";
@@ -1079,7 +1079,7 @@
                 };
                 $scope.clearChanges = function () {
                     $scope.changedResources = {};
-                    window.onbeforeunload = null;
+                    // window.onbeforeunload = null;
                 };
                 $scope.changesMade = function () {
                     for (var key in $scope.changedResources) {

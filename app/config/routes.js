@@ -5,7 +5,7 @@
         .module('BlurAdmin')
         .config(['$locationProvider', '$stateProvider', '$urlRouterProvider',
             function ($locationProvider, $stateProvider, $urlRouterProvider) {
-                $locationProvider.html5Mode(true);
+                // $locationProvider.html5Mode(true);
                 $stateProvider
                     .state('login', {
                         url: '/login',

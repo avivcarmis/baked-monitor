@@ -1,5 +1,5 @@
 <div class="page-top clearfix" scroll-position="scrolled" max-height="50" ng-class="{'scrolled': scrolled}">
-    <a href="/" class="al-logo clearfix">
+    <a ui-sref="monitor" class="al-logo clearfix">
         <img style="background: #313131; padding: 10px; border-radius: 50%;" src="assets/img/favicon-29x29.png">&nbsp;
         Go-To-<span>Guy</span>
     </a>
@@ -18,10 +18,8 @@
             </div>
             <ul class="top-dropdown-menu profile-dropdown" uib-dropdown-menu>
                 <li><i class="dropdown-arr"></i></li>
-                <li><a href="profile"><i class="fa fa-user"></i>Profile</a></li>
-                <li><a href="javascript:void(0)" ng-click="logout()" class="signout"><i
-                        class="fa fa-power-off"></i>Sign
-                    out</a></li>
+                <li><a ui-sref="profile"><i class="fa fa-user"></i>Profile</a></li>
+                <li><a ng-click="logout()" class="signout"><i class="fa fa-power-off"></i>Sign out</a></li>
             </ul>
         </div>
     </div>

@@ -10,13 +10,13 @@
 
                 $scope.initialized = false;
 
-                if (typeof(Storage) === "undefined") {
-                    $rootScope.browserNotSupported = true;
-                    angular.element(document).ready(function () {
-                        $("#browserSupport").removeClass("hidden");
-                    });
-                    return;
-                }
+                // if ((!chrome || !chrome.storage) && typeof(Storage) === "undefined") {
+                //     $rootScope.browserNotSupported = true;
+                //     angular.element(document).ready(function () {
+                //         $("#browserSupport").removeClass("hidden");
+                //     });
+                //     return;
+                // }
 
                 $rootScope.AVATARS = [
                     {name: "abraham", title: "Neat Abraham"},
@@ -39,9 +39,6 @@
                     "#505050",
                     "#ececec"
                 ];
-
-                var allProfilesData = localStorage.getItem("allProfiles");
-                $rootScope.allProfiles = allProfilesData ? JSON.parse(allProfilesData) : [];
 
                 $rootScope.confirm = function (body, title, onYesCallback, onNoCallback) {
                     var modal = $uibModal.open({
@@ -134,8 +131,8 @@
                     for (var i = 0; i < $rootScope.allProfiles.length; i++) {
                         var profile = $rootScope.allProfiles[i];
                         if (profile.id == current.id) {
-                            $rootScope.allProfiles[i] = current;
-                            localStorage.setItem("allProfiles", JSON.stringify($rootScope.allProfiles));
+                            $rootScope.allProfiles[i] = utils.cloneObject(current);
+                            chrome.storage.sync.set({"allProfiles": JSON.stringify($rootScope.allProfiles)});
                             $rootScope.reloadSidebar();
                             return;
                         }
@@ -151,7 +148,7 @@
                         var profile = $rootScope.allProfiles[i];
                         if (profile.id == current.id) {
                             $rootScope.allProfiles.splice(i, 1);
-                            localStorage.setItem("allProfiles", JSON.stringify($rootScope.allProfiles));
+                            chrome.storage.sync.set({"allProfiles": JSON.stringify($rootScope.allProfiles)});
                             return $rootScope.logout();
                         }
                     }
@@ -185,7 +182,7 @@
 
                 $rootScope.logout = function () {
                     $rootScope.loggedIn = false;
-                    localStorage.removeItem("activeProfileId");
+                    chrome.storage.sync.remove("activeProfileId");
                     $state.go('login');
                 };
 
@@ -194,10 +191,10 @@
                     if (!$rootScope.profile) {
                         toastr.error("This profile doesn't exist anymore", "Oops!");
                         $rootScope.loggedIn = false;
-                        localStorage.removeItem("activeProfileId");
+                        chrome.storage.sync.remove("activeProfileId");
                         return;
                     }
-                    localStorage.setItem("activeProfileId", profileId);
+                    chrome.storage.sync.set({"activeProfileId": profileId});
                     $rootScope.reloadSidebar();
                     $rootScope.loggedIn = true;
                     $rootScope.goHome();
@@ -212,19 +209,32 @@
                         color: utils.random($rootScope.COLORS),
                         servers: []
                     });
-                    localStorage.setItem("allProfiles", JSON.stringify($rootScope.allProfiles));
+                    chrome.storage.sync.set({"allProfiles": JSON.stringify($rootScope.allProfiles)});
                     $rootScope.firstProfileUpdate = true;
                     $rootScope.pendingRedirect = {state: "profile"};
                     $scope.login(id);
                 };
 
-                $rootScope.profile = null;
-                var activeProfileId = localStorage.getItem("activeProfileId");
-                if (activeProfileId) {
-                    return $scope.login(activeProfileId);
-                }
+                chrome.storage.sync.get("allProfiles", function(data) {
 
-                $scope.initialized = true;
+                    var allProfilesData = data.allProfiles;
+                    $rootScope.allProfiles = allProfilesData ? JSON.parse(allProfilesData) : [];
+                    $rootScope.profile = null;
+
+                    chrome.storage.sync.get("activeProfileId", function (data) {
+
+                        $scope.$apply(function () {
+                            var activeProfileId = data.activeProfileId;
+                            if (activeProfileId) {
+                                return $scope.login(activeProfileId);
+                            }
+
+                            $scope.initialized = true;
+                        });
+
+                    });
+
+                });
 
             }]);
 })();

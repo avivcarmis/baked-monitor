@@ -21,14 +21,6 @@
                 });
             };
 
-            $scope.exportData = function () {
-                return localStorage.getItem("allProfiles");
-            };
-
-            $scope.encodedExportData = function () {
-                return encodeURI($scope.exportData());
-            };
-
             $scope.importFile = function () {
                 var reader = new FileReader();
                 reader.onload = function () {
@@ -68,7 +60,7 @@
                         $rootScope.allProfiles.push(data[i]);
                         success++;
                     }
-                    localStorage.setItem("allProfiles", JSON.stringify($rootScope.allProfiles));
+                    chrome.storage.sync.set({"allProfiles": JSON.stringify($rootScope.allProfiles)});
                     if (success > 0) {
                         message = "Imported " + success + " profiles";
                         if (failed > 0) {
@@ -91,6 +83,12 @@
                 }
                 return false;
             };
+
+            chrome.storage.sync.get("allProfiles", function (data) {
+                $scope.$apply(function () {
+                    $scope.encodedExportData = encodeURI(data.allProfiles);
+                });
+            });
 
         }]);
 
