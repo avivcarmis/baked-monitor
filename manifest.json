@@ -1,19 +1,27 @@
 {
-  "name": "Go-To-Guy",
-  "description": "Live monitoring for backend applications.",
-  "version": "1.0.0",
+
   "manifest_version": 2,
+
+  "name": "Go-To-Guy",
+  "version": "0.0.0.1",
+  "description": "Live monitoring for backend applications.",
+  "default_locale": "en",
+  "icons": {
+    "16": "assets/img/favicon-16x16.png",
+    "48": "assets/img/favicon-48x48.png",
+    "128": "assets/img/favicon-128x128.png"
+  },
+  "homepage_url": "https://github.com/avivcarmis/go-to-guy",
+
   "app": {
     "background": {
       "scripts": ["background.js"]
     }
   },
-  "icons": {
-    "16": "assets/img/favicon-16x16.png",
-    "128": "assets/img/favicon-128x128.png"
-  },
+
   "permissions": [
     "system.display",
     "storage"
   ]
+
 }
