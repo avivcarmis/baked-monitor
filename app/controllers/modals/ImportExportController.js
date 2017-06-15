@@ -21,6 +21,14 @@
                 });
             };
 
+            $scope.exportData = function () {
+                return localStorage.getItem("allProfiles");
+            };
+
+            $scope.encodedExportData = function() {
+                return encodeURI($scope.exportData());
+            };
+
             $scope.importFile = function () {
                 var reader = new FileReader();
                 reader.onload = function () {
@@ -83,8 +91,6 @@
                 }
                 return false;
             };
-
-            $scope.encodedExportData = encodeURI(localStorage.getItem("allProfiles"));
 
         }]);
 

@@ -1,4 +1,5 @@
 const {app, BrowserWindow} = require('electron');
+const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const url = require('url');
 
@@ -7,8 +8,29 @@ const url = require('url');
 let win;
 
 function createWindow () {
+
+    // Load the previous state with fallback to defaults
+    let mainWindowState = windowStateKeeper({
+        defaultWidth: 1000,
+        defaultHeight: 800
+    });
+
     // Create the browser window.
-    win = new BrowserWindow({width: 800, height: 600});
+    win = new BrowserWindow({
+        x: mainWindowState.x,
+        y: mainWindowState.y,
+        width: mainWindowState.width,
+        height: mainWindowState.height,
+        title: "Go-To-Guy",
+        icon: "assets/img/favicon-32x32.png"
+    });
+
+    win.setMenu(null);
+
+    // Let us register listeners on the window, so we can update the state
+    // automatically (the listeners will be removed when the window is closed)
+    // and restore the maximized or full screen state
+    mainWindowState.manage(win);
 
     // and load the index.html of the app.
     win.loadURL(url.format({
@@ -32,7 +54,7 @@ function createWindow () {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {

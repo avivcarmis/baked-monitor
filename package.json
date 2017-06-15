@@ -18,5 +18,8 @@
   "homepage": "https://github.com/avivcarmis/go-to-guy#readme",
   "devDependencies": {
     "electron": "^1.6.11"
+  },
+  "dependencies": {
+    "electron-window-state": "^4.1.1"
   }
 }

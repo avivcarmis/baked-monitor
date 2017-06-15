@@ -19,7 +19,7 @@
                 var res = '<div class="panel-body" ng-transclude></div>';
                 var toAdd = "";
                 if (attrs.baPanelMeterId) {
-                    toAdd = '<span class="meter-refresh-warning"><span class="text-danger warning">not refreshing</span>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="edit/' + attrs.baPanelMeterId + '">click to edit</a></span>';
+                    toAdd = '<span class="meter-refresh-warning"><span class="text-danger warning">not refreshing</span>&nbsp;&nbsp;|&nbsp;&nbsp;<a ui-sref="edit({resourceId: \'' + attrs.baPanelMeterId + '\'})">click to edit</a></span>';
                 }
                 if (attrs.baPanelTitle) {
                     var titleTpl = '<div class="panel-heading clearfix">' + toAdd + '<h3 class="panel-title">' + attrs.baPanelTitle + '</h3></div>';
