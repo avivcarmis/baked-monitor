@@ -2,7 +2,11 @@
 
 ![](https://avivcarmis.github.io/go-to-guy/demo.png)
 
+[![Build Status](https://api.travis-ci.org/avivcarmis/go-to-guy.svg?branch=master)](https://api.travis-ci.org/avivcarmis/go-to-guy.svg?branch=master)
+
 Go-To-Guy UI is based and forked from [Akveo](https://github.com/akveo "Akveo") talented team's [BlurAdmin](https://github.com/akveo/blur-admin "BlurAdmin").
+
+---
 
 ### In a Nutshell
 Go-To-Guy is a desktop application aimed to provide dynamic tools for live status and monitoring statistics for web applications.
