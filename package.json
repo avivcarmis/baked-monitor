@@ -1,0 +1,22 @@
+{
+  "name": "go-to-guy",
+  "version": "1.0.0",
+  "description": "Live monitoring for backend applications",
+  "main": "main.js",
+  "scripts": {
+    "postinstall": "bower install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avivcarmis/go-to-guy.git"
+  },
+  "author": "Aviv Carmi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/avivcarmis/go-to-guy/issues"
+  },
+  "homepage": "https://github.com/avivcarmis/go-to-guy#readme",
+  "devDependencies": {
+    "electron": "^1.6.11"
+  }
+}

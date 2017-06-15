@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="BlurAdmin" ng-csp="">
+<html lang="en" ng-app="BlurAdmin">
 <head>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <base href="/">
+
     <title>Go-To-Guy</title>
 
     <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
@@ -39,6 +39,9 @@
     </main>
 </div>
 <div ng-if="!browserNotSupported" ui-view style="height: 100%; width: 100%; position: relative;"></div>
+
+<!-- Insert this line above script imports  -->
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 
 <script src="bower_components/jquery/dist/jquery.js"></script>
 <script src="bower_components/jquery-ui/jquery-ui.js"></script>
@@ -102,6 +105,9 @@
 <script src="app/theme/components/pageTop/pageTop.directive.js"></script>
 <script src="app/theme/components/widgets/widgets.directive.js"></script>
 <script src="app/theme/components/backTop/lib/jquery.backTop.min.js"></script>
+
+<!-- Insert this line after script imports -->
+<script>if (window.module) module = window.module;</script>
 
 </body>
 </html>
