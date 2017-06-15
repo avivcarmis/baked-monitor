@@ -11,7 +11,7 @@ env:
 matrix:
   include:
     - os: osx
-    - os: linux
+#    - os: linux
       env: CC=clang CXX=clang++ npm_config_clang=1
       compiler: clang
 
