@@ -5,7 +5,7 @@
 Go-To-Guy UI is based and forked from [Akveo](https://github.com/akveo "Akveo") talented team's [BlurAdmin](https://github.com/akveo/blur-admin "BlurAdmin").
 
 ### In a Nutshell
-Go-To-Guy is a chrome application aimed to provide dynamic tools for live status and monitoring statistics for web applications.
+Go-To-Guy is a desktop application aimed to provide dynamic tools for live status and monitoring statistics for web applications.
 
 Go-To-Guy consumes JSON from your application servers and provide tools to monitor the server status and build [histogram graphs](https://github.com/avivcarmis/go-to-guy/wiki#histogram-graph "histogram graphs"), [pie charts](https://github.com/avivcarmis/go-to-guy/wiki#pie-chart "pie charts"), [data tables](https://github.com/avivcarmis/go-to-guy/wiki#data-table "data tables") and [single value monitors](https://github.com/avivcarmis/go-to-guy/wiki#single-value-monitor "single value monitors") from the consumed data.
 More on that in [meters wiki](https://github.com/avivcarmis/go-to-guy/wiki#meters "meters wiki").
